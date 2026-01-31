@@ -674,6 +674,10 @@ const FieldActionButtons = ({
       selectedFieldFormId.includes(field.formId),
     );
 
+    if (fields.length === 0 || !fields[0]?.recipientId) {
+      return null;
+    }
+
     const recipient = envelope.recipients.find(
       (recipient) => recipient.id === fields[0].recipientId,
     );
@@ -689,7 +693,7 @@ const FieldActionButtons = ({
     }
 
     return null;
-  }, [editorFields.localFields]);
+  }, [editorFields.localFields, selectedFieldFormId, envelope.recipients]);
 
   return (
     <div className="flex flex-col items-center" {...props}>

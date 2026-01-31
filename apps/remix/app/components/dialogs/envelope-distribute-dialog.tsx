@@ -47,7 +47,6 @@ import {
   SelectValue,
 } from '@documenso/ui/primitives/select';
 import { SpinnerBox } from '@documenso/ui/primitives/spinner';
-import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { Textarea } from '@documenso/ui/primitives/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@documenso/ui/primitives/tooltip';
 import { useToast } from '@documenso/ui/primitives/use-toast';
@@ -177,11 +176,7 @@ export const EnvelopeDistributeDialog = ({
 
       await onDistribute?.();
 
-      let redirectPath = `${documentRootPath}/${envelope.id}`;
-
-      if (meta.distributionMethod === DocumentDistributionMethod.NONE) {
-        redirectPath += '?action=copy-links';
-      }
+      const redirectPath = `${documentRootPath}/${envelope.id}`;
 
       await navigate(redirectPath);
 
@@ -248,24 +243,6 @@ export const EnvelopeDistributeDialog = ({
           <Form {...form}>
             <form onSubmit={handleSubmit(onFormSubmit)}>
               <fieldset disabled={isSubmitting}>
-                <Tabs
-                  onValueChange={(value) =>
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                    setValue('meta.distributionMethod', value as DocumentDistributionMethod)
-                  }
-                  value={distributionMethod}
-                  className="mb-2"
-                >
-                  <TabsList className="w-full">
-                    <TabsTrigger className="w-full" value={DocumentDistributionMethod.EMAIL}>
-                      Email
-                    </TabsTrigger>
-                    <TabsTrigger className="w-full" value={DocumentDistributionMethod.NONE}>
-                      None
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-
                 <div
                   className={cn('min-h-72', {
                     'min-h-[23rem]': organisation.organisationClaim.flags.emailDomains,
@@ -281,7 +258,7 @@ export const EnvelopeDistributeDialog = ({
                       >
                         <SpinnerBox spinnerProps={{ size: 'sm' }} className="h-72" />
                       </motion.div>
-                    ) : distributionMethod === DocumentDistributionMethod.EMAIL ? (
+                    ) : (
                       <motion.div
                         key={'Emails'}
                         initial={{ opacity: 0, y: 5 }}
@@ -410,28 +387,7 @@ export const EnvelopeDistributeDialog = ({
                           </fieldset>
                         </Form>
                       </motion.div>
-                    ) : distributionMethod === DocumentDistributionMethod.NONE ? (
-                      <motion.div
-                        key={'Links'}
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                        exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                        className="min-h-60 rounded-lg border"
-                      >
-                        <div className="py-24 text-center text-sm text-muted-foreground">
-                          <p>
-                            <Trans>We won't send anything to notify recipients.</Trans>
-                          </p>
-
-                          <p className="mt-2">
-                            <Trans>
-                              We will generate signing links for you, which you can send to the
-                              recipients through your method of choice.
-                            </Trans>
-                          </p>
-                        </div>
-                      </motion.div>
-                    ) : null}
+                    )}
                   </AnimatePresence>
                 </div>
 
@@ -443,11 +399,7 @@ export const EnvelopeDistributeDialog = ({
                   </DialogClose>
 
                   <Button loading={isSubmitting} disabled={isSyncing} type="submit">
-                    {distributionMethod === DocumentDistributionMethod.EMAIL ? (
-                      <Trans>Send</Trans>
-                    ) : (
-                      <Trans>Generate Links</Trans>
-                    )}
+                    <Trans>Send</Trans>
                   </Button>
                 </DialogFooter>
               </fieldset>

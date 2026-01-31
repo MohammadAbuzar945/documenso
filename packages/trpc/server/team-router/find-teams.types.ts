@@ -29,6 +29,7 @@ export const ZFindTeamsResponseSchema = ZFindResultResponse.extend({
   })
     .extend({
       currentTeamRole: z.nativeEnum(TeamMemberRole),
+      completedDocumentCount: z.number(),
     })
     .array(),
 });

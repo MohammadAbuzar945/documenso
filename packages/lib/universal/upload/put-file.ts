@@ -50,6 +50,7 @@ export const putFile = async (file: File) => {
 
   return await match(NEXT_PUBLIC_UPLOAD_TRANSPORT)
     .with('s3', async () => putFileInS3(file))
+    .with('gcs', async () => putFileInGCS(file))
     .otherwise(async () => putFileInDatabase(file));
 };
 
@@ -109,4 +110,8 @@ const putFileInS3 = async (file: File) => {
     type: DocumentDataType.S3_PATH,
     data: key,
   };
+};
+
+const putFileInGCS = async (file: File) => {
+  return putFileInS3(file);
 };

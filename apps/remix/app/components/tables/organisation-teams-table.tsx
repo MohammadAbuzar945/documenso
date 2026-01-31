@@ -77,6 +77,11 @@ export const OrganisationTeamsTable = () => {
         cell: ({ row }) => i18n.date(row.original.createdAt),
       },
       {
+        header: _(msg`Credits Used`),
+        accessorKey: 'completedDocumentCount',
+        cell: ({ row }) => row.original.completedDocumentCount ?? 0,
+      },
+      {
         id: 'actions',
         cell: ({ row }) => (
           <div className="flex justify-end space-x-2">
@@ -132,6 +137,9 @@ export const OrganisationTeamsTable = () => {
             </TableCell>
             <TableCell>
               <Skeleton className="h-4 w-20 rounded-full" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-16 rounded-full" />
             </TableCell>
             <TableCell>
               <div className="flex flex-row justify-end space-x-2">

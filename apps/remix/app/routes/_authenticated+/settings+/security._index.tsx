@@ -128,7 +128,7 @@ export default function SettingsSecurity({ loaderData }: Route.ComponentProps) {
         </Alert>
       )}
 
-      <Alert
+      {/* <Alert
         className="mt-6 flex flex-col justify-between p-6 sm:flex-row sm:items-center"
         variant="neutral"
       >
@@ -149,7 +149,7 @@ export default function SettingsSecurity({ loaderData }: Route.ComponentProps) {
             <Trans>Manage passkeys</Trans>
           </Link>
         </Button>
-      </Alert>
+      </Alert> */}
 
       <Alert
         className="mt-6 flex flex-col justify-between p-6 sm:flex-row sm:items-center"
@@ -193,7 +193,7 @@ export default function SettingsSecurity({ loaderData }: Route.ComponentProps) {
         </Button>
       </Alert>
 
-      <Alert
+      {/* <Alert
         className="mt-6 flex flex-col justify-between p-6 sm:flex-row sm:items-center"
         variant="neutral"
       >
@@ -212,7 +212,7 @@ export default function SettingsSecurity({ loaderData }: Route.ComponentProps) {
             <Trans>Manage linked accounts</Trans>
           </Link>
         </Button>
-      </Alert>
+      </Alert> */}
     </div>
   );
 }

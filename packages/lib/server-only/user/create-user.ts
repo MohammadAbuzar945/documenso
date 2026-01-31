@@ -6,6 +6,7 @@ import { prisma } from '@documenso/prisma';
 import { SALT_ROUNDS } from '../../constants/auth';
 import { AppError, AppErrorCode } from '../../errors/app-error';
 import { createPersonalOrganisation } from '../organisation/create-organisation';
+import { ensureUserCredits } from '@documenso/ee/server-only/limits/user-credits';
 
 export interface CreateUserOptions {
   name: string;
@@ -67,6 +68,22 @@ export const createUser = async ({ name, email, password, signature }: CreateUse
  */
 export const onCreateUserHook = async (user: User) => {
   await createPersonalOrganisation({ userId: user.id });
+
+  // Initialize user credits with 10 initial credits
+  await prisma.userCredits.upsert({
+    where: {
+      userId: user.id,
+    },
+    create: {
+      userId: user.id,
+      credits: 10,
+      isActive: true,
+    },
+    update: {
+      // If record already exists, just ensure it's active (don't overwrite existing credits)
+      isActive: true,
+    },
+  });
 
   return user;
 };

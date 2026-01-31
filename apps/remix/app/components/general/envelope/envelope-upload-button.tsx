@@ -63,10 +63,6 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
       return msg`Document upload disabled due to unpaid invoices`;
     }
 
-    if (remaining.documents === 0) {
-      return msg`You have reached your document limit.`;
-    }
-
     if (!user.emailVerified) {
       return msg`Verify your email to upload documents.`;
     }
@@ -75,6 +71,17 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
   }, [remaining.documents, user.emailVerified, team]);
 
   const onFileDrop = async (files: File[]) => {
+    // Check if user has no credits remaining
+    if (type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null)) {
+      toast({
+        title: t`Upload failed`,
+        description: t`You have reached your document limit. Please upgrade your plan to upload more documents.`,
+        variant: 'destructive',
+        duration: 7500,
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
 
@@ -108,7 +115,7 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
           ? formatDocumentsPath(team.url)
           : formatTemplatesPath(team.url);
 
-      const aiQueryParam = team.preferences.aiFeaturesEnabled ? '?ai=true' : '';
+      const aiQueryParam = team.preferences.aiFeaturesEnabled ? '?ai=false' : '';
 
       await navigate(`${pathPrefix}/${id}/edit${aiQueryParam}`);
 
@@ -129,7 +136,7 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
         .with('INVALID_DOCUMENT_FILE', () => t`You cannot upload encrypted PDFs.`)
         .with(
           AppErrorCode.LIMIT_EXCEEDED,
-          () => t`You have reached your document limit for this month. Please upgrade your plan.`,
+          () => t`You have reached your document limit. Please upgrade your plan.`,
         )
         .with(
           'ENVELOPE_ITEM_LIMIT_EXCEEDED',
@@ -174,16 +181,21 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
     });
   };
 
+  const isDisabled = !user.emailVerified;
+  const hasNoCredits = type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null);
+  const showCreditsInfo = type === EnvelopeType.DOCUMENT && typeof remaining.documents === 'number';
+
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative flex flex-col gap-2', className)}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <div>
               <DocumentUploadButton
                 loading={isLoading}
-                disabled={remaining.documents === 0 || !user.emailVerified}
+                disabled={isDisabled}
                 disabledMessage={disabledMessage}
+                variant={hasNoCredits ? 'default' : 'default'}
                 onDrop={onFileDrop}
                 onDropRejected={onFileDropRejected}
                 type={type}
@@ -193,19 +205,29 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
             </div>
           </TooltipTrigger>
 
-          {type === EnvelopeType.DOCUMENT &&
-            remaining.documents > 0 &&
-            Number.isFinite(remaining.documents) && (
-              <TooltipContent>
-                <p className="text-sm">
-                  <Trans>
-                    {remaining.documents} of {quota.documents} documents remaining this month.
-                  </Trans>
-                </p>
-              </TooltipContent>
-            )}
+          {showCreditsInfo && remaining.documents > 0 && (
+            <TooltipContent>
+              <p className="text-sm">
+                <Trans>
+                  {remaining.documents} envelopes remaining
+                </Trans>
+              </p>
+            </TooltipContent>
+          )}
         </Tooltip>
       </TooltipProvider>
+
+      {/* Always show remaining credits under the button */}
+      {showCreditsInfo && (
+        <p className={cn(
+          "text-xs text-center",
+          hasNoCredits ? "text-muted-foreground" : "text-muted-foreground"
+        )}>
+          <Trans>
+            {remaining.documents} envelopes remaining
+          </Trans>
+        </p>
+      )}
     </div>
   );
 };

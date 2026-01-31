@@ -81,6 +81,7 @@ export const EnvelopeEditorFieldsPage = () => {
 
   const { _ } = useLingui();
 
+  // Dialog state - initialized to false to prevent automatic opening
   const [isAiFieldDialogOpen, setIsAiFieldDialogOpen] = useState(false);
   const [isAiEnableDialogOpen, setIsAiEnableDialogOpen] = useState(false);
   const { revalidate } = useRevalidator();
@@ -249,7 +250,7 @@ export const EnvelopeEditorFieldsPage = () => {
               selectedEnvelopeItemId={currentEnvelopeItem?.id ?? null}
             />
 
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               size="sm"
@@ -264,7 +265,7 @@ export const EnvelopeEditorFieldsPage = () => {
             >
               <SparklesIcon className="-ml-1 mr-2 h-4 w-4" />
               <Trans>Detect with AI</Trans>
-            </Button>
+            </Button> */}
 
             <AiFieldDetectionDialog
               open={isAiFieldDialogOpen}

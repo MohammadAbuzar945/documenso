@@ -89,6 +89,7 @@ export const EnvelopeDownloadDialog = ({
         token,
         fileName: envelopeItem.title,
         version,
+        envelopeStatus,
       });
 
       setIsDownloadingState((prev) => ({
@@ -181,7 +182,8 @@ export const EnvelopeDownloadDialog = ({
                     <Trans context="Original document (adjective)">Original</Trans>
                   </Button>
 
-                  {envelopeStatus === DocumentStatus.COMPLETED && (
+                  {(envelopeStatus === DocumentStatus.COMPLETED ||
+                    envelopeStatus === DocumentStatus.REJECTED) && (
                     <Button
                       variant="default"
                       size="sm"
@@ -192,7 +194,11 @@ export const EnvelopeDownloadDialog = ({
                       {!isDownloadingState[generateDownloadKey(item.id, 'signed')] && (
                         <DownloadIcon className="mr-2 h-4 w-4" />
                       )}
-                      <Trans context="Signed document (adjective)">Signed</Trans>
+                      {envelopeStatus === DocumentStatus.REJECTED ? (
+                        <Trans context="Rejected document (adjective)">Rejected</Trans>
+                      ) : (
+                        <Trans context="Signed document (adjective)">Signed</Trans>
+                      )}
                     </Button>
                   )}
                 </div>

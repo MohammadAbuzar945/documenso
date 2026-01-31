@@ -73,6 +73,7 @@ model User {
   siteSettings       SiteSettings[]
   passkeys           Passkey[]
   avatarImage        AvatarImage?           @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  userCredits        UserCredits?
 
   @@index([email])
 }
@@ -1075,4 +1076,18 @@ model OrganisationAuthenticationPortal {
 model Counter {
   id    String @id
   value Int
+}
+
+model UserCredits {
+  id           Int       @id @default(autoincrement())
+  userId       Int       @unique
+  credits      Int       @default(0)
+  lastUpdatedAt DateTime  @default(now()) @updatedAt
+  expiresAt    DateTime?
+  isActive     Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
 }

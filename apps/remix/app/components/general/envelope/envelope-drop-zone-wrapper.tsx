@@ -116,7 +116,7 @@ export const EnvelopeDropZoneWrapper = ({
           ? formatDocumentsPath(team.url)
           : formatTemplatesPath(team.url);
 
-      const aiQueryParam = team.preferences.aiFeaturesEnabled ? '?ai=true' : '';
+      const aiQueryParam = team.preferences.aiFeaturesEnabled ? '?ai=false' : '';
 
       await navigate(`${pathPrefix}/${id}/edit${aiQueryParam}`);
     } catch (err) {
@@ -126,7 +126,7 @@ export const EnvelopeDropZoneWrapper = ({
         .with('INVALID_DOCUMENT_FILE', () => t`You cannot upload encrypted PDFs.`)
         .with(
           AppErrorCode.LIMIT_EXCEEDED,
-          () => t`You have reached your document limit for this month. Please upgrade your plan.`,
+          () => t`You have reached your document limit. Please upgrade your plan.`,
         )
         .with(
           'ENVELOPE_ITEM_LIMIT_EXCEEDED',

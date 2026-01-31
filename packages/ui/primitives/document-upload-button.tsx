@@ -27,6 +27,7 @@ export type DocumentUploadButtonProps = {
   type: EnvelopeType;
   internalVersion: '1' | '2';
   maxFiles?: number;
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
   [key: string]: unknown;
 };
 
@@ -39,7 +40,7 @@ export const DocumentUploadButton = ({
   disabledMessage = msg`You cannot upload documents at this time.`,
   type,
   internalVersion,
-
+  variant,
   maxFiles,
   ...props
 }: DocumentUploadButtonProps) => {
@@ -100,7 +101,7 @@ export const DocumentUploadButton = ({
   }
 
   return (
-    <Button loading={loading} aria-disabled={disabled} {...getRootProps()} {...props}>
+    <Button loading={loading} aria-disabled={disabled} variant={variant} {...getRootProps()} {...props}>
       <div className="flex items-center gap-2">
         <input data-testid="document-upload-input" {...getInputProps()} />
         {!loading && <Upload className="h-4 w-4" />}

@@ -1,5 +1,5 @@
 import type { Team } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { DocumentStatus, EnvelopeType, Prisma } from '@prisma/client';
 
 import { prisma } from '@documenso/prisma';
 
@@ -77,6 +77,17 @@ export const findTeams = async ({
             },
           },
         },
+        _count: {
+          select: {
+            envelopes: {
+              where: {
+                status: DocumentStatus.COMPLETED,
+                type: EnvelopeType.DOCUMENT,
+                deletedAt: null,
+              },
+            },
+          },
+        },
       },
     }),
     prisma.team.count({
@@ -84,10 +95,14 @@ export const findTeams = async ({
     }),
   ]);
 
-  const maskedData = data.map((team) => ({
-    ...team,
-    currentTeamRole: getHighestTeamRoleInGroup(team.teamGroups),
-  }));
+  const maskedData = data.map((team) => {
+    const { _count, ...teamData } = team;
+    return {
+      ...teamData,
+      currentTeamRole: getHighestTeamRoleInGroup(team.teamGroups),
+      completedDocumentCount: _count.envelopes,
+    };
+  });
 
   return {
     data: maskedData,

@@ -62,7 +62,7 @@ export const createDocumentRoute = authenticatedProcedure
 
     if (remaining.documents <= 0) {
       throw new AppError(AppErrorCode.LIMIT_EXCEEDED, {
-        message: 'You have reached your document limit for this month. Please upgrade your plan.',
+        message: 'You have reached your document limit. Please upgrade your plan.',
         statusCode: 400,
       });
     }

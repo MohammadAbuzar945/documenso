@@ -32,7 +32,7 @@ export const DocumentGlobalAuthActionSelect = ({
       label: _(msg`No restrictions`),
     },
     ...Object.values(DocumentActionAuth)
-      .filter((auth) => auth !== DocumentAuth.ACCOUNT)
+      .filter((auth) => auth !== DocumentAuth.ACCOUNT && auth !== DocumentAuth.PASSKEY)
       .map((authType) => ({
         value: authType,
         label: _(DOCUMENT_AUTH_TYPES[authType].value),
@@ -98,12 +98,6 @@ export const DocumentGlobalAuthActionTooltip = () => (
       </p>
 
       <ul className="ml-3.5 list-outside list-disc space-y-0.5 py-2">
-        <li>
-          <Trans>
-            <strong>Require passkey</strong> - The recipient must have an account and passkey
-            configured via their settings
-          </Trans>
-        </li>
         <li>
           <Trans>
             <strong>Require 2FA</strong> - The recipient must have an account and 2FA enabled via

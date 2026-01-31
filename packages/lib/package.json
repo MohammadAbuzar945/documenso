@@ -25,6 +25,7 @@
     "@documenso/email": "*",
     "@documenso/prisma": "*",
     "@documenso/signing": "*",
+    "@google-cloud/storage": "^7.18.0",
     "@lingui/core": "^5.6.0",
     "@lingui/macro": "^5.6.0",
     "@lingui/react": "^5.6.0",

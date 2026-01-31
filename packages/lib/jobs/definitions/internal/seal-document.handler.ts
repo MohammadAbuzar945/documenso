@@ -12,6 +12,7 @@ import { nanoid } from 'nanoid';
 import path from 'node:path';
 import { groupBy } from 'remeda';
 
+import { deductUserCredits } from '@documenso/ee/server-only/limits/user-credits';
 import { addRejectionStampToPdf } from '@documenso/lib/server-only/pdf/add-rejection-stamp-to-pdf';
 import { generateAuditLogPdf } from '@documenso/lib/server-only/pdf/generate-audit-log-pdf';
 import { generateCertificatePdf } from '@documenso/lib/server-only/pdf/generate-certificate-pdf';
@@ -214,6 +215,14 @@ export const run = async ({
 
       certificateDoc = createdCertificatePdf;
       auditLogDoc = createdAuditLogPdf;
+
+      // Verify certificate is created once for all files
+      if (certificateDoc) {
+        const certificatePageCount = certificateDoc.getPageCount();
+        console.log(
+          `[Certificate Verification] Created single certificate for envelope ${envelope.id} with ${envelopeItems.length} files. Certificate has ${certificatePageCount} page(s) and will be added to all files.`,
+        );
+      }
     }
 
     const newDocumentData: Array<{ oldDocumentDataId: string; newDocumentDataId: string }> = [];
@@ -225,6 +234,14 @@ export const run = async ({
 
       if (!envelopeItemFields) {
         throw new Error(`Envelope item fields not found for envelope item ${envelopeItem.id}`);
+      }
+
+      // Verify the same certificateDoc is being used for all files
+      if (certificateDoc) {
+        const certificatePageCount = certificateDoc.getPageCount();
+        console.log(
+          `[Certificate Verification] Adding certificate (${certificatePageCount} page(s)) to file: ${envelopeItem.title}`,
+        );
       }
 
       const result = await decorateAndSignPdf({
@@ -281,6 +298,11 @@ export const run = async ({
         }),
       });
     });
+
+    // Deduct credits when document is completed (not rejected)
+    if (!isRejected && !isResealing) {
+      await deductUserCredits(envelope.userId, 1);
+    }
 
     return {
       envelopeId: envelope.id,

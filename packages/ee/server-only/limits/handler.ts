@@ -27,16 +27,26 @@ export const limitsHandler = async (req: Request) => {
       status: 200,
     });
   } catch (err) {
-    console.error('error', err);
+    console.error('Limits API error:', err);
 
     if (err instanceof Error) {
-      const status = match(err.message)
-        .with(ERROR_CODES.UNAUTHORIZED, () => 401)
+      // Log full error details for debugging
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+
+      // Find the error code key by matching the error message
+      const errorCodeKey = Object.keys(ERROR_CODES).find(
+        (key) => ERROR_CODES[key] === err.message,
+      );
+
+      const errorMessage = errorCodeKey ? ERROR_CODES[errorCodeKey] : err.message || ERROR_CODES.UNKNOWN;
+      const status = match(errorCodeKey)
+        .with('UNAUTHORIZED', () => 401)
         .otherwise(() => 500);
 
       return Response.json(
         {
-          error: ERROR_CODES[err.message] ?? ERROR_CODES.UNKNOWN,
+          error: errorMessage,
         },
         {
           status,

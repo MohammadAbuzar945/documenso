@@ -270,7 +270,7 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
   const columnWidth = width - columnPadding;
 
   if (recipient.signatureField?.secondaryId) {
-    // Signature container with green border
+    // Signature container with primary color border
     const signatureContainer = new Konva.Group({ x: 0, y: 0 });
 
     const minSignatureHeight = 40;

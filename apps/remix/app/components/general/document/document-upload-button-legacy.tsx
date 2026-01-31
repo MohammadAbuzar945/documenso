@@ -75,14 +75,21 @@ export const DocumentUploadButtonLegacy = ({
       return msg`Document upload disabled due to unpaid invoices`;
     }
 
-    if (remaining.documents === 0) {
-      return msg`You have reached your document limit.`;
-    }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [remaining.documents, user.emailVerified, team, type]);
 
   const onFileDrop = async (file: File) => {
+    // Check if user has no credits remaining
+    if (type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null)) {
+      toast({
+        title: _(msg`Upload failed`),
+        description: _(msg`You have reached your document limit. Please upgrade your plan to upload more documents.`),
+        variant: 'destructive',
+        duration: 7500,
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
 
@@ -143,7 +150,7 @@ export const DocumentUploadButtonLegacy = ({
         .with('INVALID_DOCUMENT_FILE', () => msg`You cannot upload encrypted PDFs.`)
         .with(
           AppErrorCode.LIMIT_EXCEEDED,
-          () => msg`You have reached your document limit for this month. Please upgrade your plan.`,
+          () => msg`You have reached your document limit. Please upgrade your plan.`,
         )
         .with(
           'ENVELOPE_ITEM_LIMIT_EXCEEDED',
@@ -171,16 +178,21 @@ export const DocumentUploadButtonLegacy = ({
     });
   };
 
+  const isDisabled = disabledMessage !== undefined;
+  const hasNoCredits = type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null);
+  const showCreditsInfo = type === EnvelopeType.DOCUMENT && typeof remaining.documents === 'number';
+
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative flex flex-col gap-2', className)}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <div>
               <DocumentUploadButtonPrimitive
                 loading={isLoading}
-                disabled={disabledMessage !== undefined}
+                disabled={isDisabled}
                 disabledMessage={disabledMessage}
+                variant={hasNoCredits ? 'default' : 'default'}
                 onDrop={async (files) => onFileDrop(files[0])}
                 onDropRejected={onFileDropRejected}
                 type={type}
@@ -189,20 +201,29 @@ export const DocumentUploadButtonLegacy = ({
             </div>
           </TooltipTrigger>
 
-          {team?.id === undefined &&
-            type === EnvelopeType.DOCUMENT &&
-            remaining.documents > 0 &&
-            Number.isFinite(remaining.documents) && (
-              <TooltipContent>
-                <p className="text-sm">
-                  <Trans>
-                    {remaining.documents} of {quota.documents} documents remaining this month.
-                  </Trans>
-                </p>
-              </TooltipContent>
-            )}
+          {showCreditsInfo && remaining.documents > 0 && (
+            <TooltipContent>
+              <p className="text-sm">
+                <Trans>
+                  {remaining.documents} envelopes remaining
+                </Trans>
+              </p>
+            </TooltipContent>
+          )}
         </Tooltip>
       </TooltipProvider>
+
+      {/* Always show remaining credits under the button */}
+      {showCreditsInfo && (
+        <p className={cn(
+          "text-xs text-center",
+          hasNoCredits ? "text-muted-foreground " : "text-muted-foreground"
+        )}>
+          <Trans>
+            {remaining.documents} envelopes remaining
+          </Trans>
+        </p>
+      )}
     </div>
   );
 };

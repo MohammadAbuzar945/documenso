@@ -5,7 +5,6 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { motion } from 'framer-motion';
 import {
   ArrowLeftIcon,
-  CopyPlusIcon,
   DownloadCloudIcon,
   EyeIcon,
   LinkIcon,
@@ -32,7 +31,6 @@ import { SpinnerBox } from '@documenso/ui/primitives/spinner';
 import { DocumentDeleteDialog } from '~/components/dialogs/document-delete-dialog';
 import { EnvelopeDistributeDialog } from '~/components/dialogs/envelope-distribute-dialog';
 import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
-import { EnvelopeDuplicateDialog } from '~/components/dialogs/envelope-duplicate-dialog';
 import { EnvelopeRedistributeDialog } from '~/components/dialogs/envelope-redistribute-dialog';
 import { TemplateDeleteDialog } from '~/components/dialogs/template-delete-dialog';
 import { TemplateDirectLinkDialog } from '~/components/dialogs/template-direct-link-dialog';
@@ -192,7 +190,7 @@ export default function EnvelopeEditor() {
                     key={step.id}
                     className={`cursor-pointer rounded-lg p-3 transition-colors ${
                       isActive
-                        ? 'border border-green-200 bg-green-50 dark:border-green-500/20 dark:bg-green-500/10'
+                        ? 'border border-green-400 bg-green-50 dark:border-green-500/20 dark:bg-green-500/10'
                         : 'border border-gray-200 hover:bg-gray-50 dark:border-gray-400/20 dark:hover:bg-gray-400/10'
                     }`}
                     onClick={() => navigateToStep(step.id as EnvelopeEditorStep)}
@@ -289,21 +287,6 @@ export default function EnvelopeEditor() {
               />
             )}
 
-            <EnvelopeDuplicateDialog
-              envelopeId={envelope.id}
-              envelopeType={envelope.type}
-              trigger={
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  <CopyPlusIcon className="mr-2 h-4 w-4" />
-                  {isDocument ? (
-                    <Trans>Duplicate Document</Trans>
-                  ) : (
-                    <Trans>Duplicate Template</Trans>
-                  )}
-                </Button>
-              }
-            />
-
             <EnvelopeDownloadDialog
               envelopeId={envelope.id}
               envelopeStatus={envelope.status}
@@ -319,7 +302,7 @@ export default function EnvelopeEditor() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => setDeleteDialogOpen(true)}
             >
               <Trash2Icon className="mr-2 h-4 w-4" />

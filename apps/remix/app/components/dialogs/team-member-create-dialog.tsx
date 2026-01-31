@@ -5,7 +5,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { TeamMemberRole } from '@prisma/client';
 import type * as DialogPrimitive from '@radix-ui/react-dialog';
 import { InfoIcon, UserPlusIcon } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form'; 
 import { Link } from 'react-router';
 import { match } from 'ts-pattern';
 import { z } from 'zod';

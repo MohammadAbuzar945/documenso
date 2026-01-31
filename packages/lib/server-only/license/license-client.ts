@@ -43,6 +43,11 @@ export class LicenseClient {
    * different bundles (e.g. Hono and Remix) at runtime.
    */
   public static async start(): Promise<void> {
+    // Skip license check if no license key is configured
+    if (!LICENSE_KEY) {
+      return;
+    }
+
     if (globalThis.__documenso_license_client__) {
       return;
     }
@@ -89,6 +94,11 @@ export class LicenseClient {
   }
 
   private async initialize(): Promise<void> {
+    // Skip initialization if no license key is configured
+    if (!LICENSE_KEY) {
+      return;
+    }
+
     console.log('[License] Checking license with server...');
 
     const cachedLicense = await this.loadFromFile();

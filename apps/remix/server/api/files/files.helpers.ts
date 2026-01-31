@@ -66,7 +66,12 @@ export const handleEnvelopeItemFileRequest = async ({
   if (isDownload) {
     // Generate filename following the pattern from envelope-download-dialog.tsx
     const baseTitle = title.replace(/\.pdf$/, '');
-    const suffix = version === 'signed' ? '_signed.pdf' : '.pdf';
+    const suffix =
+      version === 'signed'
+        ? status === DocumentStatus.REJECTED
+          ? '_rejected.pdf'
+          : '_signed.pdf'
+        : '.pdf';
     const filename = `${baseTitle}${suffix}`;
 
     c.header('Content-Disposition', contentDisposition(filename));

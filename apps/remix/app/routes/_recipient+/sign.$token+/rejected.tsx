@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro';
-import { FieldType } from '@prisma/client';
-import { XCircle } from 'lucide-react';
+import { DocumentStatus, FieldType } from '@prisma/client';
+import { DownloadIcon, XCircle } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
@@ -9,9 +9,11 @@ import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document
 import { isRecipientAuthorized } from '@documenso/lib/server-only/document/is-recipient-authorized';
 import { getFieldsForToken } from '@documenso/lib/server-only/field/get-fields-for-token';
 import { getRecipientByToken } from '@documenso/lib/server-only/recipient/get-recipient-by-token';
+import { isDocumentCompleted } from '@documenso/lib/utils/document';
 import { Badge } from '@documenso/ui/primitives/badge';
 import { Button } from '@documenso/ui/primitives/button';
 
+import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
 import { DocumentSigningAuthPageView } from '~/components/general/document-signing/document-signing-auth-page';
 import { truncateTitle } from '~/utils/truncate-title';
 
@@ -63,6 +65,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       isDocumentAccessValid: true,
       recipientReference,
       truncatedTitle,
+      document,
+      recipient,
     };
   }
 
@@ -77,7 +81,8 @@ export default function RejectedSigningPage({ loaderData }: Route.ComponentProps
   const { sessionData } = useOptionalSession();
   const user = sessionData?.user;
 
-  const { isDocumentAccessValid, recipientReference, truncatedTitle } = loaderData;
+  const { isDocumentAccessValid, recipientReference, truncatedTitle, document, recipient } =
+    loaderData;
 
   if (!isDocumentAccessValid) {
     return <DocumentSigningAuthPageView email={recipientReference} />;
@@ -113,13 +118,30 @@ export default function RejectedSigningPage({ loaderData }: Route.ComponentProps
           <Trans>No further action is required from you at this time.</Trans>
         </p>
 
-        {user && (
-          <Button className="mt-6" asChild>
-            <Link to={`/`}>
-              <Trans>Return Home</Trans>
-            </Link>
-          </Button>
-        )}
+        <div className="mt-8 flex w-full max-w-xs flex-col items-stretch gap-4 md:w-auto md:max-w-none md:flex-row md:items-center">
+          {isDocumentCompleted(document) && (
+            <EnvelopeDownloadDialog
+              envelopeId={document.envelopeId}
+              envelopeStatus={document.status}
+              envelopeItems={document.envelopeItems}
+              token={recipient?.token}
+              trigger={
+                <Button type="button" variant="outline" className="flex-1 md:flex-initial">
+                  <DownloadIcon className="mr-2 h-5 w-5" />
+                  <Trans>Download</Trans>
+                </Button>
+              }
+            />
+          )}
+
+          {user && (
+            <Button className="flex-1 md:flex-initial" asChild>
+              <Link to={`/`}>
+                <Trans>Return Home</Trans>
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

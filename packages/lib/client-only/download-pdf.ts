@@ -1,4 +1,4 @@
-import type { EnvelopeItem } from '@prisma/client';
+import { DocumentStatus, type EnvelopeItem } from '@prisma/client';
 
 import { getEnvelopeItemPdfUrl } from '../utils/envelope-download';
 import { downloadFile } from './download-file';
@@ -16,6 +16,11 @@ type DownloadPDFProps = {
    * 'original': Downloads the original version.
    */
   version?: DocumentVersion;
+  /**
+   * The envelope status to determine the correct filename suffix.
+   * If REJECTED and version is 'signed', the filename will use '_rejected.pdf' instead of '_signed.pdf'.
+   */
+  envelopeStatus?: DocumentStatus;
 };
 
 export const downloadPDF = async ({
@@ -23,6 +28,7 @@ export const downloadPDF = async ({
   token,
   fileName,
   version = 'signed',
+  envelopeStatus,
 }: DownloadPDFProps) => {
   const downloadUrl = getEnvelopeItemPdfUrl({
     type: 'download',
@@ -34,7 +40,12 @@ export const downloadPDF = async ({
   const blob = await fetch(downloadUrl).then(async (res) => await res.blob());
 
   const baseTitle = (fileName ?? 'document').replace(/\.pdf$/, '');
-  const suffix = version === 'signed' ? '_signed.pdf' : '.pdf';
+  const suffix =
+    version === 'signed'
+      ? envelopeStatus === DocumentStatus.REJECTED
+        ? '_rejected.pdf'
+        : '_signed.pdf'
+      : '.pdf';
 
   downloadFile({
     filename: `${baseTitle}${suffix}`,

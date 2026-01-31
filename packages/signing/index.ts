@@ -44,7 +44,7 @@ export const signPdf = async ({ pdf }: SignOptions) => {
 
   const { bytes } = await pdf.sign({
     signer,
-    reason: 'Signed by Documenso',
+    reason: 'Signed by Nomia',
     location: NEXT_PUBLIC_WEBAPP_URL(),
     contactInfo: NEXT_PUBLIC_SIGNING_CONTACT_INFO(),
     subFilter: NEXT_PRIVATE_USE_LEGACY_SIGNING_SUBFILTER()

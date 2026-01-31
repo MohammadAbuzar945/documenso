@@ -6,7 +6,7 @@ export const appMetaTags = (title?: string) => {
 
   return [
     {
-      title: title ? `${title} - Documenso` : 'Documenso',
+      title: title ? `${title} - Nomia Signatures` : 'Nomia Signatures',
     },
     {
       name: 'description',
@@ -15,11 +15,11 @@ export const appMetaTags = (title?: string) => {
     {
       name: 'keywords',
       content:
-        'Documenso, open source, DocuSign alternative, document signing, open signing infrastructure, open-source community, fast signing, beautiful signing, smart templates',
+        'Nomia Signatures, open source, DocuSign alternative, document signing, open signing infrastructure, open-source community, fast signing, beautiful signing, smart templates',
     },
     {
       name: 'author',
-      content: 'Documenso, Inc.',
+      content: 'Nomia Signatures, Inc.',
     },
     {
       name: 'robots',
@@ -27,7 +27,7 @@ export const appMetaTags = (title?: string) => {
     },
     {
       property: 'og:title',
-      content: 'Documenso - The Open Source DocuSign Alternative',
+      content: 'Nomia Signatures - The Open Source DocuSign Alternative',
     },
     {
       property: 'og:description',
@@ -47,7 +47,7 @@ export const appMetaTags = (title?: string) => {
     },
     {
       name: 'twitter:site',
-      content: '@documenso',
+      content: '@nomicommunity',
     },
     {
       name: 'twitter:description',

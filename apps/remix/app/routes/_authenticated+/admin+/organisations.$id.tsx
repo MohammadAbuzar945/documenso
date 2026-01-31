@@ -187,13 +187,13 @@ export default function OrganisationGroupSettingsPage({
 
       <GenericOrganisationAdminForm organisation={organisation} />
 
-      <SettingsHeader
+      {/* <SettingsHeader
         title={t`Manage subscription`}
         subtitle={t`Manage the ${organisation.name} organisation subscription`}
         className="mt-16"
-      />
+      /> */}
 
-      <Alert
+      {/* <Alert
         className="my-6 flex flex-col justify-between p-6 sm:flex-row sm:items-center"
         variant="neutral"
       >
@@ -252,7 +252,7 @@ export default function OrganisationGroupSettingsPage({
             </Button>
           </div>
         )}
-      </Alert>
+      </Alert> */}
 
       <OrganisationAdminForm organisation={organisation} licenseFlags={licenseFlags} />
 
@@ -449,7 +449,7 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
+        {/* <FormField
           control={form.control}
           name="originalSubscriptionClaimId"
           render={({ field }) => (
@@ -497,9 +497,9 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="customerId"
           render={({ field }) => (
@@ -523,7 +523,7 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}

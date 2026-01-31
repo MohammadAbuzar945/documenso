@@ -603,7 +603,7 @@ export const EnvelopeEditorRecipientForm = () => {
         </div>
 
         <div className="flex flex-row items-center space-x-2">
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
@@ -623,7 +623,7 @@ export const EnvelopeEditorRecipientForm = () => {
                 <Trans>Enable AI detection</Trans>
               )}
             </TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
 
           <Button
             variant="outline"
