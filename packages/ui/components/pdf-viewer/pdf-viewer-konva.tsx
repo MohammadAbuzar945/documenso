@@ -82,7 +82,7 @@ export const PdfViewerKonva = ({
   const [numPages, setNumPages] = useState(0);
   const [pdfError, setPdfError] = useState(false);
 
-  // Use a ref to cache the file object to prevent unnecessary re-renders
+  // Us a ref to cache the file object to prevent unnecessary re-renders
   const fileObjectRef = useRef<{ data: Uint8Array } | null>(null);
   const fileDataRef = useRef<Uint8Array | null>(null);
 
