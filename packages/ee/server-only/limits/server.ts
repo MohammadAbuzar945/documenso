@@ -53,11 +53,15 @@ export const getServerLimits = async ({
 
   const subscription = organisation.subscription;
   
+  // Use organization owner's credits for all members in the organization
+  // This allows organization members to share and use the owner's credits
+  const creditOwnerId = organisation.ownerUserId;
+  
   // Query user credits from UserCredits table (credits column)
-  // Each user gets 10 credits which determines their document quota and remaining
+  // Organization members use the owner's credits instead of their own
   let userCredits: number;
   try {
-    userCredits = await getUserCredits(userId);
+    userCredits = await getUserCredits(creditOwnerId);
   } catch (err) {
     console.error('Error fetching user credits:', err);
     // Log the actual error for debugging

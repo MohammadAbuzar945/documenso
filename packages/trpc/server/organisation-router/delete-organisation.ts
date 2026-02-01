@@ -35,6 +35,7 @@ export const deleteOrganisationRoute = authenticatedProcedure
       }),
       select: {
         id: true,
+        type: true,
         owner: {
           select: {
             id: true,
@@ -51,6 +52,12 @@ export const deleteOrganisationRoute = authenticatedProcedure
     if (!organisation) {
       throw new AppError(AppErrorCode.UNAUTHORIZED, {
         message: 'You are not authorized to delete this organisation',
+      });
+    }
+
+    if (organisation.type === 'PERSONAL') {
+      throw new AppError(AppErrorCode.INVALID_REQUEST, {
+        message: 'Personal organisations cannot be deleted',
       });
     }
 

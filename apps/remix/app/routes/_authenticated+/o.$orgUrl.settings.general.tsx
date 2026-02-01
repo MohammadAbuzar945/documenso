@@ -4,6 +4,7 @@ import { Trans } from '@lingui/react/macro';
 
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { canExecuteOrganisationAction } from '@documenso/lib/utils/organisations';
+import { OrganisationType } from '@documenso/prisma/generated/types';
 import { Alert, AlertDescription, AlertTitle } from '@documenso/ui/primitives/alert';
 
 import { OrganisationDeleteDialog } from '~/components/dialogs/organisation-delete-dialog';
@@ -36,30 +37,31 @@ export default function OrganisationSettingsGeneral() {
       {canExecuteOrganisationAction(
         'DELETE_ORGANISATION',
         organisation.currentOrganisationRole,
-      ) && (
-        <>
-          <hr className="my-4" />
+      ) &&
+        organisation.type !== OrganisationType.PERSONAL && (
+          <>
+            <hr className="my-4" />
 
-          <Alert
-            className="flex flex-col justify-between p-6 sm:flex-row sm:items-center"
-            variant="neutral"
-          >
-            <div className="mb-4 sm:mb-0">
-              <AlertTitle>
-                <Trans>Delete organisation</Trans>
-              </AlertTitle>
+            <Alert
+              className="flex flex-col justify-between p-6 sm:flex-row sm:items-center"
+              variant="neutral"
+            >
+              <div className="mb-4 sm:mb-0">
+                <AlertTitle>
+                  <Trans>Delete organisation</Trans>
+                </AlertTitle>
 
-              <AlertDescription className="mr-2">
-                <Trans>
-                  This organisation, and any associated data will be permanently deleted.
-                </Trans>
-              </AlertDescription>
-            </div>
+                <AlertDescription className="mr-2">
+                  <Trans>
+                    This organisation, and any associated data will be permanently deleted.
+                  </Trans>
+                </AlertDescription>
+              </div>
 
-            <OrganisationDeleteDialog />
-          </Alert>
-        </>
-      )}
+              <OrganisationDeleteDialog />
+            </Alert>
+          </>
+        )}
     </div>
   );
 }

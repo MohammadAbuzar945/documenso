@@ -11,6 +11,7 @@ import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/org
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { ZUrlSearchParamsSchema } from '@documenso/lib/types/search-params';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
+import { OrganisationType } from '@documenso/prisma/generated/types';
 import { trpc } from '@documenso/trpc/react';
 import { AvatarWithText } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
@@ -91,15 +92,17 @@ export const OrganisationTeamsTable = () => {
               </Link>
             </Button>
 
-            <TeamDeleteDialog
-              teamId={row.original.id}
-              teamName={row.original.name}
-              trigger={
-                <Button variant="destructive" onSelect={(e) => e.preventDefault()}>
-                  <Trans>Delete</Trans>
-                </Button>
-              }
-            />
+            {organisation.type !== OrganisationType.PERSONAL && (
+              <TeamDeleteDialog
+                teamId={row.original.id}
+                teamName={row.original.name}
+                trigger={
+                  <Button variant="destructive" onSelect={(e) => e.preventDefault()}>
+                    <Trans>Delete</Trans>
+                  </Button>
+                }
+              />
+            )}
           </div>
         ),
       },

@@ -23,6 +23,7 @@ import { isAdmin } from '@documenso/lib/utils/is-admin';
 import { canExecuteOrganisationAction } from '@documenso/lib/utils/organisations';
 import { extractInitials } from '@documenso/lib/utils/recipient-formatter';
 import { canExecuteTeamAction } from '@documenso/lib/utils/teams';
+import { OrganisationMemberRole, OrganisationType } from '@documenso/prisma/generated/types';
 import { AnimateGenericFadeInOut } from '@documenso/ui/components/animate/animate-generic-fade-in-out';
 import { LanguageSwitcherDialog } from '@documenso/ui/components/common/language-switcher-dialog';
 import { cn } from '@documenso/ui/lib/utils';
@@ -49,6 +50,9 @@ export const OrgMenuSwitcher = () => {
   const [hoveredOrgId, setHoveredOrgId] = useState<string | null>(null);
 
   const isUserAdmin = isAdmin(user);
+
+  const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
+  const canCreateOrganisation = ownedOrganisationsCount < 2;
 
   const isPathOrgUrl = (orgUrl: string) => {
     if (!pathname || !pathname.startsWith(`/o/`)) {
@@ -195,12 +199,14 @@ export const OrgMenuSwitcher = () => {
                 </div>
               ))}
 
-              <Button variant="ghost" className="w-full justify-start" asChild>
-                <Link to="/settings/organisations?action=add-organisation">
-                  <Plus className="mr-2 h-4 w-4" />
-                  <Trans>Create Organisation</Trans>
-                </Link>
-              </Button>
+              {canCreateOrganisation && (
+                <Button variant="ghost" className="w-full justify-start" asChild>
+                  <Link to="/settings/organisations?action=add-organisation">
+                    <Plus className="mr-2 h-4 w-4" />
+                    <Trans>Create Organisation</Trans>
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
 
@@ -253,14 +259,18 @@ export const OrgMenuSwitcher = () => {
                   </div>
                 )}
 
-                {displayedOrg && (
-                  <Button variant="ghost" className="w-full justify-start" asChild>
-                    <Link to={`/o/${displayedOrg.url}/settings/teams?action=add-team`}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      <Trans>Create Team</Trans>
-                    </Link>
-                  </Button>
-                )}
+                {displayedOrg &&
+                  displayedOrg.type !== OrganisationType.PERSONAL &&
+                  (displayedOrg.ownerUserId === user.id ||
+                    displayedOrg.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
+                    displayedOrg.currentOrganisationRole === OrganisationMemberRole.MANAGER) && (
+                    <Button variant="ghost" className="w-full justify-start" asChild>
+                      <Link to={`/o/${displayedOrg.url}/settings/teams?action=add-team`}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        <Trans>Create Team</Trans>
+                      </Link>
+                    </Button>
+                  )}
               </AnimateGenericFadeInOut>
             </div>
           </div>
@@ -283,6 +293,7 @@ export const OrgMenuSwitcher = () => {
               )}
 
               {currentOrganisation &&
+                currentOrganisation.type !== OrganisationType.PERSONAL &&
                 canExecuteOrganisationAction(
                   'MANAGE_ORGANISATION',
                   currentOrganisation.currentOrganisationRole,
@@ -293,14 +304,6 @@ export const OrgMenuSwitcher = () => {
                     </Link>
                   </DropdownMenuItem>
                 )}
-
-              {currentTeam && canExecuteTeamAction('MANAGE_TEAM', currentTeam.currentTeamRole) && (
-                <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
-                  <Link to={`/t/${currentTeam.url}/settings`}>
-                    <Trans>Team settings</Trans>
-                  </Link>
-                </DropdownMenuItem>
-              )}
 
               <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
                 <Link to="/inbox">

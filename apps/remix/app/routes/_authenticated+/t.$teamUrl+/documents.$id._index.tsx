@@ -55,9 +55,21 @@ export default function DocumentPage({ params }: Route.ComponentProps) {
     data: envelope,
     isLoading: isLoadingEnvelope,
     isError: isErrorEnvelope,
-  } = trpc.envelope.get.useQuery({
-    envelopeId: params.id,
-  });
+  } = trpc.envelope.get.useQuery(
+    {
+      envelopeId: params.id,
+    },
+    {
+      // Refetch every 3 seconds when document is pending to catch status changes
+      refetchInterval: (query) => {
+        const envelope = query.state.data;
+        if (envelope && envelope.status === DocumentStatus.PENDING) {
+          return 3000;
+        }
+        return false;
+      },
+    },
+  );
 
   if (isLoadingEnvelope) {
     return (

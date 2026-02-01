@@ -18,6 +18,3 @@ CREATE INDEX "UserCredits_isActive_idx" ON "UserCredits"("isActive");
 
 -- AddForeignKey
 ALTER TABLE "UserCredits" ADD CONSTRAINT "UserCredits_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- CreateUniqueConstraint
-ALTER TABLE "UserCredits" ADD CONSTRAINT "UserCredits_userId_key" UNIQUE ("userId");

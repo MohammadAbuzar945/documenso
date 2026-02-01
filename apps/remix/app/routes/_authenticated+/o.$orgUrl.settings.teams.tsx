@@ -7,12 +7,19 @@ import { useLocation } from 'react-router';
 import { useDebouncedValue } from '@documenso/lib/client-only/hooks/use-debounced-value';
 import { Input } from '@documenso/ui/primitives/input';
 
+import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
+import { useSession } from '@documenso/lib/client-only/providers/session';
+import { OrganisationMemberRole, OrganisationType } from '@documenso/prisma/generated/types';
+
 import { TeamCreateDialog } from '~/components/dialogs/team-create-dialog';
 import { SettingsHeader } from '~/components/general/settings-header';
 import { OrganisationTeamsTable } from '~/components/tables/organisation-teams-table';
 
 export default function OrganisationSettingsTeamsPage() {
   const { t } = useLingui();
+
+  const organisation = useCurrentOrganisation();
+  const { user } = useSession();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { pathname } = useLocation();
@@ -36,10 +43,16 @@ export default function OrganisationSettingsTeamsPage() {
     setSearchParams(params);
   }, [debouncedSearchQuery, pathname, searchParams]);
 
+  const canCreateTeam =
+    organisation.type !== OrganisationType.PERSONAL &&
+    (organisation.ownerUserId === user.id ||
+      organisation.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
+      organisation.currentOrganisationRole === OrganisationMemberRole.MANAGER);
+
   return (
     <div>
       <SettingsHeader title={t`Teams`} subtitle={t`Manage the teams in this organisation.`}>
-        <TeamCreateDialog />
+        {canCreateTeam && <TeamCreateDialog />}
       </SettingsHeader>
 
       <Input

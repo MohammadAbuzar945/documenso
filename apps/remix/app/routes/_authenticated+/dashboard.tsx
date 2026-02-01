@@ -74,11 +74,13 @@ export default function DashboardPage() {
               </p>
             </div>
 
+            {organisations.filter((org) => org.ownerUserId === user.id).length < 2 && (
             <Button asChild className="mt-4" variant="outline">
               <Link to="/settings/organisations?action=add-organisation">
                 <Trans>Create organisation</Trans>
               </Link>
             </Button>
+            )}
           </div>
         )}
 

@@ -3,10 +3,12 @@ import { CheckCircle2, Clock } from 'lucide-react';
 import { P, match } from 'ts-pattern';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
+import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { getTeamWithEmail } from '@documenso/lib/server-only/team/get-team-email-by-email';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { extractInitials } from '@documenso/lib/utils/recipient-formatter';
 import { canExecuteTeamAction } from '@documenso/lib/utils/teams';
+import { OrganisationType } from '@documenso/prisma/generated/types';
 import { Alert, AlertDescription, AlertTitle } from '@documenso/ui/primitives/alert';
 import { AvatarWithText } from '@documenso/ui/primitives/avatar';
 
@@ -37,6 +39,7 @@ export default function TeamsSettingsPage({ loaderData }: Route.ComponentProps) 
   const { team } = loaderData;
 
   const currentTeam = useCurrentTeam();
+  const organisation = useCurrentOrganisation();
 
   return (
     <div className="max-w-2xl">
@@ -149,27 +152,28 @@ export default function TeamsSettingsPage({ loaderData }: Route.ComponentProps) 
           </Alert>
         )}
 
-        {canExecuteTeamAction('MANAGE_TEAM', currentTeam.currentTeamRole) && (
-          <Alert
-            className="flex flex-col justify-between p-6 sm:flex-row sm:items-center"
-            variant="neutral"
-          >
-            <div className="mb-4 sm:mb-0">
-              <AlertTitle>
-                <Trans>Delete team</Trans>
-              </AlertTitle>
+        {canExecuteTeamAction('MANAGE_TEAM', currentTeam.currentTeamRole) &&
+          organisation.type !== OrganisationType.PERSONAL && (
+            <Alert
+              className="flex flex-col justify-between p-6 sm:flex-row sm:items-center"
+              variant="neutral"
+            >
+              <div className="mb-4 sm:mb-0">
+                <AlertTitle>
+                  <Trans>Delete team</Trans>
+                </AlertTitle>
 
-              <AlertDescription className="mr-2">
-                <Trans>
-                  This team, and any associated data excluding billing invoices will be permanently
-                  deleted.
-                </Trans>
-              </AlertDescription>
-            </div>
+                <AlertDescription className="mr-2">
+                  <Trans>
+                    This team, and any associated data excluding billing invoices will be permanently
+                    deleted.
+                  </Trans>
+                </AlertDescription>
+              </div>
 
-            <TeamDeleteDialog teamId={team.id} teamName={team.name} redirectTo="/dashboard" />
-          </Alert>
-        )}
+              <TeamDeleteDialog teamId={team.id} teamName={team.name} redirectTo="/dashboard" />
+            </Alert>
+          )}
       </section>
     </div>
   );

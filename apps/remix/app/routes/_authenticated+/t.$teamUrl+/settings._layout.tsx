@@ -12,6 +12,7 @@ import {
 import { Link, NavLink, Outlet, redirect } from 'react-router';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
+import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { getTeamByUrl } from '@documenso/lib/server-only/team/get-team';
 import { canExecuteTeamAction } from '@documenso/lib/utils/teams';
 import { cn } from '@documenso/ui/lib/utils';
@@ -48,6 +49,9 @@ export default function TeamsSettingsLayout() {
   const { t } = useLingui();
 
   const team = useCurrentTeam();
+  const organisation = useCurrentOrganisation();
+
+  const isPersonalTeam = organisation?.type === 'PERSONAL';
 
   const teamSettingRoutes = [
     {
@@ -55,6 +59,9 @@ export default function TeamsSettingsLayout() {
       label: t`General`,
       icon: SettingsIcon,
     },
+    ...(isPersonalTeam
+      ? []
+      : [
     {
       path: `/t/${team.url}/settings/document`,
       label: t`Preferences`,
@@ -76,11 +83,15 @@ export default function TeamsSettingsLayout() {
       label: t`Email`,
       isSubNav: true,
     },
+        ]),
     {
       path: `/t/${team.url}/settings/public-profile`,
       label: t`Public Profile`,
       icon: Globe2Icon,
     },
+    ...(isPersonalTeam
+      ? []
+      : [
     {
       path: `/t/${team.url}/settings/members`,
       label: t`Members`,
@@ -91,6 +102,7 @@ export default function TeamsSettingsLayout() {
       label: t`Groups`,
       icon: GroupIcon,
     },
+        ]),
     {
       path: `/t/${team.url}/settings/tokens`,
       label: t`API Tokens`,

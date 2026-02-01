@@ -96,6 +96,25 @@ export const run = async ({
       teamId: envelope.teamId,
     });
 
+    // Get the organization owner ID to use their credits for deduction
+    // Organization members should use the owner's credits
+    const team = await prisma.team.findFirst({
+      where: {
+        id: envelope.teamId,
+      },
+      include: {
+        organisation: {
+          select: {
+            ownerUserId: true,
+          },
+        },
+      },
+    });
+
+    // Use organization owner's credits if team exists and belongs to an organization
+    // Otherwise, fall back to the envelope creator's credits
+    const creditOwnerId = team?.organisation?.ownerUserId ?? envelope.userId;
+
     // Ensure all CC recipients are marked as signed
     await prisma.recipient.updateMany({
       where: {
@@ -300,8 +319,9 @@ export const run = async ({
     });
 
     // Deduct credits when document is completed (not rejected)
+    // Use organization owner's credits if document is in an organization
     if (!isRejected && !isResealing) {
-      await deductUserCredits(envelope.userId, 1);
+      await deductUserCredits(creditOwnerId, 1);
     }
 
     return {

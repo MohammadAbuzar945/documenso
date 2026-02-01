@@ -26,11 +26,14 @@ import {
 export const MenuSwitcher = () => {
   const { _ } = useLingui();
 
-  const { user } = useSession();
+  const { user, organisations } = useSession();
 
   const [languageSwitcherOpen, setLanguageSwitcherOpen] = useState(false);
 
   const isUserAdmin = isAdmin(user);
+
+  const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
+  const canCreateOrganisation = ownedOrganisationsCount < 2;
 
   const formatAvatarFallback = (name?: string) => {
     if (name !== undefined) {
@@ -66,6 +69,8 @@ export const MenuSwitcher = () => {
         align="end"
         forceMount
       >
+        {canCreateOrganisation && (
+          <>
         <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
           <Link
             to="/settings/organisations?action=add-organisation"
@@ -76,6 +81,8 @@ export const MenuSwitcher = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+          </>
+        )}
 
         {isUserAdmin && (
           <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>

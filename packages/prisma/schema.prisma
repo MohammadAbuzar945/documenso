@@ -397,6 +397,7 @@ model Envelope {
 
   internalVersion         Int
   useLegacyFieldInsertion Boolean @default(false)
+  fromNomia               Boolean? @default(false)
 
   envelopeItems EnvelopeItem[]
   recipients    Recipient[]

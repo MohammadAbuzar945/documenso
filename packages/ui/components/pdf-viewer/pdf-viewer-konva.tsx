@@ -82,21 +82,34 @@ export const PdfViewerKonva = ({
   const [numPages, setNumPages] = useState(0);
   const [pdfError, setPdfError] = useState(false);
 
+  // Use a ref to cache the file object to prevent unnecessary re-renders
+  const fileObjectRef = useRef<{ data: Uint8Array } | null>(null);
+  const fileDataRef = useRef<Uint8Array | null>(null);
+
   const envelopeItemFile = useMemo(() => {
     const data = getPdfBuffer(currentEnvelopeItem?.id || '');
 
     if (!data || data.status !== 'loaded') {
+      fileObjectRef.current = null;
+      fileDataRef.current = null;
       return null;
     }
 
-    return {
-      data: new Uint8Array(data.file),
-    };
+    // Only create a new object if the file data reference actually changed
+    if (fileDataRef.current !== data.file) {
+      fileDataRef.current = data.file;
+      fileObjectRef.current = {
+        data: data.file,
+      };
+    }
+
+    return fileObjectRef.current;
   }, [currentEnvelopeItem?.id, getPdfBuffer]);
 
   const onDocumentLoaded = useCallback(
     (doc: PDFDocumentProxy) => {
       setNumPages(doc.numPages);
+      onDocumentLoad?.();
     },
     [onDocumentLoad],
   );
