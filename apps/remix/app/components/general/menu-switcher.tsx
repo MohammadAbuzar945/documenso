@@ -11,6 +11,7 @@ import { useSession } from '@documenso/lib/client-only/providers/session';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { isAdmin } from '@documenso/lib/utils/is-admin';
 import { extractInitials } from '@documenso/lib/utils/recipient-formatter';
+import { OrganisationType } from '@documenso/prisma/generated/types';
 import { LanguageSwitcherDialog } from '@documenso/ui/components/common/language-switcher-dialog';
 import { cn } from '@documenso/ui/lib/utils';
 import { AvatarWithText } from '@documenso/ui/primitives/avatar';
@@ -33,7 +34,10 @@ export const MenuSwitcher = () => {
   const isUserAdmin = isAdmin(user);
 
   const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
-  const canCreateOrganisation = ownedOrganisationsCount < 2;
+  const hasPersonalOrganisation = organisations.some(
+    (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
+  );
+  const canCreateOrganisation = isUserAdmin && (!hasPersonalOrganisation || ownedOrganisationsCount < 2);
 
   const formatAvatarFallback = (name?: string) => {
     if (name !== undefined) {

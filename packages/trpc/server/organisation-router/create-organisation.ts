@@ -26,7 +26,7 @@ export const createOrganisationRoute = authenticatedProcedure
       },
     });
 
-    // Check if non-admin user can create an organisation (limit to 1).
+    // Prevent non-admin users from creating additional organisations (only allow personal).
     // Only session users have roles, API token users don't have roles so they can't be admins
     const roles = ctx.session && 'roles' in ctx.user ? (ctx.user.roles as Role[]) : null;
     const isUserAdmin = roles ? isAdmin({ roles }) : false;
@@ -38,9 +38,14 @@ export const createOrganisationRoute = authenticatedProcedure
         },
       });
 
-      if (userOrganisations.length >= 2) {
+      // Check if user already has a personal organisation
+      const hasPersonalOrganisation = userOrganisations.some(
+        (org) => org.type === OrganisationType.PERSONAL,
+      );
+
+      if (hasPersonalOrganisation || userOrganisations.length >= 1) {
         throw new AppError(AppErrorCode.LIMIT_EXCEEDED, {
-          message: 'You have reached the maximum number of organisations. Only administrators can create multiple organisations.',
+          message: 'You can only have one personal organisation. Only administrators can create additional organisations.',
         });
       }
     }

@@ -7,9 +7,22 @@ const INITIAL_USER_CREDITS = 10;
  * Returns the user's credits record.
  */
 export const ensureUserCredits = async (userId: number) => {
-  let userCredits = await prisma.userCredits.findUnique({
+  if (!prisma) {
+    console.error('Prisma client is undefined in ensureUserCredits. Check if @documenso/prisma is properly imported.');
+    throw new Error('Database connection failed');
+  }
+
+  if (!prisma.userCredits) {
+    console.error('Prisma userCredits model is undefined. Prisma object:', Object.keys(prisma || {}));
+    throw new Error('Database connection failed - userCredits model not available');
+  }
+
+  // Find the active user credits record for this user
+  // Note: Using findFirst because userId is not unique (though typically there should be only one active record)
+  let userCredits = await prisma.userCredits.findFirst({
     where: {
       userId,
+      isActive: true,
     },
   });
 
@@ -63,13 +76,20 @@ export const deductUserCredits = async (userId: number, amount: number = 1) => {
 
 /**
  * Gets the current credits for a user.
+ * IMPORTANT: For organization members, pass the organization owner's userId
+ * so that all members share and consume the owner's credits.
  */
 export const getUserCredits = async (userId: number) => {
+  if (!prisma) {
+    console.error('Prisma client is undefined in getUserCredits. Check if @documenso/prisma is properly imported.');
+    throw new Error('Database connection failed');
+  }
+
   try {
     const userCredits = await ensureUserCredits(userId);
     return userCredits.credits;
   } catch (err) {
-    console.error('Error in getUserCredits:', err);
+    console.error('Error in getUserCredits for userId:', userId, 'error:', err);
     // If table doesn't exist or other Prisma error, return default
     if (err instanceof Error && err.message.includes('does not exist')) {
       throw new Error('UserCredits table does not exist. Please run migrations.');

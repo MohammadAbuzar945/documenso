@@ -92,17 +92,15 @@ export const OrganisationTeamsTable = () => {
               </Link>
             </Button>
 
-            {organisation.type !== OrganisationType.PERSONAL && (
-              <TeamDeleteDialog
-                teamId={row.original.id}
-                teamName={row.original.name}
-                trigger={
-                  <Button variant="destructive" onSelect={(e) => e.preventDefault()}>
-                    <Trans>Delete</Trans>
-                  </Button>
-                }
-              />
-            )}
+            <TeamDeleteDialog
+              teamId={row.original.id}
+              teamName={row.original.name}
+              trigger={
+                <Button variant="destructive" onSelect={(e) => e.preventDefault()}>
+                  <Trans>Delete</Trans>
+                </Button>
+              }
+            />
           </div>
         ),
       },

@@ -15,7 +15,18 @@ type FileData =
       status: 'loading' | 'error';
     }
   | {
-      file: Uint8Array;
+      /**
+       * Store the original Blob instead of an ArrayBuffer/Uint8Array.
+       *
+       * Passing ArrayBuffers or views over them directly to react-pdf causes the
+       * underlying buffer to be transferred and detached when sent to the worker.
+       * If the same buffer is reused (e.g. navigating Add fields → Preview → Add fields),
+       * subsequent renders will fail with DataCloneError / detached ArrayBuffer errors.
+       *
+       * Using a Blob keeps the source immutable and non-transferable so react-pdf
+       * can safely read it on every mount without detaching our cached data.
+       */
+      blob: Blob;
       status: 'loaded';
     };
 
@@ -133,13 +144,10 @@ export const EnvelopeRenderProvider = ({
       });
 
       const blob = await fetch(downloadUrl).then(async (res) => await res.blob());
-
-      const file = await blob.arrayBuffer();
-
       setFiles((prev) => ({
         ...prev,
         [envelopeItem.id]: {
-          file: new Uint8Array(file),
+          blob,
           status: 'loaded',
         },
       }));

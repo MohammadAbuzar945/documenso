@@ -6,10 +6,13 @@ import { ERROR_CODES } from './errors';
 import { getServerLimits } from './server';
 
 export const limitsHandler = async (req: Request) => {
+  console.log('limitsHandler');
   try {
     const { user } = await getSession(req);
 
     const rawTeamId = req.headers.get('team-id');
+
+    console.log('rawTeamId', rawTeamId);
 
     let teamId: number | null = null;
 
@@ -43,6 +46,8 @@ export const limitsHandler = async (req: Request) => {
       const status = match(errorCodeKey)
         .with('UNAUTHORIZED', () => 401)
         .otherwise(() => 500);
+
+        console.log('errorMessage', errorMessage);
 
       return Response.json(
         {

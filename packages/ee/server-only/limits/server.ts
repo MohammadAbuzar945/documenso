@@ -24,13 +24,58 @@ export const getServerLimits = async ({
   userId,
   teamId,
 }: GetServerLimitsOptions): Promise<TLimitsResponseSchema> => {
+  // console.log('userId', userId);
+  // console.log('teamId', teamId);
+  // console.log('prisma type:', typeof prisma);
+  // console.log('prisma value:', prisma);
+  // console.log('prisma.team type:', typeof prisma?.team);
+
+  // if (!prisma) {
+  //   console.error('Prisma client is undefined. Check if @documenso/prisma is properly imported.');
+  //   throw new Error('Database connection failed');
+  // }
+
+  // if (!prisma.team) {
+  //   console.error('Prisma team model is undefined. Prisma object:', Object.keys(prisma || {}));
+  //   throw new Error('Database connection failed - team model not available');
+  // }
+
+  // Debug: Check if team exists and what organisation it belongs to
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+    select: { id: true, organisationId: true, name: true },
+  });
+
+  if (!team) {
+    console.error('Team not found:', teamId);
+    throw new Error(ERROR_CODES.USER_FETCH_FAILED);
+  }
+
+  console.log('Team found:', team);
+
+  // Debug: Check if user is a member of any organisation
+  const userOrganisationMembers = await prisma.organisationMember.findMany({
+    where: { userId },
+    select: { organisationId: true, organisation: { select: { id: true, name: true } } },
+  });
+
+  console.log('User organisation members:', userOrganisationMembers);
+
+  // Check if the team's organisation matches any of the user's organisations
+  const userOrganisationIds = userOrganisationMembers.map((m) => m.organisationId);
+  if (!userOrganisationIds.includes(team.organisationId)) {
+    console.error(
+      'User is not a member of the team\'s organisation. Team organisationId:',
+      team.organisationId,
+      'User organisationIds:',
+      userOrganisationIds,
+    );
+    throw new Error(ERROR_CODES.USER_FETCH_FAILED);
+  }
+
   const organisation = await prisma.organisation.findFirst({
     where: {
-      teams: {
-        some: {
-          id: teamId,
-        },
-      },
+      id: team.organisationId,
       members: {
         some: {
           userId,
@@ -44,10 +89,12 @@ export const getServerLimits = async ({
   });
 
   if (!organisation) {
+    console.error('No organisation found for userId:', userId, 'teamId:', teamId, 'organisationId:', team.organisationId);
     throw new Error(ERROR_CODES.USER_FETCH_FAILED);
   }
 
   if (!organisation.organisationClaim) {
+    console.error('Organisation found but missing organisationClaim. Organisation ID:', organisation.id);
     throw new Error(ERROR_CODES.USER_FETCH_FAILED);
   }
 
@@ -56,6 +103,13 @@ export const getServerLimits = async ({
   // Use organization owner's credits for all members in the organization
   // This allows organization members to share and use the owner's credits
   const creditOwnerId = organisation.ownerUserId;
+
+  console.log('creditOwnerId', creditOwnerId);
+  
+  if (!creditOwnerId) {
+    console.error('Organisation ownerUserId is missing:', organisation.id);
+    throw new Error(ERROR_CODES.USER_FETCH_FAILED);
+  }
   
   // Query user credits from UserCredits table (credits column)
   // Organization members use the owner's credits instead of their own

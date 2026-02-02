@@ -94,14 +94,29 @@ export const PDFViewer = ({
 
   const isLoading = isDocumentBytesLoading || !documentBytes;
 
+  // Use a ref to cache the file object to prevent unnecessary re-renders
+  // and avoid ArrayBuffer detachment errors when react-pdf transfers data to workers
+  const fileObjectRef = useRef<{ data: Uint8Array } | null>(null);
+  const fileDataRef = useRef<Uint8Array | null>(null);
+
   const envelopeItemFile = useMemo(() => {
     if (!documentBytes) {
+      fileObjectRef.current = null;
+      fileDataRef.current = null;
       return null;
     }
 
-    return {
-      data: documentBytes,
-    };
+    // Only create a new object if the file data reference actually changed
+    if (fileDataRef.current !== documentBytes) {
+      fileDataRef.current = documentBytes;
+      fileObjectRef.current = {
+        data: documentBytes,
+      };
+      // Reset error state when file changes
+      setPdfError(false);
+    }
+
+    return fileObjectRef.current;
   }, [documentBytes]);
 
   const onDocumentLoaded = (doc: LoadedPDFDocument) => {
@@ -169,7 +184,10 @@ export const PDFViewer = ({
     if (overrideData) {
       const bytes = base64.decode(overrideData);
 
-      setDocumentBytes(bytes);
+      // Create a copy of the buffer to prevent ArrayBuffer detachment errors
+      // when react-pdf transfers data to workers
+      // new Uint8Array(uint8Array) creates a copy
+      setDocumentBytes(new Uint8Array(bytes));
       return;
     }
 
@@ -186,7 +204,9 @@ export const PDFViewer = ({
 
         const bytes = await fetch(documentUrl).then(async (res) => await res.arrayBuffer());
 
-        setDocumentBytes(new Uint8Array(bytes));
+        // Create a copy of the buffer to prevent ArrayBuffer detachment errors
+        // when react-pdf transfers data to workers
+        setDocumentBytes(new Uint8Array(bytes.slice()));
 
         setIsDocumentBytesLoading(false);
       } catch (err) {
@@ -216,6 +236,7 @@ export const PDFViewer = ({
       ) : (
         <>
           <PDFDocument
+            key={`${envelopeItem.id}-${version}`}
             file={envelopeItemFile}
             className={cn('w-full overflow-hidden rounded', {
               'h-[80vh] max-h-[60rem]': numPages === 0,

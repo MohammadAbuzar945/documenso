@@ -135,12 +135,6 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
       return 'loading';
     }
 
-    // Prevent creating more than 1 team in Personal Organisation
-    const isPersonalOrganisation = fullOrganisation.type === 'PERSONAL';
-    if (isPersonalOrganisation && fullOrganisation.teams.length >= 1) {
-      return 'alert';
-    }
-
     if (!IS_BILLING_ENABLED()) {
       return 'form';
     }
@@ -201,18 +195,11 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
               variant="neutral"
             >
               <AlertDescription className="mt-0">
-                {fullOrganisation?.type === 'PERSONAL' ? (
-                  <Trans>
-                    You cannot create more than one team in a Personal Organisation. Personal
-                    Organisations are limited to a single team.
-                  </Trans>
-                ) : (
-                  <Trans>
-                    You have reached the maximum number of teams for your plan. Please contact sales
-                    at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> if you would like to
-                    adjust your plan.
-                  </Trans>
-                )}
+                <Trans>
+                  You have reached the maximum number of teams for your plan. Please contact sales
+                  at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> if you would like to
+                  adjust your plan.
+                </Trans>
               </AlertDescription>
             </Alert>
 

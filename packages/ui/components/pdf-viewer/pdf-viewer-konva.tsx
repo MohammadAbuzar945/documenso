@@ -82,28 +82,29 @@ export const PdfViewerKonva = ({
   const [numPages, setNumPages] = useState(0);
   const [pdfError, setPdfError] = useState(false);
 
-  // Us a ref to cache the file object to prevent unnecessary re-renders
-  const fileObjectRef = useRef<{ data: Uint8Array } | null>(null);
-  const fileDataRef = useRef<Uint8Array | null>(null);
+  // Use refs to cache the Blob passed to react-pdf to avoid unnecessary reloads
+  // while still ensuring we never reuse a detached ArrayBuffer.
+  const fileBlobRef = useRef<Blob | null>(null);
+  const fileDataRef = useRef<Blob | null>(null);
 
   const envelopeItemFile = useMemo(() => {
     const data = getPdfBuffer(currentEnvelopeItem?.id || '');
 
     if (!data || data.status !== 'loaded') {
-      fileObjectRef.current = null;
+      fileBlobRef.current = null;
       fileDataRef.current = null;
       return null;
     }
 
-    // Only create a new object if the file data reference actually changed
-    if (fileDataRef.current !== data.file) {
-      fileDataRef.current = data.file;
-      fileObjectRef.current = {
-        data: data.file,
-      };
+    // Only update the cached blob if it actually changed
+    if (fileDataRef.current !== data.blob) {
+      fileDataRef.current = data.blob;
+      fileBlobRef.current = data.blob;
+      // Reset error state when file changes so we can retry rendering
+      setPdfError(false);
     }
 
-    return fileObjectRef.current;
+    return fileBlobRef.current;
   }, [currentEnvelopeItem?.id, getPdfBuffer]);
 
   const onDocumentLoaded = useCallback(
@@ -146,6 +147,7 @@ export const PdfViewerKonva = ({
 
       {envelopeItemFile && Konva ? (
         <PDFDocument
+          key={currentEnvelopeItem?.id}
           file={envelopeItemFile}
           className={cn('w-full rounded', {
             'h-[80vh] max-h-[60rem]': numPages === 0,

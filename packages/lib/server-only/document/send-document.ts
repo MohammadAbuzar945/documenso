@@ -21,6 +21,7 @@ import { AppError, AppErrorCode } from '../../errors/app-error';
 import { jobs } from '../../jobs/client';
 import { extractDerivedDocumentEmailSettings } from '../../types/document-email';
 import {
+  FIELD_META_DEFAULT_VALUES,
   ZCheckboxFieldMeta,
   ZDropdownFieldMeta,
   ZFieldAndMetaSchema,
@@ -350,12 +351,19 @@ const injectFormValuesIntoDocument = async (
 export const extractFieldAutoInsertValues = (
   unknownField: Field,
 ): { fieldId: number; customText: string } | null => {
-  const parsedField = ZFieldAndMetaSchema.safeParse(unknownField);
+  const parsedField = ZFieldAndMetaSchema.safeParse({
+    ...unknownField,
+    fieldMeta: unknownField.fieldMeta ?? FIELD_META_DEFAULT_VALUES[unknownField.type],
+  });
 
-  if (parsedField.error) {
-    throw new AppError(AppErrorCode.INVALID_REQUEST, {
-      message: 'One or more fields have invalid metadata. Error: ' + parsedField.error.message,
+  if (!parsedField.success) {
+    // eslint-disable-next-line no-console
+    console.warn('Skipping auto-insert for field with invalid metadata', {
+      fieldId: unknownField.id,
+      error: parsedField.error,
     });
+
+    return null;
   }
 
   const field = parsedField.data;

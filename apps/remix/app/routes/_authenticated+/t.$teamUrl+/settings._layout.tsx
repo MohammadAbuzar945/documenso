@@ -51,17 +51,12 @@ export default function TeamsSettingsLayout() {
   const team = useCurrentTeam();
   const organisation = useCurrentOrganisation();
 
-  const isPersonalTeam = organisation?.type === 'PERSONAL';
-
   const teamSettingRoutes = [
     {
       path: `/t/${team.url}/settings`,
       label: t`General`,
       icon: SettingsIcon,
     },
-    ...(isPersonalTeam
-      ? []
-      : [
     {
       path: `/t/${team.url}/settings/document`,
       label: t`Preferences`,
@@ -83,15 +78,11 @@ export default function TeamsSettingsLayout() {
       label: t`Email`,
       isSubNav: true,
     },
-        ]),
     {
       path: `/t/${team.url}/settings/public-profile`,
       label: t`Public Profile`,
       icon: Globe2Icon,
     },
-    ...(isPersonalTeam
-      ? []
-      : [
     {
       path: `/t/${team.url}/settings/members`,
       label: t`Members`,
@@ -102,7 +93,6 @@ export default function TeamsSettingsLayout() {
       label: t`Groups`,
       icon: GroupIcon,
     },
-        ]),
     {
       path: `/t/${team.url}/settings/tokens`,
       label: t`API Tokens`,

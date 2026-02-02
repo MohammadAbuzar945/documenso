@@ -44,10 +44,9 @@ export default function OrganisationSettingsTeamsPage() {
   }, [debouncedSearchQuery, pathname, searchParams]);
 
   const canCreateTeam =
-    organisation.type !== OrganisationType.PERSONAL &&
-    (organisation.ownerUserId === user.id ||
-      organisation.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
-      organisation.currentOrganisationRole === OrganisationMemberRole.MANAGER);
+    organisation.ownerUserId === user.id ||
+    organisation.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
+    organisation.currentOrganisationRole === OrganisationMemberRole.MANAGER;
 
   return (
     <div>

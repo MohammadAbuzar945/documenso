@@ -63,19 +63,18 @@ export default function OrganisationSettingsTeamsPage() {
               </Trans>
             </p>
 
-            {organisation.type !== OrganisationType.PERSONAL &&
-              (organisation.ownerUserId === user.id ||
-                organisation.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
-                organisation.currentOrganisationRole === OrganisationMemberRole.MANAGER) && (
-                <TeamCreateDialog
-                  trigger={
-                    <Button className="flex items-center gap-2">
-                      <PlusIcon className="h-4 w-4" />
-                      <Trans>Create team</Trans>
-                    </Button>
-                  }
-                />
-              )}
+            {(organisation.ownerUserId === user.id ||
+              organisation.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
+              organisation.currentOrganisationRole === OrganisationMemberRole.MANAGER) && (
+              <TeamCreateDialog
+                trigger={
+                  <Button className="flex items-center gap-2">
+                    <PlusIcon className="h-4 w-4" />
+                    <Trans>Create team</Trans>
+                  </Button>
+                }
+              />
+            )}
 
             <div className="mt-12 max-w-md rounded-lg border px-8 py-6">
               <h3 className="mb-2 font-medium">
@@ -214,32 +213,29 @@ const TeamDropdownMenu = ({
             <Trans>Settings</Trans>
           </Link>
         </DropdownMenuItem>
-        {!isPersonalOrganisation && (
-          <DropdownMenuItem asChild>
-            <Link to={`/t/${team.url}/settings/members`}>
-              <UsersIcon className="mr-2 h-4 w-4" />
-              <Trans>Members</Trans>
-            </Link>
-          </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to={`/t/${team.url}/settings/members`}>
+            <UsersIcon className="mr-2 h-4 w-4" />
+            <Trans>Members</Trans>
+          </Link>
+        </DropdownMenuItem>
+
+        {canExecuteTeamAction('DELETE_TEAM', team.currentTeamRole) && (
+          <>
+            <DropdownMenuSeparator />
+
+            <TeamDeleteDialog
+              teamId={team.id}
+              teamName={team.name}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  <Trans>Delete</Trans>
+                </DropdownMenuItem>
+              }
+            />
+          </>
         )}
-
-        {canExecuteTeamAction('DELETE_TEAM', team.currentTeamRole) &&
-          organisation.type !== OrganisationType.PERSONAL && (
-            <>
-              <DropdownMenuSeparator />
-
-              <TeamDeleteDialog
-                teamId={team.id}
-                teamName={team.name}
-                trigger={
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <TrashIcon className="mr-2 h-4 w-4" />
-                    <Trans>Delete</Trans>
-                  </DropdownMenuItem>
-                }
-              />
-            </>
-          )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

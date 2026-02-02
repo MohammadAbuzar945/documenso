@@ -113,5 +113,47 @@ const putFileInS3 = async (file: File) => {
 };
 
 const putFileInGCS = async (file: File) => {
-  return putFileInS3(file);
+  const getPresignedUrlResponse = await fetch(
+    `${NEXT_PUBLIC_WEBAPP_URL()}/api/files/presigned-post-url`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fileName: file.name,
+        contentType: file.type,
+      }),
+    },
+  );
+
+  if (!getPresignedUrlResponse.ok) {
+    throw new Error(
+      `Failed to get presigned post url, failed with status code ${getPresignedUrlResponse.status}`,
+    );
+  }
+
+  const { url, key }: TGetPresignedPostUrlResponse = await getPresignedUrlResponse.json();
+
+  const body = await file.arrayBuffer();
+
+  // Use the actual file content type to match what was used to sign the URL
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': file.type || 'application/octet-stream',
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to upload file "${file.name}", failed with status code ${response.status}`,
+    );
+  }
+
+  return {
+    type: DocumentDataType.S3_PATH,
+    data: key,
+  };
 };

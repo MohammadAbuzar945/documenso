@@ -52,7 +52,10 @@ export const OrgMenuSwitcher = () => {
   const isUserAdmin = isAdmin(user);
 
   const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
-  const canCreateOrganisation = ownedOrganisationsCount < 2;
+  const hasPersonalOrganisation = organisations.some(
+    (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
+  );
+  const canCreateOrganisation = isUserAdmin && (!hasPersonalOrganisation || ownedOrganisationsCount < 2);
 
   const isPathOrgUrl = (orgUrl: string) => {
     if (!pathname || !pathname.startsWith(`/o/`)) {
@@ -260,7 +263,6 @@ export const OrgMenuSwitcher = () => {
                 )}
 
                 {displayedOrg &&
-                  displayedOrg.type !== OrganisationType.PERSONAL &&
                   (displayedOrg.ownerUserId === user.id ||
                     displayedOrg.currentOrganisationRole === OrganisationMemberRole.ADMIN ||
                     displayedOrg.currentOrganisationRole === OrganisationMemberRole.MANAGER) && (
