@@ -402,13 +402,13 @@ export const SignUpForm = ({
               size="lg"
               className="mt-6 w-full"
             >
-              <Trans>Complete</Trans>
+              <Trans>Create account</Trans>
             </Button>
           </form>
         </Form>
         <p className="text-muted-foreground mt-6 text-xs">
           <Trans>
-            By proceeding, you agree to our{' '}
+          By proceeding, you agree to our{' '}
             <Link
               to="/articles/terms"
               target="_blank"
