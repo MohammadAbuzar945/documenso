@@ -57,7 +57,7 @@ const payAsYouGoRedirects = {
   '1000': 'https://paystack.shop/pay/q2shmym9rjg',
 };
 
-const plansData = {
+const TEST_PLANS_DATA = {
   'Pay-as-you-go / Top-up': [
     {
       name: '20 envelopes',
@@ -108,6 +108,98 @@ const plansData = {
       redirect_url: payAsYouGoRedirects[1000],
     },
   ],
+  Monthly: [
+    {
+      name: '20 envelopes',
+      credits: 20,
+      amount: 'ZAR 170',
+      planCode: 'PLN_1croxh14pyq4cj7',
+      label: 'Monthly',
+    },
+    {
+      name: '50 envelopes',
+      credits: 50,
+      amount: 'ZAR 400',
+      planCode: 'PLN_zel9llutx085dp9',
+      label: 'Monthly',
+    },
+    {
+      name: '100 envelopes',
+      credits: 100,
+      amount: 'ZAR 750',
+      planCode: 'PLN_yvo5ujkxt1diiak',
+      label: 'Monthly',
+    },
+    {
+      name: '200 envelopes',
+      credits: 200,
+      amount: 'ZAR 1,400',
+      planCode: 'PLN_0oqk4fljy5uais0',
+      label: 'Monthly',
+    },
+    {
+      name: '500 envelopes',
+      credits: 500,
+      amount: 'ZAR 3,250',
+      planCode: 'PLN_27yc6cxtga9huy7',
+      label: 'Monthly',
+    },
+    {
+      name: '1000 envelopes',
+      credits: 1000,
+      amount: 'ZAR 6,000',
+      planCode: 'PLN_q4qbiwreibc8qr5',
+      label: 'Monthly',
+    },
+  ],
+  Annual: [
+    {
+      name: '240 envelopes',
+      credits: 240,
+      amount: 'ZAR 1,700',
+      planCode: 'PLN_coac3n7m4jo59ct',
+      label: 'Annually',
+    },
+    {
+      name: '600 envelopes',
+      credits: 600,
+      amount: 'ZAR 4,000',
+      planCode: 'PLN_8kh731h1ojcx37d',
+      label: 'Annually',
+    },
+    {
+      name: '1200 envelopes',
+      credits: 1200,
+      amount: 'ZAR 7,500',
+      planCode: 'PLN_tzngz1lbhvxnufb',
+      label: 'Annually',
+    },
+    {
+      name: '2400 envelopes',
+      credits: 2400,
+      amount: 'ZAR 14,000',
+      planCode: 'PLN_kn6j6ur12pedilo',
+      label: 'Annually',
+    },
+    {
+      name: '6000 envelopes',
+      credits: 6000,
+      amount: 'ZAR 32,500',
+      planCode: 'PLN_moko1x694rvm5l8',
+      label: 'Annually',
+    },
+    {
+      name: '12000 envelopes',
+      credits: 12000,
+      amount: 'ZAR 60,000',
+      planCode: 'PLN_scnf05tt3vrui2i',
+      label: 'Annually',
+    },
+  ],
+} as const;
+
+const LIVE_PLANS_DATA = {
+  'Pay-as-you-go / Top-up': TEST_PLANS_DATA['Pay-as-you-go / Top-up'],
   Monthly: [
     {
       name: '20 envelopes',
@@ -196,7 +288,14 @@ const plansData = {
       label: 'Annually',
     },
   ],
-};
+} as const;
+
+const isTestPaystackEnv = (() => {
+  const baseUrl = NEXT_PUBLIC_WEBAPP_URL();
+  return baseUrl.includes('sign.nomiadocs.com') || baseUrl.includes('localhost:4000');
+})();
+
+const plansData = isTestPaystackEnv ? TEST_PLANS_DATA : LIVE_PLANS_DATA;
 
 function PlanCard({
   title,
@@ -371,7 +470,7 @@ export default function PricePlansPage() {
 
   const getActiveSubscriptionDetails = (planId: string) => {
     for (const [_, plans] of Object?.entries(plansData)) {
-      const matchedPlan = plans?.find((plan) => plan.planCode === planId);
+      const matchedPlan = plans?.find((plan: { planCode: string; }) => plan.planCode === planId);
       if (matchedPlan) return matchedPlan;
     }
     return null;
