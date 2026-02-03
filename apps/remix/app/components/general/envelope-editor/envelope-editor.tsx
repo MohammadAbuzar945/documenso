@@ -150,11 +150,11 @@ export default function EnvelopeEditor() {
     envelopeEditorSteps.find((step) => step.id === currentStep) || envelopeEditorSteps[0];
 
   return (
-    <div className="h-screen w-screen bg-gray-50 dark:bg-background">
+    <div className="h-screen w-full overflow-hidden bg-gray-50 dark:bg-background">
       <EnvelopeEditorHeader />
 
       {/* Main Content Area */}
-      <div className="flex h-[calc(100vh-4rem)] w-screen">
+      <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden">
         {/* Left Section - Step Navigation */}
         <div className="flex w-80 flex-shrink-0 flex-col overflow-y-auto border-r border-border bg-background py-4">
           {/* Left section step selector. */}
