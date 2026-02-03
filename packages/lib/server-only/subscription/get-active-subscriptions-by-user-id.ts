@@ -2,16 +2,16 @@ import { SubscriptionStatus } from '@prisma/client';
 
 import { prisma } from '@documenso/prisma';
 
-export type GetActiveSubscriptionsByUserIdOptions = {
-  userId: number;
+export type GetActiveSubscriptionsByOrganisationIdOptions = {
+  organisationId: string;
 };
 
 export const getActiveSubscriptionsByUserId = async ({
-  userId,
-}: GetActiveSubscriptionsByUserIdOptions) => {
+  organisationId,
+}: GetActiveSubscriptionsByOrganisationIdOptions) => {
   return await prisma.subscription.findMany({
     where: {
-      userId,
+      organisationId,
       status: {
         not: SubscriptionStatus.INACTIVE,
       },

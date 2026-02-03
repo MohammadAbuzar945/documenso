@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { ChevronsUpDown, Plus } from 'lucide-react';
+import { ChevronsUpDown, CreditCardIcon, Plus } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { authClient } from '@documenso/auth/client';
@@ -38,6 +38,8 @@ export const MenuSwitcher = () => {
     (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
   );
   const canCreateOrganisation = isUserAdmin && (!hasPersonalOrganisation || ownedOrganisationsCount < 2);
+
+  const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
 
   const formatAvatarFallback = (name?: string) => {
     if (name !== undefined) {
@@ -107,6 +109,15 @@ export const MenuSwitcher = () => {
             <Trans>User settings</Trans>
           </Link>
         </DropdownMenuItem>
+
+        {isOrganisationOwner && (
+          <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
+            <Link to="/price-plans" className="flex items-center">
+              <CreditCardIcon className="mr-2 h-4 w-4" />
+              <Trans>Subscriptions</Trans>
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem
           className="text-muted-foreground px-4 py-2"

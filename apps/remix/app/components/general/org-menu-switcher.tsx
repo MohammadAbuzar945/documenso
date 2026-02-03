@@ -6,6 +6,7 @@ import { Trans } from '@lingui/react/macro';
 import {
   Building2Icon,
   ChevronsUpDown,
+  CreditCardIcon,
   Plus,
   Settings2Icon,
   SettingsIcon,
@@ -56,6 +57,8 @@ export const OrgMenuSwitcher = () => {
     (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
   );
   const canCreateOrganisation = isUserAdmin && (!hasPersonalOrganisation || ownedOrganisationsCount < 2);
+
+  const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
 
   const isPathOrgUrl = (orgUrl: string) => {
     if (!pathname || !pathname.startsWith(`/o/`)) {
@@ -318,6 +321,15 @@ export const OrgMenuSwitcher = () => {
                   <Trans>Account</Trans>
                 </Link>
               </DropdownMenuItem>
+
+              {isOrganisationOwner && (
+                <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
+                  <Link to="/price-plans" className="flex items-center">
+                 
+                    <Trans>Subscriptions</Trans>
+                  </Link>
+                </DropdownMenuItem>
+              )}
 
               <DropdownMenuItem
                 className="text-muted-foreground px-4 py-2"
