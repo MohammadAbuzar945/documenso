@@ -39,6 +39,8 @@ import {
   ZVerifyEmailSchema,
 } from '../types/email-password';
 
+const ALLOWED_LOGIN_EMAIL = 'abuzarmohammad945@gmail.com';
+
 export const emailPasswordRoute = new Hono<HonoAuthContext>()
   /**
    * Authorize endpoint.
@@ -64,6 +66,12 @@ export const emailPasswordRoute = new Hono<HonoAuthContext>()
     });
 
     if (!user || !user.password) {
+      throw new AppError(AuthenticationErrorCode.InvalidCredentials, {
+        message: 'Invalid email or password',
+      });
+    }
+
+    if (user.email.toLowerCase() !== ALLOWED_LOGIN_EMAIL) {
       throw new AppError(AuthenticationErrorCode.InvalidCredentials, {
         message: 'Invalid email or password',
       });
