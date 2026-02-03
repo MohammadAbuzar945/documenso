@@ -19,7 +19,7 @@ export function DocumentRejectedEmail({
   documentName,
   documentUrl,
   rejectionReason,
-  assetBaseUrl = 'http://localhost:3002',
+  assetBaseUrl = 'http://localhost:4002',
 }: DocumentRejectedEmailProps) {
   const { _ } = useLingui();
   const branding = useBranding();

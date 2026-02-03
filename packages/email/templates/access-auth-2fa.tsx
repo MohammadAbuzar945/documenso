@@ -21,7 +21,7 @@ export const AccessAuth2FAEmailTemplate = ({
   userEmail,
   userName,
   expiresInMinutes,
-  assetBaseUrl = 'http://localhost:3002',
+  assetBaseUrl = 'http://localhost:4002',
 }: AccessAuth2FAEmailTemplateProps) => {
   const { _ } = useLingui();
 

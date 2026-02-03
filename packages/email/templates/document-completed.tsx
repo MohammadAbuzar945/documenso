@@ -14,7 +14,7 @@ export type DocumentCompletedEmailTemplateProps = Partial<TemplateDocumentComple
 export const DocumentCompletedEmailTemplate = ({
   downloadLink = 'https://documenso.com',
   documentName = 'Open Source Pledge.pdf',
-  assetBaseUrl = 'http://localhost:3002',
+  assetBaseUrl = 'http://localhost:4002',
   customBody,
 }: DocumentCompletedEmailTemplateProps) => {
   const { _ } = useLingui();

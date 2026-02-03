@@ -17,7 +17,7 @@ export type OrganisationLeaveEmailProps = {
 };
 
 export const OrganisationLeaveEmailTemplate = ({
-  assetBaseUrl = 'http://localhost:3002',
+  assetBaseUrl = 'http://localhost:4002',
   baseUrl = 'https://documenso.com',
   memberName = 'John Doe',
   memberEmail = 'johndoe@documenso.com',
