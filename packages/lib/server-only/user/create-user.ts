@@ -70,20 +70,32 @@ export const onCreateUserHook = async (user: User) => {
   await createPersonalOrganisation({ userId: user.id });
 
   // Initialize user credits with 10 initial credits
-  await prisma.userCredits.upsert({
+  const existingCredits = await prisma.userCredits.findFirst({
     where: {
       userId: user.id,
-    },
-    create: {
-      userId: user.id,
-      credits: 10,
-      isActive: true,
-    },
-    update: {
-      // If record already exists, just ensure it's active (don't overwrite existing credits)
       isActive: true,
     },
   });
+
+  if (existingCredits) {
+    await prisma.userCredits.update({
+      where: {
+        id: existingCredits.id,
+      },
+      data: {
+        // If record already exists, just ensure it's active (don't overwrite existing credits)
+        isActive: true,
+      },
+    });
+  } else {
+    await prisma.userCredits.create({
+      data: {
+        userId: user.id,
+        credits: 10,
+        isActive: true,
+      },
+    });
+  }
 
   return user;
 };

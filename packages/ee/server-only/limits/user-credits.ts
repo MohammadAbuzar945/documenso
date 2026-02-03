@@ -1,5 +1,5 @@
 import { prisma } from '@documenso/prisma';
-import { UserCredits } from '@prisma/client';
+import type { UserCredits } from '@prisma/client';
 const INITIAL_USER_CREDITS = 10;
 
 /**

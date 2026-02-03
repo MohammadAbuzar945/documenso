@@ -119,7 +119,7 @@ export default function RejectedSigningPage({ loaderData }: Route.ComponentProps
         </p>
 
         <div className="mt-8 flex w-full max-w-xs flex-col items-stretch gap-4 md:w-auto md:max-w-none md:flex-row md:items-center">
-          {isDocumentCompleted(document) && (
+          {document && isDocumentCompleted(document) && (
             <EnvelopeDownloadDialog
               envelopeId={document.envelopeId}
               envelopeStatus={document.status}

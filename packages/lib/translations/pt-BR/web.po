@@ -17,6 +17,11 @@ msgstr ""
 msgid ".PDF documents accepted (max {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB)"
 msgstr "Documentos .PDF aceitos (máx. {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB)"
 
+#. placeholder {0}: invalidEmails[0].value
+#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
+msgid "\"{0}\" is not a valid email address."
+msgstr ""
+
 #. placeholder {0}: field.customText
 #. placeholder {1}: timezone || ''
 #: apps/remix/app/components/general/document-signing/document-signing-date-field.tsx
@@ -227,6 +232,14 @@ msgstr "{0} não pôde ser enviado:"
 msgid "{0} direct signing templates"
 msgstr "{0} modelos de assinatura direta"
 
+#. placeholder {0}: remaining.documents
+#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
+#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
+#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
+#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
+msgid "{0} envelopes remaining"
+msgstr ""
+
 #. placeholder {0}: team.name
 #. placeholder {1}: envelope.title
 #: packages/lib/jobs/definitions/emails/send-signing-email.handler.ts
@@ -251,9 +264,7 @@ msgstr ""
 
 #. placeholder {0}: remaining.documents
 #. placeholder {1}: quota.documents
-#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
 #: apps/remix/app/components/general/envelope/envelope-drop-zone-wrapper.tsx
-#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 msgid "{0} of {1} documents remaining this month."
 msgstr "{0} de {1} documentos restantes este mês."
 
@@ -690,11 +701,6 @@ msgid "<0>Require account</0> - The recipient must be signed in to view the docu
 msgstr "<0>Exigir conta</0> - O destinatário deve estar logado para visualizar o documento"
 
 #: packages/ui/components/document/document-global-auth-action-select.tsx
-#: packages/ui/components/recipient/recipient-action-auth-select.tsx
-msgid "<0>Require passkey</0> - The recipient must have an account and passkey configured via their settings"
-msgstr "<0>Exigir passkey</0> - O destinatário deve ter uma conta e passkey configurada em suas configurações"
-
-#: packages/ui/components/document/document-global-auth-action-select.tsx
 msgid "<0>Require password</0> - The recipient must have an account and password configured via their settings, the password will be verified during signing"
 msgstr "<0>Exigir senha</0> - O destinatário deve ter uma conta e senha configurada em suas configurações, a senha será verificada durante a assinatura"
 
@@ -710,21 +716,85 @@ msgstr "<0>Digitada</0> - Uma assinatura digitada usando um teclado."
 msgid "<0>Uploaded</0> - A signature that is uploaded from a file."
 msgstr "<0>Enviada</0> - Uma assinatura enviada de um arquivo."
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "0 Free organisations left"
-msgstr "0 organizações gratuitas restantes"
-
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "1 Free organisations left"
-msgstr "1 organização gratuita restante"
-
 #: apps/remix/app/components/forms/token.tsx
 msgid "1 month"
 msgstr "1 mês"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "1. ACCEPTANCE OF TERMS"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "10. TERMS"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "11. DISCLAIMER OF LIABILITY"
+msgstr ""
+
 #: apps/remix/app/components/forms/token.tsx
 msgid "12 months"
 msgstr "12 meses"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "12. NO LIABILITY FOR LOST DATA / USER CONTENT"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "13. DISCLAIMER OF WARRANTIES AND LIMITATION OF LIABILITY"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "13.1. DISCLAIMER OF WARRANTIES"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "13.2. LIMITATION OF LIABILITY"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "14. THIRD PARTY LINKS"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15. MISCELLANEOUS"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.1. Entire Agreement and Conflict"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.2. Governing Law"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.3. Reference and Advertising"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.4. Severability"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.5. Assignment"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.6. Force Majeure"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.7. Survival"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "15.8. No Waiver"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "2. CHANGES"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "2FA"
@@ -737,6 +807,34 @@ msgstr "Redefinição de 2FA"
 #: apps/remix/app/components/forms/token.tsx
 msgid "3 months"
 msgstr "3 meses"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "3. LICENSE TO USE THE NOMIA APP"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "3.1. Ownership and Rights to Access and/or Use the Nomia App"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "3.2. Reservation of rights"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "3.3. Availability of content"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "4. SCOPE OF USE"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "4.1. Use of the Nomia App and Availability"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "4.2. Restrictions"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "400 Error"
@@ -799,13 +897,29 @@ msgstr "404 Usuário não encontrado"
 msgid "404 Webhook not found"
 msgstr "404 Webhook não encontrado"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "5 documents a month"
-msgstr "5 documentos por mês"
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "5. PAYMENT AND SUBSCRIPTION TERMS"
+msgstr ""
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "5 Documents a month"
-msgstr "5 Documentos por mês"
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "5.1. Monthly subscription"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "5.2. Annual subscription"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "5.3. Unpaid Charges and Account Suspension"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "5.4. Annual Increases"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "5.5. User Content retention post cancellation"
+msgstr ""
 
 #: apps/remix/app/components/general/generic-error-layout.tsx
 msgid "500 Internal Server Error"
@@ -815,9 +929,41 @@ msgstr "500 Erro Interno do Servidor"
 msgid "6 months"
 msgstr "6 meses"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "6. USER CONTENT"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "6.1. Warranties"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "6.2. User Content"
+msgstr ""
+
 #: apps/remix/app/components/forms/token.tsx
 msgid "7 days"
 msgstr "7 dias"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "7. PROHIBITED USER CONTENT"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "8. REVIEW OF USER CONTENT"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "8.1. Enforcement"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "8.2. User Content Liability"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "8.3. Third party hosting"
+msgstr ""
 
 #: apps/remix/app/components/forms/send-confirmation-email.tsx
 msgid "A confirmation email has been sent, and it should arrive in your inbox shortly."
@@ -980,6 +1126,10 @@ msgstr "Acesso desativado"
 msgid "Access enabled"
 msgstr "Acesso ativado"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "access, store, distribute or transmit any viruses, malware or other harmful material;"
+msgstr ""
+
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 #: apps/remix/app/components/general/org-menu-switcher.tsx
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
@@ -1079,6 +1229,7 @@ msgstr "Ações"
 msgid "Active"
 msgstr "Ativo"
 
+#: apps/remix/app/components/general/admin-license-card.tsx
 #: apps/remix/app/components/tables/user-billing-organisations-table.tsx
 msgctxt "Subscription status"
 msgid "Active"
@@ -1253,6 +1404,10 @@ msgstr "Adicionar destinatários"
 msgid "Add Recipients"
 msgstr "Adicionar Destinatários"
 
+#: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
+msgid "Add recipients to your document"
+msgstr ""
+
 #: apps/remix/app/components/embed/authoring/configure-document-recipients.tsx
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
 #: packages/ui/primitives/document-flow/add-signers.tsx
@@ -1363,6 +1518,10 @@ msgstr ""
 msgid "All"
 msgstr "Todos"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "All content you or your users upload, create, submit, distribute, post and/or store as part of the Nomia App including, but not limited to, document layouts, source code, pictures, video and other images, audio materials, graphics, document or data files, information relating to natural and other persons, messages, e-mail and other communications, files, texts, personalisation settings and other information and/or content (collectively \"User Content\"), is the sole responsibility of the person who originated such User Content. Nomia has no responsibility and/or liability for the deletion and/or accuracy of any User Content, the failure to store, transmit and/or receive transmission of User Content and/or the security, privacy, storage and/or transmission of other communications originating with and/or involving use of the Nomia App."
+msgstr ""
+
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "All documents"
 msgstr "Todos os documentos"
@@ -1394,6 +1553,14 @@ msgstr "Todas as assinaturas inseridas serão anuladas"
 
 #: apps/remix/app/components/dialogs/envelopes-bulk-move-dialog.tsx
 msgid "All items must be of the same type."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "All Nomia App subscription plans (i.e. both monthly and/or annual plans) are subject to annual increases, to be determined in Nomia's sole discretion, which will take effect on each anniversary of your initial subscription date."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "All provisions of these Terms which by their nature should survive termination shall survive termination including, without limitation, licenses of User Content, ownership provisions, warranty disclaimers, indemnity provisions and limitations of liability."
 msgstr ""
 
 #: apps/remix/app/routes/_recipient+/sign.$token+/complete.tsx
@@ -1451,10 +1618,6 @@ msgstr "Tipos de Assinatura Permitidos"
 #: apps/remix/app/components/tables/admin-claims-table.tsx
 msgid "Allowed teams"
 msgstr "Equipes permitidas"
-
-#: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
-msgid "Allows authenticating using biometrics, password managers, hardware keys, etc."
-msgstr "Permite autenticação usando biometria, gerenciadores de senhas, chaves de hardware, etc."
 
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
@@ -2031,7 +2194,6 @@ msgstr "Avatar Atualizado"
 msgid "Awaiting email confirmation"
 msgstr "Aguardando confirmação de e-mail"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/dialogs/team-group-create-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
 #: apps/remix/app/components/embed/authoring/configure-fields-view.tsx
@@ -2040,7 +2202,9 @@ msgstr "Aguardando confirmação de e-mail"
 msgid "Back"
 msgstr "Voltar"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
 msgid "Back home"
 msgstr "Voltar ao início"
 
@@ -2173,8 +2337,8 @@ msgid "By enabling 2FA, you will be required to enter a code from your authentic
 msgstr "Ao ativar a 2FA, você precisará inserir um código do seu aplicativo autenticador toda vez que fizer login usando senha de e-mail."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "By proceeding to use the electronic signature service provided by Documenso, you affirm that you have read and understood this disclosure. You agree to all terms and conditions related to the use of electronic signatures and electronic transactions as outlined herein."
-msgstr "Ao prosseguir com o uso do serviço de assinatura eletrônica fornecido pela Documenso, você afirma que leu e compreendeu esta divulgação. Você concorda com todos os termos e condições relacionados ao uso de assinaturas eletrônicas e transações eletrônicas conforme descrito aqui."
+msgid "By proceeding to use the electronic signature service provided by Nomia, you affirm that you have read and understood this disclosure. You agree to all terms and conditions related to the use of electronic signatures and electronic transactions as outlined herein."
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
 msgid "By proceeding with your electronic signature, you acknowledge and consent that it will be used to sign the given document and holds the same legal validity as a handwritten signature. By completing the electronic signing process, you affirm your understanding and acceptance of these conditions."
@@ -2191,6 +2355,10 @@ msgstr "Ao usar o recurso de assinatura eletrônica, você consente em realizar 
 #: packages/ui/components/recipient/recipient-role-select.tsx
 msgid "Can prepare"
 msgstr "Pode preparar"
+
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
+msgid "Can't find someone?"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/admin-organisation-create-dialog.tsx
 #: apps/remix/app/components/dialogs/admin-organisation-member-update-dialog.tsx
@@ -2214,7 +2382,6 @@ msgstr "Pode preparar"
 #: apps/remix/app/components/dialogs/folder-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/folder-move-dialog.tsx
 #: apps/remix/app/components/dialogs/folder-update-dialog.tsx
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-email-create-dialog.tsx
@@ -2338,6 +2505,10 @@ msgstr "Centro"
 msgid "Change Recipient"
 msgstr "Alterar Destinatário"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Changes to this Policy"
+msgstr ""
+
 #: apps/remix/app/components/forms/editor/editor-field-text-form.tsx
 msgid "Character limit"
 msgstr "Limite de caracteres"
@@ -2354,7 +2525,9 @@ msgstr "Gráficos"
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-drag-drop.tsx
 #: packages/lib/utils/fields.ts
+#: packages/ui/primitives/document-flow/add-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
+#: packages/ui/primitives/template-flow/add-template-fields.tsx
 msgid "Checkbox"
 msgstr "Caixa de seleção"
 
@@ -2371,8 +2544,6 @@ msgstr "Configurações da Caixa de Seleção"
 msgid "Checkbox values"
 msgstr "Valores da caixa de seleção"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/general/billing-plans.tsx
 msgid "Checkout"
 msgstr "Checkout"
@@ -2404,6 +2575,10 @@ msgstr "Escolha seu método de autenticação preferido:"
 #: apps/remix/app/components/forms/token.tsx
 msgid "Choose..."
 msgstr "Escolha..."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "circumvent or disable any security or technological features or measures of the Nomia App."
+msgstr ""
 
 #: apps/remix/app/components/general/claim-account.tsx
 msgid "Claim account"
@@ -2498,20 +2673,19 @@ msgstr "Segredo do Cliente é obrigatório"
 msgid "Close"
 msgstr "Fechar"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "communicate with you regarding the services or products you have subscribed for;"
+msgstr ""
+
 #: apps/remix/app/components/embed/authoring/configure-document-advanced-settings.tsx
 msgid "Communication"
 msgstr "Comunicação"
-
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Compare all plans and features in detail"
-msgstr "Compare todos os planos e recursos em detalhes"
 
 #: apps/remix/app/components/embed/embed-direct-template-client-page.tsx
 #: apps/remix/app/components/embed/embed-direct-template-client-page.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
 #: apps/remix/app/components/embed/multisign/multi-sign-document-signing-view.tsx
-#: apps/remix/app/components/forms/signup.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 msgid "Complete"
@@ -2674,13 +2848,17 @@ msgstr "Consentimento para Transações Eletrônicas"
 msgid "Contact Information"
 msgstr "Informações de Contato"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Contact sales here"
-msgstr "Contate vendas aqui"
-
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.support.tsx
 msgid "Contact us"
 msgstr "Contate-nos"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "contains and/or installs any viruses, worms, malware, Trojan horses and/or other harmful content;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "contains payment card data;"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Content"
@@ -2691,7 +2869,6 @@ msgid "Context"
 msgstr "Contexto"
 
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-view.tsx
@@ -2762,6 +2939,10 @@ msgstr "Controla se o certificado de assinatura será incluído no documento qua
 msgid "Controls which signatures are allowed to be used when signing a document."
 msgstr "Controla quais assinaturas podem ser usadas ao assinar um documento."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Cookies"
+msgstr ""
+
 #: apps/remix/app/components/general/document/document-recipient-link-copy-dialog.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "Copied"
@@ -2825,6 +3006,10 @@ msgstr "Copiar Links de Assinatura"
 msgid "Copy token"
 msgstr "Copiar token"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "copy, reproduce, distribute, republish, download, distribute, disclose, encumber, time-share, license, sell, distribute, display, post and/or transmit any part of the Nomia App in any form and/or by any means;"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/admin-organisation-create-dialog.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
@@ -2859,6 +3044,7 @@ msgstr "Criar um ticket de suporte"
 msgid "Create a team to collaborate with your team members."
 msgstr "Crie uma equipe para colaborar com os membros da sua equipe."
 
+#: apps/remix/app/components/forms/signup.tsx
 #: apps/remix/app/routes/_unauthenticated+/organisation.invite.$token.tsx
 #: packages/email/template-components/template-document-self-signed.tsx
 msgid "Create account"
@@ -2963,14 +3149,6 @@ msgstr "Criar organização separada"
 msgid "Create signing links"
 msgstr "Criar links de assinatura"
 
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "Create Stripe customer"
-msgstr "Criar cliente Stripe"
-
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "Create subscription"
-msgstr "Criar assinatura"
-
 #: apps/remix/app/components/dialogs/claim-create-dialog.tsx
 msgid "Create Subscription Claim"
 msgstr "Criar Reivindicação de Assinatura"
@@ -3048,6 +3226,10 @@ msgstr "Criado em"
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.tokens.tsx
 msgid "Created on {0}"
 msgstr "Criado em {0}"
+
+#: apps/remix/app/components/tables/organisation-teams-table.tsx
+msgid "Credits Used"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "CSV Structure"
@@ -3133,6 +3315,10 @@ msgstr "David é o Funcionário, Lucas é o Gerente"
 #: packages/email/templates/organisation-invite.tsx
 msgid "Decline"
 msgstr "Recusar"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "defames, harasses, abuses, threatens, or incites violence towards any individual or group;"
+msgstr ""
 
 #: apps/remix/app/components/forms/document-preferences-form.tsx
 msgid "Default Date Format"
@@ -3370,14 +3556,6 @@ msgstr "Detectar campos"
 msgid "Detect recipients"
 msgstr "Detectar destinatários"
 
-#: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
-msgid "Detect recipients with AI"
-msgstr "Detectar destinatários com IA"
-
-#: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-page.tsx
-msgid "Detect with AI"
-msgstr "Detectar com IA"
-
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 msgid "Detected fields"
 msgstr "Campos detectados"
@@ -3520,6 +3698,10 @@ msgstr "Desativar a assinatura por link direto impedirá que qualquer pessoa ace
 msgid "Disabling the user results in the user not being able to use the account. It also disables all the related contents such as subscription, webhooks, teams, and API keys."
 msgstr "Desativar o usuário resulta na impossibilidade de usar a conta. Também desativa todos os conteúdos relacionados, como assinatura, webhooks, equipes e chaves de API."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Disclosure of Personal Information"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.support.tsx
 msgid "Discord"
 msgstr "Discord"
@@ -3556,6 +3738,10 @@ msgstr "Você deseja excluir este modelo?"
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
 msgid "Do you want to duplicate this template?"
 msgstr "Você deseja duplicar este modelo?"
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "Documenso License"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/account-delete-dialog.tsx
 msgid "Documenso will delete <0>all of your documents</0>, along with all of your completed documents, signatures, and all other resources belonging to your Account."
@@ -3992,6 +4178,7 @@ msgstr ""
 #: apps/remix/app/components/tables/inbox-table.tsx
 #: apps/remix/app/components/tables/organisation-billing-invoices-table.tsx
 #: apps/remix/app/routes/_recipient+/sign.$token+/complete.tsx
+#: apps/remix/app/routes/_recipient+/sign.$token+/rejected.tsx
 #: packages/email/template-components/template-document-completed.tsx
 msgid "Download"
 msgstr "Baixar"
@@ -4090,7 +4277,6 @@ msgid "Duplicate"
 msgstr "Duplicar"
 
 #: apps/remix/app/components/dialogs/envelope-duplicate-dialog.tsx
-#: apps/remix/app/components/general/envelope-editor/envelope-editor.tsx
 msgid "Duplicate Document"
 msgstr "Duplicar Documento"
 
@@ -4100,7 +4286,6 @@ msgid "Duplicate on all pages"
 msgstr "Duplicar em todas as páginas"
 
 #: apps/remix/app/components/dialogs/envelope-duplicate-dialog.tsx
-#: apps/remix/app/components/general/envelope-editor/envelope-editor.tsx
 msgid "Duplicate Template"
 msgstr "Duplicar Modelo"
 
@@ -4304,10 +4489,6 @@ msgstr "A verificação de e-mail foi reenviada"
 msgid "Emails"
 msgstr "E-mails"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Embedding, 5 members included and more"
-msgstr "Incorporação, 5 membros incluídos e mais"
-
 #: packages/ui/primitives/document-flow/add-fields.tsx
 msgid "Empty field"
 msgstr "Campo vazio"
@@ -4333,10 +4514,6 @@ msgstr "Ativar conta"
 #: apps/remix/app/components/dialogs/admin-user-enable-dialog.tsx
 msgid "Enable Account"
 msgstr "Ativar Conta"
-
-#: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
-msgid "Enable AI detection"
-msgstr ""
 
 #: apps/remix/app/components/dialogs/ai-features-enable-dialog.tsx
 #: apps/remix/app/components/dialogs/ai-features-enable-dialog.tsx
@@ -4498,10 +4675,6 @@ msgstr "Digite sua senha"
 msgid "Enter your text here"
 msgstr "Digite seu texto aqui"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Enterprise"
-msgstr "Empresarial"
-
 #: apps/remix/app/components/dialogs/envelope-distribute-dialog.tsx
 msgid "Envelope distributed"
 msgstr "Envelope distribuído"
@@ -4660,9 +4833,26 @@ msgstr "Todos assinaram! Você receberá uma cópia do documento assinado por e-
 msgid "Exceeded timeout"
 msgstr "Tempo limite excedido"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Except as expressly specified in these Terms, you shall not:"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Except for payment obligations, neither Nomia nor you will be liable by reason of any failure or delay in the performance of its obligations on account of events beyond the reasonable control of a party, which may include denial-of-service attacks, a failure by a third-party hosting provider or utility provider, shortages, riots, pandemics, fires, acts of God, war, strikes, terrorism and/or governmental action or sanction."
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._index.tsx
 msgid "Expired"
 msgstr "Expirado"
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgctxt "Subscription status"
+msgid "Expired"
+msgstr ""
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "Expires"
+msgstr ""
 
 #. placeholder {0}: DateTime.fromMillis(Math.max(millisecondsRemaining, 0)).toFormat( 'mm:ss', )
 #: apps/remix/app/components/general/document-signing/access-auth-2fa-form.tsx
@@ -4737,6 +4927,10 @@ msgstr "Falha ao salvar configurações."
 msgid "Failed to sign out all sessions"
 msgstr "Falha ao sair de todas as sessões"
 
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "Failed to sync license"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Failed to unlink account"
 msgstr "Falha ao desvincular conta"
@@ -4774,6 +4968,10 @@ msgstr "Falhou: {failedCount}"
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "Feature Flags"
 msgstr "Sinalizadores de Recurso"
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "Features"
+msgstr ""
 
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/text-field.tsx
 msgid "Field character limit"
@@ -4900,16 +5098,12 @@ msgid "Font Size"
 msgstr "Tamanho da fonte"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "For any questions regarding this disclosure, electronic signatures, or any related process, please contact us at: <0>{SUPPORT_EMAIL}</0>"
-msgstr "Para quaisquer dúvidas sobre esta divulgação, assinaturas eletrônicas ou qualquer processo relacionado, entre em contato conosco em: <0>{SUPPORT_EMAIL}</0>"
+msgid "For any questions regarding this disclosure, electronic signatures, or any related process, please contact us at: <0>help@nomiadocs.com</0>"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "For each recipient, provide their email (required) and name (optional) in separate columns. Download the template CSV below for the correct format."
 msgstr "Para cada destinatário, forneça seu e-mail (obrigatório) e nome (opcional) em colunas separadas. Baixe o modelo CSV abaixo para o formato correto."
-
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "For example, if the claim has a new flag \"FLAG_1\" set to true, then this organisation will get that flag added."
-msgstr "Por exemplo, se a reivindicação tiver um novo sinalizador \"FLAG_1\" definido como verdadeiro, essa organização terá esse sinalizador adicionado."
 
 #: packages/lib/server-only/auth/send-forgot-password.ts
 msgid "Forgot Password?"
@@ -4921,10 +5115,9 @@ msgstr "Esqueceu a senha?"
 msgid "Forgot your password?"
 msgstr "Esqueceu sua senha?"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgctxt "Plan price"
-msgid "Free"
-msgstr "Grátis"
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "frame and/or utilise framing techniques to enclose any trademark, logo and/or other portion of the Nomia App;"
+msgstr ""
 
 #: apps/remix/app/components/tables/admin-organisations-table.tsx
 #: apps/remix/app/components/tables/user-billing-organisations-table.tsx
@@ -4968,7 +5161,6 @@ msgstr "Geral"
 msgid "Generate DKIM Records"
 msgstr "Gerar Registros DKIM"
 
-#: apps/remix/app/components/dialogs/envelope-distribute-dialog.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "Generate Links"
 msgstr "Gerar Links"
@@ -5188,6 +5380,10 @@ msgstr "Início (Sem Pasta)"
 msgid "Horizontal"
 msgstr "Horizontal"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "How we may use your Personal Information"
+msgstr ""
+
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "I agree to link my account with this organization"
 msgstr "Concordo em vincular minha conta a esta organização"
@@ -5243,6 +5439,10 @@ msgstr "Identificando campos de entrada"
 msgid "Identifying recipients"
 msgstr "Identificando destinatários"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "If any part of these Terms is held invalid or unenforceable that part will be construed to reflect the parties' original intent, and the remaining portions will remain in full force and effect."
+msgstr ""
+
 #: apps/remix/app/components/general/organisations/organisation-billing-banner.tsx
 msgid "If there is any issue with your subscription, please contact us at <0>{SUPPORT_EMAIL}</0>."
 msgstr "Se houver algum problema com sua assinatura, entre em contato conosco em <0>{SUPPORT_EMAIL}</0>."
@@ -5263,9 +5463,29 @@ msgstr "Se você não encontrar o link de confirmação em sua caixa de entrada,
 msgid "If your authenticator app does not support QR codes, you can use the following code instead:"
 msgstr "Se seu aplicativo autenticador não suportar códigos QR, você pode usar o seguinte código:"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "impersonates any person or entity;"
+msgstr ""
+
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "Important: What This Means"
 msgstr "Importante: O que isso significa"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "In addition to any Personal Information you may submit to us via the website, when visiting our website, we may collect usage information which may include your geographical location and information about the timing, frequency and pattern of your service use. This information may be processed by us for purposes of analysing the use of our website and improving its usability."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "IN NO EVENT WILL NOMIA, ITS OFFICERS, DIRECTORS, EMPLOYEES, PARTNERS, LICENSORS, AND/OR SUPPLIERS BE LIABLE TO YOU AND/OR ANYONE ELSE FOR ANY SPECIAL, INCIDENTAL, INDIRECT, CONSEQUENTIAL AND/OR PUNITIVE DAMAGES WHATSOEVER, INCLUDING THOSE RESULTING FROM LOSS OF USE, DATA AND/OR PROFITS, WHETHER OR NOT FORESEEABLE, REGARDLESS OF THE FORM OF ACTION, WHETHER IN CONTRACT, TORT (INCLUDING NEGLIGENCE), WARRANTY, STRICT LIABILITY AND/OR ANY OTHER LEGAL OR EQUITABLE THEORY."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "In the event that you cancel your Nomia App subscription in accordance with these Terms we shall store all the User Content created by you via the Nomia App for a maximum of 30 (thirty) days post cancellation of your relevant subscription and give you download-access only to the Nomia App throughout such 30-day period in order to allow you to download and/or store all your User Content on third party locations of your choice. Following the aforesaid 30-day User Content retention period, we reserve the sole right to, without any liability whatsoever, delete and/or destroy all your User Content and indefinitely suspend your access to the Nomia App."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "In the event that you fail to make timeous payment of any relevant monthly or annual Nomia App subscription amount(s), for any reason whatsoever, Nomia reserves the right to, without any liability to you, disable your access to all or part of the Nomia App and to only reactivate the same once all due charges have been paid in full."
+msgstr ""
 
 #: apps/remix/app/components/tables/user-billing-organisations-table.tsx
 msgctxt "Subscription status"
@@ -5295,6 +5515,10 @@ msgstr "Incluir o Certificado de Assinatura no Documento"
 msgid "Information"
 msgstr "Informação"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "infringes on any proprietary right of any party;"
+msgstr ""
+
 #: packages/ui/components/recipient/recipient-action-auth-select.tsx
 msgid "Inherit authentication method"
 msgstr "Herdar método de autenticação"
@@ -5320,17 +5544,14 @@ msgstr "Herdar da organização"
 msgid "Inherit organisation members"
 msgstr "Herdar membros da organização"
 
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "Inherited subscription claim"
-msgstr "Reivindicação de assinatura herdada"
-
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/sign-field-initials-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-initials-field.tsx
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-drag-drop.tsx
 #: packages/lib/utils/fields.ts
+#: packages/ui/primitives/document-flow/add-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
+#: packages/ui/primitives/template-flow/add-template-fields.tsx
 msgid "Initials"
 msgstr "Iniciais"
 
@@ -5350,6 +5571,10 @@ msgstr "Inserido"
 msgid "Instance Stats"
 msgstr "Estatísticas da Instância"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "intentionally hold Nomia and/or its employees and/or directors up to public scorn, ridicule and/or defamation;"
+msgstr ""
+
 #: apps/remix/app/components/forms/2fa/view-recovery-codes-dialog.tsx
 msgid "Invalid code. Please try again."
 msgstr "Código inválido. Por favor, tente novamente."
@@ -5358,10 +5583,19 @@ msgstr "Código inválido. Por favor, tente novamente."
 msgid "Invalid domains"
 msgstr "Domínios inválidos"
 
+#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
 #: packages/lib/types/recipient.ts
 #: packages/ui/primitives/document-flow/add-signers.types.ts
 msgid "Invalid email"
 msgstr "E-mail inválido"
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "Invalid License Key"
+msgstr ""
+
+#: apps/remix/app/components/general/admin-license-status-banner.tsx
+msgid "Invalid License Type - Your Documenso instance is using features that are not part of your license."
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/team.verify.email.$token.tsx
 msgid "Invalid link"
@@ -5414,12 +5648,17 @@ msgid "Invite Members"
 msgstr "Convidar Membros"
 
 #: apps/remix/app/components/dialogs/organisation-member-invite-dialog.tsx
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
 msgid "Invite organisation members"
 msgstr "Convidar membros da organização"
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl._index.tsx
 msgid "Invite team members to collaborate"
 msgstr "Convidar membros da equipe para colaborar"
+
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
+msgid "Invite them to the organisation first"
+msgstr ""
 
 #: apps/remix/app/components/tables/organisation-member-invites-table.tsx
 msgid "Invited At"
@@ -5440,6 +5679,18 @@ msgstr "Fatura"
 msgid "IP Address"
 msgstr "Endereço IP"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "is pornographic, discriminatory and/or otherwise victimises and/or intimidates an individual and/or group;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "is spam, is machine- or randomly-generated, constitutes unauthorised or unsolicited advertising;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "is unlawful and/or promotes unlawful activities;"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "Issuer URL"
 msgstr "URL do Emissor"
@@ -5447,6 +5698,10 @@ msgstr "URL do Emissor"
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "It is crucial to keep your contact information, especially your email address, up to date with us. Please notify us immediately of any changes to ensure that you continue to receive all necessary communications."
 msgstr "É crucial manter suas informações de contato, especialmente seu endereço de e-mail, atualizadas conosco. Por favor, notifique-nos imediatamente sobre quaisquer alterações para garantir que você continue recebendo todas as comunicações necessárias."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "It is your responsibility to review these Terms frequently and to remain informed of any changes thereto."
+msgstr ""
 
 #. placeholder {0}: publicProfile.name
 #: apps/remix/app/routes/_profile+/p.$url.tsx
@@ -5557,6 +5812,11 @@ msgstr "Última Atualização"
 msgid "Last updated at"
 msgstr "Última atualização em"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Last updated: 01/02/2026"
+msgstr ""
+
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
 msgid "Last used"
 msgstr "Último uso"
@@ -5564,6 +5824,12 @@ msgstr "Último uso"
 #: apps/remix/app/components/filters/date-range-filter.tsx
 msgid "Last Year"
 msgstr "Ano Passado"
+
+#: apps/remix/app/components/forms/subscription-claim-form.tsx
+#: apps/remix/app/components/general/admin-license-card.tsx
+#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
+msgid "Learn more"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/organisation-leave-dialog.tsx
 #: apps/remix/app/components/tables/user-organisations-table.tsx
@@ -5597,6 +5863,27 @@ msgstr "Espaçamento entre letras"
 msgid "Letter Spacing"
 msgstr "Espaçamento entre Letras"
 
+#: apps/remix/app/components/general/admin-license-card.tsx
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "License"
+msgstr ""
+
+#: apps/remix/app/components/general/admin-license-status-banner.tsx
+msgid "License Expired - Please renew your license to continue using enterprise features."
+msgstr ""
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "License Key"
+msgstr ""
+
+#: apps/remix/app/components/general/admin-license-status-banner.tsx
+msgid "License Payment Overdue - Please update your payment to avoid service disruptions."
+msgstr ""
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "License synced"
+msgstr ""
+
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "Light Mode"
 msgstr "Modo Claro"
@@ -5629,7 +5916,6 @@ msgstr "Vincular modelo"
 msgid "Link your Documenso account"
 msgstr "Vincule sua conta Documenso"
 
-#: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Linked Accounts"
 msgstr "Contas Vinculadas"
@@ -5672,6 +5958,7 @@ msgstr "Carregando Documento..."
 msgid "Loading suggestions..."
 msgstr "Carregando sugestões..."
 
+#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
 #: apps/remix/app/components/general/document/document-page-view-recent-activity.tsx
 msgid "Loading..."
 msgstr "Carregando..."
@@ -5697,6 +5984,10 @@ msgstr "Procurando campos de formulário"
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
 msgid "Looking for signature fields"
 msgstr "Procurando campos de assinatura"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "make the functionality of the Nomia App available to unauthorised users;"
+msgstr ""
 
 #: apps/remix/app/components/tables/admin-organisations-table.tsx
 #: apps/remix/app/components/tables/organisation-groups-table.tsx
@@ -5751,10 +6042,6 @@ msgstr "Gerenciar Link Direto"
 msgid "Manage documents"
 msgstr "Gerenciar documentos"
 
-#: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
-msgid "Manage linked accounts"
-msgstr "Gerenciar contas vinculadas"
-
 #: apps/remix/app/routes/_authenticated+/admin+/organisation-insights.$id.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "Manage organisation"
@@ -5768,10 +6055,6 @@ msgstr ""
 msgid "Manage organisations"
 msgstr "Gerenciar organizações"
 
-#: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
-msgid "Manage passkeys"
-msgstr "Gerenciar passkeys"
-
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl._index.tsx
 msgid "Manage permissions and access controls"
 msgstr "Gerenciar permissões e controles de acesso"
@@ -5780,20 +6063,10 @@ msgstr "Gerenciar permissões e controles de acesso"
 msgid "Manage sessions"
 msgstr "Gerenciar sessões"
 
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "Manage subscription"
-msgstr "Gerenciar assinatura"
-
 #. placeholder {0}: organisation.name
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "Manage the {0} organisation"
 msgstr "Gerenciar a organização {0}"
-
-#. placeholder {0}: organisation.name
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "Manage the {0} organisation subscription"
-msgstr "Gerenciar a assinatura da organização {0}"
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.groups._index.tsx
 msgid "Manage the custom groups of members for your organisation."
@@ -5949,6 +6222,10 @@ msgstr "Meio"
 msgid "Min"
 msgstr "Mín"
 
+#: apps/remix/app/components/general/admin-license-status-banner.tsx
+msgid "Missing License - Your Documenso instance is using features that require a license."
+msgstr ""
+
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-page.tsx
 msgid "Missing Recipients"
 msgstr "Destinatários Ausentes"
@@ -5962,7 +6239,10 @@ msgstr "Modificar destinatários"
 msgid "Modify the details of the subscription claim."
 msgstr "Modifique os detalhes da reivindicação de assinatura."
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "modify, and/or make derivative works of, disassemble, reverse compile and/or reverse engineer any part of the Nomia App;"
+msgstr ""
+
 #: apps/remix/app/components/general/billing-plans.tsx
 msgid "Monthly"
 msgstr "Mensal"
@@ -6022,6 +6302,7 @@ msgid "My Folder"
 msgstr "Minha Pasta"
 
 #: apps/remix/app/components/tables/internal-audit-log-table.tsx
+#: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 #: packages/lib/server-only/pdf/render-audit-logs.ts
 msgid "N/A"
 msgstr "N/A"
@@ -6140,6 +6421,10 @@ msgstr "Nenhum documento encontrado"
 msgid "No email detected"
 msgstr "Nenhum e-mail detectado"
 
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "No features enabled"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 msgid "No fields were detected in your document."
 msgstr "Nenhum campo foi detectado em seu documento."
@@ -6159,6 +6444,18 @@ msgstr "Nenhuma pasta encontrada correspondente a \"{searchTerm}\""
 #: apps/remix/app/routes/_recipient+/sign.$token+/rejected.tsx
 msgid "No further action is required from you at this time."
 msgstr "Nenhuma ação adicional é necessária de sua parte neste momento."
+
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "No License Configured"
+msgstr ""
+
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
+msgid "No members selected"
+msgstr ""
+
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
+msgid "No organisation members available"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/dashboard.tsx
 msgid "No organisations found"
@@ -6216,10 +6513,6 @@ msgstr "Nenhum resultado encontrado."
 msgid "No signature field found"
 msgstr "Nenhum campo de assinatura encontrado"
 
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "No Stripe customer attached"
-msgstr "Nenhum cliente Stripe anexado"
-
 #: packages/ui/components/recipient/recipient-autocomplete-input.tsx
 msgid "No suggestions found"
 msgstr "Nenhuma sugestão encontrada"
@@ -6246,9 +6539,45 @@ msgstr "Nenhum destinatário válido encontrado"
 msgid "No value found."
 msgstr "Nenhum valor encontrado."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "No waiver by Nomia of any breach and/or default and/or failure to exercise any right allowed under these Terms is a waiver of any preceding and/or subsequent breach and/or default and/or a waiver and/or forfeiture of any similar and/or future rights under these Terms."
+msgstr ""
+
 #: apps/remix/app/routes/_unauthenticated+/forgot-password.tsx
 msgid "No worries, it happens! Enter your email and we'll email you a special link to reset your password."
 msgstr "Não se preocupe, acontece! Digite seu e-mail e enviaremos um link especial para redefinir sua senha."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Nomia disclaims all liability relating to any User Content including any error, virus, defamation, libel, obscenity or inaccuracy contained in any User Content, whether or not arising under the laws of copyright, libel, privacy or otherwise, any prohibited User Content and/or any other User Content."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Nomia does not undertake to screen, review, edit, censor and/or otherwise filter and/or control User Content and/or the behavior of users of User Content and/or the Nomia App. Nomia may, but shall not be obliged to, review, either by manual and/or automated means, all User Content which is and/or may be uploaded on the Nomia App and monitor and/or review any areas of the Nomia App where users transmit and/or post communications or communicate with each other or us (as applicable)."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Nomia is under no obligation to become involved in any dispute that you have with other users and/or in any incident that you are party to with other users or that are affected by and/or otherwise related to the Nomia App."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "NOMIA PRIVACY POLICY"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Nomia shall not be liable for any loss, deletion, removal and/or failure of delivery to the intended recipient of any User Content whether caused by computer virus, unauthorised access and/or otherwise. You remain personally responsible for maintaining adequate back-up copies of all User Content and we accept no liability for the loss, deletion, removal or destruction of the same for any reason whatsoever."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "NOMIA USER TERMS AND CONDITIONS"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Nomia's annual subscription plans provide year-to-year access to the Nomia App and a substantial savings over the month-to-month subscription plan. Your initial annual subscription charge will be payable on or before the first date of your use of the Nomia App and on each subsequent annual renewal date. Annual plans shall automatically renew every 12 months unless you provide us with at least a calendar month's written notice prior to your annual renewal date indicating that you wish to cancel your Nomia App subscription at the end of the current 12-month period."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Nomia's monthly subscription plan provides you with month-to-month access to the Nomia App, with monthly charges being payable on or before the first day of each calendar month. Monthly subscription plans shall automatically renew every month and be terminable by at any time prior to the end of any relevant calendar month. If you cancel your subscription before the end of a particular month you will continue to have access to the Nomia App through to the end of the then-current month."
+msgstr ""
 
 #: apps/remix/app/components/embed/authoring/configure-document-advanced-settings.tsx
 #: apps/remix/app/components/forms/editor/editor-field-number-form.tsx
@@ -6268,14 +6597,18 @@ msgstr ""
 msgid "Not found"
 msgstr "Não encontrado"
 
-#: apps/remix/app/components/forms/signin.tsx
-msgid "Not supported"
-msgstr "Não suportado"
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Note: You can unsubscribe from our marketing communications at any time by sending us an email asking to unsubscribe, or by clicking on the \"unsubscribe\" link in any electronic marketing communications."
+msgstr ""
 
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "Nothing to do"
 msgstr "Nada a fazer"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Notwithstanding the above, we do not make any warranties or representations that your Personal Information or any of our services, products or website are 100% safe and secure nor do we guarantee that our services, products or website is invulnerable to unauthorised access by third parties."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-number-field.tsx
@@ -6506,7 +6839,6 @@ msgstr "URL da Organização"
 #: apps/remix/app/components/general/org-menu-switcher.tsx
 #: apps/remix/app/components/general/settings-nav-desktop.tsx
 #: apps/remix/app/components/general/settings-nav-mobile.tsx
-#: apps/remix/app/routes/_authenticated+/admin+/_layout.tsx
 #: apps/remix/app/routes/_authenticated+/dashboard.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/organisations.tsx
 msgid "Organisations"
@@ -6540,6 +6872,10 @@ msgstr "Original"
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Otherwise, the document will be created as a draft."
 msgstr "Caso contrário, o documento será criado como um rascunho."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Our website may contain links to third party or affiliate websites, or you may be directed to us through a third-party website. If you follow a link to any of these websites, please note that these websites have their own terms and privacy policies and that we do not accept any responsibility or liability for them."
+msgstr ""
 
 #: apps/remix/app/components/forms/document-preferences-form.tsx
 #: apps/remix/app/components/forms/email-preferences-form.tsx
@@ -6581,7 +6917,6 @@ msgctxt "Subscription status"
 msgid "Paid"
 msgstr "Pago"
 
-#: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "Passkey"
 msgstr "Passkey"
@@ -6611,7 +6946,6 @@ msgstr "Nome da Passkey"
 msgid "Passkey Re-Authentication"
 msgstr "Reautenticação por Passkey"
 
-#: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security.passkeys.tsx
 msgid "Passkeys"
 msgstr "Passkeys"
@@ -6619,10 +6953,6 @@ msgstr "Passkeys"
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
 msgid "Passkeys allow you to sign in and authenticate using biometrics, password managers, etc."
 msgstr "Passkeys permitem que você faça login e se autentique usando biometria, gerenciadores de senhas, etc."
-
-#: apps/remix/app/components/forms/signin.tsx
-msgid "Passkeys are not supported on this browser"
-msgstr "Passkeys não são suportadas neste navegador"
 
 #: apps/remix/app/components/forms/reset-password.tsx
 #: apps/remix/app/components/forms/signin.tsx
@@ -6660,6 +6990,7 @@ msgstr "Senha atualizada"
 msgid "Password updated!"
 msgstr "Senha atualizada!"
 
+#: apps/remix/app/components/general/admin-license-card.tsx
 #: apps/remix/app/components/tables/user-billing-organisations-table.tsx
 msgctxt "Subscription status"
 msgid "Past Due"
@@ -6706,12 +7037,10 @@ msgstr ""
 msgid "Pending invitations"
 msgstr "Convites pendentes"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/general/billing-plans.tsx
 msgid "per month"
 msgstr "por mês"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/general/billing-plans.tsx
 msgid "per year"
 msgstr "por ano"
@@ -6877,6 +7206,10 @@ msgstr "Observe que qualquer pessoa que fizer login através do seu portal será
 msgid "Please note that proceeding will remove direct linking recipient and turn it into a placeholder."
 msgstr "Observe que prosseguir removerá o destinatário do link direto e o transformará em um espaço reservado."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Please note that the security of Personal Information that is transmitted through the internet or via a mobile device can never be guaranteed. While we have taken all reasonable security steps, we will not be held responsible for any interception or loss of Personal Information or interruption of any communications through the internet."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/envelopes-bulk-delete-dialog.tsx
 msgid "Please note that this action is <0>irreversible</0>."
@@ -6929,6 +7262,10 @@ msgstr "Por favor, revise o documento antes de assinar."
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Please select a PDF file"
 msgstr "Por favor, selecione um arquivo PDF"
+
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
+msgid "Please select at least one member to add to the team."
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/access-auth-2fa-form.tsx
 msgid "Please select how you'd like to receive your verification code."
@@ -7047,6 +7384,18 @@ msgstr "Perfil atualizado"
 msgid "Progress"
 msgstr "Progresso"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "promote and/or provide information about illegal activities and/or physical harm and/or injury;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Protection of your Personal Information"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "provide you access to any of our services or products;"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Provider"
 msgstr "Provedor"
@@ -7086,7 +7435,9 @@ msgstr "Ações Rápidas"
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-drag-drop.tsx
 #: packages/lib/utils/fields.ts
+#: packages/ui/primitives/document-flow/add-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
+#: packages/ui/primitives/template-flow/add-template-fields.tsx
 msgid "Radio"
 msgstr "Radio"
 
@@ -7214,8 +7565,10 @@ msgstr "Destinatário atualizado"
 
 #: apps/remix/app/components/embed/authoring/configure-document-recipients.tsx
 #: apps/remix/app/components/general/document/document-page-view-recipients.tsx
+#: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
 #: apps/remix/app/components/general/template/template-page-view-recipients.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
+#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/documents.$id.logs.tsx
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/audit-log.tsx
 #: packages/lib/server-only/pdf/render-audit-logs.ts
 msgid "Recipients"
@@ -7303,6 +7656,11 @@ msgstr "Rejeitar Documento"
 msgid "Rejected"
 msgstr "Rejeitado"
 
+#: apps/remix/app/components/dialogs/envelope-download-dialog.tsx
+msgctxt "Rejected document (adjective)"
+msgid "Rejected"
+msgstr ""
+
 #: packages/email/template-components/template-document-rejection-confirmed.tsx
 msgid "Rejection Confirmed"
 msgstr "Rejeição Confirmada"
@@ -7358,6 +7716,10 @@ msgstr "Lembrete: Por favor {recipientActionVerb} seu documento"
 #: packages/ui/primitives/document-flow/field-item.tsx
 msgid "Remove"
 msgstr "Remover"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "remove and/or destroy any copyright notices and/or other proprietary markings;"
+msgstr ""
 
 #: apps/remix/app/components/tables/organisation-email-domains-table.tsx
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.email-domains.$id.tsx
@@ -7513,6 +7875,10 @@ msgstr "Resolver"
 msgid "Resolve payment"
 msgstr "Resolver pagamento"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "respond to your enquires;"
+msgstr ""
+
 #: apps/remix/app/components/general/webhook-logs-sheet.tsx
 msgid "Response"
 msgstr "Resposta"
@@ -7627,6 +7993,10 @@ msgstr "Funções"
 msgid "Rows per page"
 msgstr "Linhas por página"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "run any form of auto-responder and/or \"spam\" on the Nomia App;"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
 #: apps/remix/app/components/embed/authoring/configure-fields-view.tsx
 #: apps/remix/app/components/embed/authoring/configure-fields-view.tsx
@@ -7720,6 +8090,10 @@ msgstr "Segurança"
 msgid "Security activity"
 msgstr "Atividade de segurança"
 
+#: apps/remix/app/components/general/admin-license-status-banner.tsx
+msgid "See Documentation"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 msgid "See the background jobs tab for the status"
 msgstr "Veja a aba de trabalhos em segundo plano para o status"
@@ -7738,14 +8112,6 @@ msgstr "Selecione um destino para esta pasta."
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 msgid "Select a folder to move this document to."
 msgstr "Selecione uma pasta para mover este documento."
-
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Select a plan"
-msgstr "Selecione um plano"
-
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Select a plan to continue"
-msgstr "Selecione um plano para continuar"
 
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-page-renderer.tsx
 msgid "Select a recipient"
@@ -7848,14 +8214,17 @@ msgstr "Selecionar Opção"
 msgid "Select Options"
 msgstr ""
 
+#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
+msgid "Select or add recipients"
+msgstr ""
+
+#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
+msgid "Select or enter email address"
+msgstr ""
+
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 msgid "Select passkey"
 msgstr "Selecionar passkey"
-
-#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
-#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
-msgid "Select recipients"
-msgstr ""
 
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
@@ -8002,6 +8371,14 @@ msgstr "Enviar lembrete"
 msgid "Send reminders to the following recipients"
 msgstr "Enviar lembretes para os seguintes destinatários"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "send you a quote for any of our products or services;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "send you marketing material (including electronic communications) relating to any of our other services or products that you might be interested in."
+msgstr ""
+
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/inbox-table.tsx
 msgid "Sender"
@@ -8066,7 +8443,6 @@ msgid "Share"
 msgstr "Compartilhar"
 
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
-#: apps/remix/app/components/tables/documents-table-action-dropdown.tsx
 msgid "Share Signing Card"
 msgstr "Compartilhar Cartão de Assinatura"
 
@@ -8212,6 +8588,7 @@ msgstr "Inscrever-se com OIDC"
 #: packages/lib/utils/fields.ts
 #: packages/ui/primitives/document-flow/add-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
+#: packages/ui/primitives/field-selector.tsx
 #: packages/ui/primitives/template-flow/add-template-fields.tsx
 msgid "Signature"
 msgstr "Assinatura"
@@ -8308,7 +8685,6 @@ msgid "Signing in..."
 msgstr "Entrando..."
 
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
-#: apps/remix/app/components/tables/documents-table-action-dropdown.tsx
 msgid "Signing Links"
 msgstr "Links de Assinatura"
 
@@ -8367,7 +8743,6 @@ msgstr "Alguns signatários não receberam um campo de assinatura. Por favor, at
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
 #: apps/remix/app/components/embed/embed-direct-template-client-page.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
-#: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/general/billing-plans.tsx
 #: apps/remix/app/components/general/billing-plans.tsx
 #: apps/remix/app/components/general/direct-template/direct-template-page.tsx
@@ -8520,10 +8895,6 @@ msgstr "Stripe"
 msgid "Stripe customer created successfully"
 msgstr "Cliente Stripe criado com sucesso"
 
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "Stripe Customer ID"
-msgstr "ID do Cliente Stripe"
-
 #: apps/remix/app/components/forms/support-ticket-form.tsx
 msgid "Subject"
 msgstr "Assunto"
@@ -8535,6 +8906,10 @@ msgstr "Assunto"
 #: packages/ui/primitives/template-flow/add-template-settings.tsx
 msgid "Subject <0>(Optional)</0>"
 msgstr "Assunto <0>(Opcional)</0>"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Subject to your strict compliance with these Terms, we grant to you a limited, personal, non-exclusive, non-transferable, revocable right to use and/or access the Nomia App. Neither these Terms nor your access to and/or use of the Nomia App shall in any way be deemed to transfer to you and/or any third-party any rights, title and/or interest in any intellectual property rights related to the Nomia App and all relevant intellectual property shall remain our sole and exclusive property."
+msgstr ""
 
 #: apps/remix/app/components/forms/support-ticket-form.tsx
 msgid "Submit"
@@ -8551,7 +8926,6 @@ msgid "Subscribe"
 msgstr "Assinar"
 
 #: apps/remix/app/components/tables/admin-organisations-table.tsx
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "Subscription"
 msgstr "Assinatura"
 
@@ -8655,7 +9029,6 @@ msgstr "suporte"
 
 #: apps/remix/app/components/dialogs/organisation-email-create-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-email-update-dialog.tsx
-#: apps/remix/app/components/general/org-menu-switcher.tsx
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.support.tsx
 msgid "Support"
 msgstr "Suporte"
@@ -8676,6 +9049,10 @@ msgstr "Sincronizar Domínios de E-mail"
 msgid "Sync failed, changes not saved"
 msgstr "Falha na sincronização, alterações não salvas"
 
+#: apps/remix/app/components/general/admin-license-card.tsx
+msgid "Sync license from server"
+msgstr ""
+
 #: packages/lib/utils/document-audit-logs.ts
 msgid "System auto inserted fields"
 msgstr "Campos inseridos automaticamente pelo sistema"
@@ -8692,6 +9069,10 @@ msgstr "Requisitos do Sistema"
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "System Theme"
 msgstr "Tema do Sistema"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "take any action that imposes an unreasonable and/or disproportionately large load on our infrastructure;"
+msgstr ""
 
 #: apps/remix/app/components/tables/organisation-insights-table.tsx
 #: apps/remix/app/components/tables/organisation-teams-table.tsx
@@ -8806,10 +9187,6 @@ msgstr "Modelos apenas para equipe não estão vinculados a lugar nenhum e são 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.groups.$id.tsx
 msgid "Team Role"
 msgstr "Função na Equipe"
-
-#: apps/remix/app/components/general/org-menu-switcher.tsx
-msgid "Team settings"
-msgstr "Configurações da equipe"
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._layout.tsx
 msgid "Team Settings"
@@ -8988,8 +9365,8 @@ msgid "Thank you for completing the signing process."
 msgstr "Obrigado por concluir o processo de assinatura."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Thank you for using Documenso to perform your electronic document signing. The purpose of this disclosure is to inform you about the process, legality, and your rights regarding the use of electronic signatures on our platform. By opting to use an electronic signature, you are agreeing to the terms and conditions outlined below."
-msgstr "Obrigado por usar o Documenso para realizar sua assinatura eletrônica de documentos. O objetivo desta divulgação é informá-lo sobre o processo, legalidade e seus direitos em relação ao uso de assinaturas eletrônicas em nossa plataforma. Ao optar por usar uma assinatura eletrônica, você concorda com os termos e condições descritos abaixo."
+msgid "Thank you for using Nomia to perform your electronic document signing. The purpose of this disclosure is to inform you about the process, legality, and your rights regarding the use of electronic signatures on our platform. By opting to use an electronic signature, you are agreeing to the terms and conditions outlined below."
+msgstr ""
 
 #: packages/email/template-components/template-forgot-password.tsx
 msgid "That's okay, it happens! Click the button below to reset your password."
@@ -9154,6 +9531,26 @@ msgstr "Os seguintes signatários estão sem campos de assinatura:"
 #: packages/email/templates/team-delete.tsx
 msgid "The following team has been deleted. You will no longer be able to access this team and its documents"
 msgstr "A seguinte equipe foi excluída. Você não poderá mais acessar esta equipe e seus documentos"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "The following terms and conditions (the \"Terms\") govern each user's (\"you(r)\") access to and/or use of Nomia Africa (Pty) Limited's (\"we, us, our, Nomia\") online document management and creation platform: Nomia (\"Nomia App\") and all content, services and products made available on and/or through the website (e-sign.nomiadocs.com / www.nomiadocs.com)."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "The Nomia App is offered and provided subject to your acceptance of the terms and conditions contained herein and all other operating rules, policies (including, without limitation, the Nomia Privacy Policy) and procedures that may be published from time to time on the Nomia website and which shall be incorporated herein by reference. By accessing, registering for and/or using the Nomia App in any manner or form you agree to these Terms. If you do not agree to these Terms you must immediately refrain from and/or cease using the Nomia App."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "The Nomia App is protected by applicable intellectual property laws, including copyright law. Subject to the limited rights expressly granted hereunder, our and/or our third-party providers, licensors and suppliers reserve all rights, title and interest in and to the Nomia App including without limitation, all related worldwide intellectual property rights. No rights are granted to you hereunder other than as expressly set forth herein."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "THE NOMIA APP IS PROVIDED BY NOMIA TO YOU ON AN \"AS IS,\" \"AS AVAILABLE\" BASIS, EXCEPT AS EXPRESSLY SET FORTH IN THE TERMS. NOMIA DOES NOT MAKE ANY OTHER WARRANTY OF ANY KIND WHETHER EXPRESS, STATUTORY AND/OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, AND/OR FITNESS FOR A PARTICULAR PURPOSE, ACCURACY AND FROM COURSE OF DEALING, USAGE AND/OR TRADE PRACTICE, ALL OF WHICH NOMIA EXPRESSLY DISCLAIMS."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "The Nomia App may integrate with and/or provide links to various other independent third-party products and/or services (\"Linked Sites\") that may be of interest to you and are for your convenience only. Nomia does not control and/or endorse such Linked Sites and is neither responsible for their content nor responsible for the accuracy and/or reliability of any information, data, opinions, advice and/or statements contained within such Linked Sites."
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "The OpenID discovery endpoint URL for your provider"
@@ -9374,6 +9771,10 @@ msgstr "Houve um problema ao renderizar alguns campos, revise os campos e tente 
 msgid "These can be overriden by setting the authentication requirements directly on each recipient in the next step. Multiple methods can be selected."
 msgstr "Estes podem ser substituídos definindo os requisitos de autenticação diretamente em cada destinatário na próxima etapa. Vários métodos podem ser selecionados."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "These Terms will remain in full force and effect for as long as you access and/or use the Nomia App. We may terminate your access to and/or use of all or any part of the Nomia App at any time, with or without notice, effective immediately and without liability, should you or any of your users at any time violate any of these Terms."
+msgstr ""
+
 #: packages/ui/components/recipient/recipient-action-auth-select.tsx
 msgid "These will override any global settings. Multiple methods can be selected."
 msgstr "Estes substituirão quaisquer configurações globais. Vários métodos podem ser selecionados."
@@ -9381,6 +9782,10 @@ msgstr "Estes substituirão quaisquer configurações globais. Vários métodos 
 #: apps/remix/app/components/general/teams/team-email-usage.tsx
 msgid "They have permission on your behalf to:"
 msgstr "Eles têm permissão em seu nome para:"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Third Party Links"
+msgstr ""
 
 #: apps/remix/app/components/forms/signin.tsx
 msgid "This account has been disabled. Please contact support."
@@ -9403,6 +9808,10 @@ msgstr "Esta ação não é reversível. Por favor, tenha certeza."
 #: apps/remix/app/components/dialogs/admin-user-disable-dialog.tsx
 msgid "This action is reversible, but please be careful as the account may be affected permanently (e.g. their settings and contents not being restored properly)."
 msgstr "Esta ação é reversível, mas tenha cuidado, pois a conta pode ser afetada permanentemente (por exemplo, suas configurações e conteúdos não serem restaurados corretamente)."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "This Agreement and any access to and/or use of the Nomia App will exclusively be governed by the laws of the Republic of South-Africa."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
@@ -9533,10 +9942,6 @@ msgstr "Esta pasta contém vários itens. Excluí-la removerá todas as subpasta
 msgid "This is how the document will reach the recipients once the document is ready for signing."
 msgstr "É assim que o documento chegará aos destinatários quando estiver pronto para assinatura."
 
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "This is the claim that this organisation was initially created with. Any feature flag changes to this claim will be backported into this organisation."
-msgstr "Esta é a reivindicação com a qual esta organização foi criada inicialmente. Quaisquer alterações de sinalizador de recurso nesta reivindicação serão transferidas para esta organização."
-
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "This is the required scopes you must set in your provider's settings"
 msgstr "Estes são os escopos necessários que você deve definir nas configurações do seu provedor"
@@ -9565,18 +9970,10 @@ msgstr "Esta organização e quaisquer dados associados serão excluídos perman
 msgid "This passkey has already been registered."
 msgstr "Esta passkey já foi registrada."
 
-#: apps/remix/app/components/forms/signin.tsx
-msgid "This passkey is not configured for this application. Please login and add one in the user settings."
-msgstr "Esta passkey não está configurada para este aplicativo. Faça login e adicione uma nas configurações do usuário."
-
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-page.tsx
 #: packages/ui/primitives/document-flow/add-fields.tsx
 msgid "This recipient can no longer be modified as they have signed a field, or completed the document."
 msgstr "Este destinatário não pode mais ser modificado, pois assinou um campo ou concluiu o documento."
-
-#: apps/remix/app/components/forms/signin.tsx
-msgid "This session has expired. Please try again."
-msgstr "Esta sessão expirou. Por favor, tente novamente."
 
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
 #: packages/ui/primitives/document-flow/add-signers.tsx
@@ -9628,10 +10025,6 @@ msgstr "Isso será enviado ao proprietário do documento assim que o documento f
 #: apps/remix/app/components/tables/organisation-email-domains-table.tsx
 msgid "This will check and sync the status of all email domains for this organisation"
 msgstr "Isso verificará e sincronizará o status de todos os domínios de e-mail para esta organização"
-
-#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
-msgid "This will ONLY backport feature flags which are set to true, anything disabled in the initial claim will not be backported"
-msgstr "Isso APENAS transferirá sinalizadores de recurso definidos como verdadeiro, qualquer coisa desativada na reivindicação inicial não será transferida"
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.email-domains.$id.tsx
 msgid "This will remove all emails associated with this email domain"
@@ -9690,6 +10083,10 @@ msgstr "Para {0} este {1}, você precisa estar logado."
 #: apps/remix/app/routes/_unauthenticated+/organisation.invite.$token.tsx
 msgid "To accept this invitation you must create an account."
 msgstr "Para aceitar este convite, você deve criar uma conta."
+
+#: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
+msgid "To add members to this team, you must first add them to the organisation."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
 msgid "To be able to add members to a team, you must first add them to the organisation. For more information, please see the <0>documentation</0>."
@@ -9881,6 +10278,10 @@ msgstr "Digitar"
 msgid "Type a command or search..."
 msgstr "Digite um comando ou pesquise..."
 
+#: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
+msgid "Type an email address to add a recipient"
+msgstr ""
+
 #: packages/ui/primitives/signature-pad/signature-pad-type.tsx
 msgid "Type your signature"
 msgstr "Digite sua assinatura"
@@ -10011,13 +10412,13 @@ msgstr "Erro desconhecido"
 msgid "Unknown name"
 msgstr "Nome desconhecido"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Unless otherwise agreed to by Nomia and you in writing, these Terms constitute the entire agreement between Nomia and you concerning the subject matter hereof."
+msgstr ""
+
 #: apps/remix/app/components/tables/admin-claims-table.tsx
 msgid "Unlimited"
 msgstr "Ilimitado"
-
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Unlimited documents, API and more"
-msgstr "Documentos ilimitados, API e mais"
 
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
@@ -10224,8 +10625,10 @@ msgstr "Enviar Documento"
 msgid "Upload documents and add recipients"
 msgstr "Envie documentos e adicione destinatários"
 
+#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-upload-page.tsx
 #: apps/remix/app/components/general/envelope/envelope-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 #: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 msgid "Upload failed"
 msgstr "Falha no envio"
@@ -10277,6 +10680,18 @@ msgstr "URL"
 msgid "Use"
 msgstr "Usar"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "use and/or access the Nomia App in order to build a similar and/or competitive website, application and/or service;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "use any manual and/or automated software, devices and/or other processes to \"scrape\" and/or download data;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "use any metatags and/or other \"hidden text\" using Nomia's name and/or trademarks;"
+msgstr ""
+
 #: apps/remix/app/components/forms/2fa/disable-authenticator-app-dialog.tsx
 #: apps/remix/app/components/forms/signin.tsx
 msgid "Use Authenticator"
@@ -10291,6 +10706,10 @@ msgstr "Usar Código de Backup"
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-header.tsx
 msgid "Use Template"
 msgstr "Usar Modelo"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "use the Nomia App for any unlawful purpose;"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/access-auth-2fa-form.tsx
 msgid "Use your authenticator app to generate a code"
@@ -10367,10 +10786,6 @@ msgstr "Falha na validação"
 msgid "Value"
 msgstr "Valor"
 
-#: packages/lib/types/field-meta.ts
-msgid "Value must be a number"
-msgstr "O valor deve ser um número"
-
 #: packages/email/template-components/template-access-auth-2fa.tsx
 msgid "Verification Code Required"
 msgstr "Código de Verificação Necessário"
@@ -10407,6 +10822,10 @@ msgstr "Verifique seu endereço de e-mail para desbloquear todos os recursos."
 #: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 msgid "Verify your email to upload documents."
 msgstr "Verifique seu e-mail para enviar documentos."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "verify your identity;"
+msgstr ""
 
 #: packages/email/templates/confirm-team-email.tsx
 msgid "Verify your team email address"
@@ -10468,7 +10887,6 @@ msgstr "Visualizar todas as atividades de segurança relacionadas à sua conta."
 msgid "View and manage all active sessions for your account."
 msgstr "Visualizar e gerenciar todas as sessões ativas da sua conta."
 
-#: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "View and manage all login methods linked to your account."
 msgstr "Visualizar e gerenciar todos os métodos de login vinculados à sua conta."
@@ -10584,6 +11002,10 @@ msgctxt "Recipient role progressive verb"
 msgid "Viewing"
 msgstr "Visualizando"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "violates the privacy of any third party or Nomia employee and/or representative."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/folder-update-dialog.tsx
 msgid "Visibility"
 msgstr "Visibilidade"
@@ -10630,6 +11052,14 @@ msgstr "Quer seu próprio perfil público?"
 msgid "Warning: Assistant as last signer"
 msgstr "Aviso: Assistente como último signatário"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We are not responsible for any representations, information, warranties or content on any website of any third party or our affiliates. We do not exercise control over third parties' or our affiliates' privacy policies and you should refer to the policy of any such third party or affiliate to see how they protect your privacy."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We are required by law to verify the identity of our clients so we may ask you to provide us with various other personal information."
+msgstr ""
+
 #: apps/remix/app/components/general/organisations/organisation-billing-banner.tsx
 #: apps/remix/app/components/general/organisations/organisation-billing-portal-button.tsx
 msgid "We are unable to proceed to the billing portal at this time. Please try again, or contact support."
@@ -10642,6 +11072,10 @@ msgstr "Não conseguimos remover esta passkey no momento. Por favor, tente novam
 #: apps/remix/app/components/tables/settings-security-passkey-table-actions.tsx
 msgid "We are unable to update this passkey at the moment. Please try again later."
 msgstr "Não conseguimos atualizar esta passkey no momento. Por favor, tente novamente mais tarde."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We constantly monitor the latest internet developments to ensure our systems evolve as required. We also test our systems regularly to ensure that our security mechanisms are up to date."
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "We couldn't create a Stripe customer. Please try again."
@@ -10663,6 +11097,10 @@ msgstr "Não conseguimos atualizar a organização. Por favor, tente novamente."
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "We couldn't update the provider. Please try again."
 msgstr "Não conseguimos atualizar o provedor. Por favor, tente novamente."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "We do not guarantee that any content will be made available on the Nomia App. We reserve the right to, but do not have any obligation to, (i) remove, edit and/or modify any content in our sole discretion, at any time, without notice to you and for any reason (including, but not limited to, upon receipt of claims and/or allegations from third parties and/or authorities relating to such content and/or if we are concerned that you may have violated these Terms), and/or (ii) remove or block any content from the Nomia App."
+msgstr ""
 
 #: packages/lib/client-only/providers/envelope-editor-provider.tsx
 #: packages/lib/client-only/providers/envelope-editor-provider.tsx
@@ -10855,9 +11293,61 @@ msgstr "Encontramos um erro desconhecido ao tentar atualizar seu perfil. Por fav
 msgid "We have sent a confirmation email for verification."
 msgstr "Enviamos um e-mail de confirmação para verificação."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "We may amend these Terms and/or our other operating rules, policies and/or procedures from time to time in our sole and absolute discretion. We will notify you of any changes to these Terms by posting the updated Terms on our website. Any changes to our operating rules, policies and/or procedures shall be incorporated herein by reference."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We may disclose or transfer your Personal Information to our agents and/or appointed service providers for purposes of marketing our own products or services;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We may disclose or transfer your Personal Information to suppliers, contractors, partners or agents in order to provide you with access to our services or products;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We may need to collect some financial information from you (e.g. credit card details) required to process your monthly and/or annual payments for our services or products;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We may need to disclose your Personal Information to applicable industry regulators and/or other statutory bodies in terms of prevailing legislation."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We may need to disclose your Personal Information to some of our employees who require such information to perform their employment duties;"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We may use your Personal Information to:"
+msgstr ""
+
 #: apps/remix/app/components/forms/signup.tsx
 msgid "We need your signature to sign documents"
 msgstr "Precisamos da sua assinatura para assinar documentos"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We reserve the right to update this Policy from time to time for any of the following reasons:"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We respect your privacy and will protect your Personal Information. This Policy tells you how we, Nomia Africa (Pty) Limited (\"Nomia\"), will process and protect your Personal Information. In order for us to help you, you will have to share information with us. It is important that you trust us to protect it and keep it confidential."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "We retain the right, in our sole and absolute discretion, to deny access to and/or use of the Nomia App to anyone at any time and for any reason. While we will use reasonable efforts to keep the Nomia App accessible, the same may be unavailable from time to time. You understand and agree that there may be interruptions to the Nomia App and/or your use of / access to the same due to circumstances both within our control (e.g. routine maintenance) and outside of our control."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We understand the value of your Personal Information and will therefore take all reasonable steps to protect your Personal Information from loss, misuse or unauthorised alteration, access or disclosure, by the following means:"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We use cookies on this website (cookies are files that store information on your hard drive or browser). This allows us to recognise that you have visited our website before and will make it easier for you to maintain your preferences on the website and by seeing how you use the website, we can tailor it around your preferences and measure usability of the website."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We use SSL Web Server Certificates to offer secure communications. At each point where information is captured the secure padlock symbol will appear in your browser showing that all communication is encrypted;"
+msgstr ""
 
 #: apps/remix/app/components/forms/token.tsx
 msgid "We were unable to copy the token to your clipboard. Please try again."
@@ -10926,13 +11416,19 @@ msgstr "Não conseguimos verificar seu e-mail neste momento."
 msgid "We were unable to verify your email. If your email is not verified already, please try again."
 msgstr "Não conseguimos verificar seu e-mail. Se seu e-mail ainda não foi verificado, por favor, tente novamente."
 
-#: apps/remix/app/components/dialogs/envelope-distribute-dialog.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "We will generate signing links for you, which you can send to the recipients through your method of choice."
 msgstr "Geraremos links de assinatura para você, que você pode enviar aos destinatários através do método de sua escolha."
 
-#: apps/remix/app/components/dialogs/envelope-distribute-dialog.tsx
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We will not disclose your Personal Information to any third party except as provided for in this Policy. Disclosure of your Personal Information to third parties shall only occur in the following instances:"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "We will notify you of any changes by placing a notice in a prominent place on the website. If you do not agree with the changes, then you must stop using the website and any of our products or services. If you continue to use the website or any of our products or services following notification of a change to the terms, the changed terms of this Policy will apply to you, and you will be deemed to have accepted those updated terms."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "We won't send anything to notify recipients."
@@ -11044,6 +11540,10 @@ msgstr "URL Well-known é obrigatória"
 msgid "Were you trying to edit this document instead?"
 msgstr "Você estava tentando editar este documento?"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "What Personal Information do we collect from you"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl._index.tsx
 msgid "What you can do with teams:"
 msgstr "O que você pode fazer com equipes:"
@@ -11064,8 +11564,12 @@ msgid "When you sign a document, we can automatically fill in and sign the follo
 msgstr "Ao assinar um documento, podemos preencher e assinar automaticamente os seguintes campos usando informações que já foram fornecidas. Você também pode assinar manualmente ou remover quaisquer campos assinados automaticamente depois, se desejar."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "When you use our platform to affix your electronic signature to documents, you are consenting to do so under the Electronic Signatures in Global and National Commerce Act (E-Sign Act) and other applicable laws. This action indicates your agreement to use electronic means to sign documents and receive notifications."
-msgstr "Ao usar nossa plataforma para afixar sua assinatura eletrônica em documentos, você consente em fazê-lo sob a Lei de Assinaturas Eletrônicas no Comércio Global e Nacional (E-Sign Act) e outras leis aplicáveis. Esta ação indica sua concordância em usar meios eletrônicos para assinar documentos e receber notificações."
+msgid "When you use our platform to affix your electronic signature to documents, you are consenting to do so under the Electronic Communications and Transactions Act and other applicable laws. This action indicates your agreement to use electronic means to sign documents and receive notifications."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "Where we provide document storage facilities via the Nomia App we reserve the right to impose and vary limits and/or restrictions (temporary or otherwise) on the use of the Nomia App including, without limitation, limits on the storage provided by reference to storage space, time/age of files, number and/or size of files, amount of data downloaded and/or uploaded and/or any other criteria that Nomia may specify. Any content and/or materials which exceed any such limits may be deleted and/or not accepted for storage without liability to Nomia."
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "Whether to enable the SSO portal for your organisation"
@@ -11075,9 +11579,9 @@ msgstr "Se deve ativar o portal SSO para sua organização"
 msgid "While waiting for them to do so you can create your own Documenso account and get started with document signing right away."
 msgstr "Enquanto espera que eles façam isso, você pode criar sua própria conta Documenso e começar a assinar documentos imediatamente."
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
-msgid "Whitelabeling, unlimited members and more"
-msgstr "Whitelabeling, membros ilimitados e mais"
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "While you use this website and/or any metasites connected hereto (collectively \"website\") we may collect your Personal Information or you may provide it to us (e.g. by signing up for our \"Free Trial\" or subscribing for any of our services). This information may include your name, company information and/or contact details;"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/document-resend-dialog.tsx
 msgid "Who do you want to remind?"
@@ -11091,7 +11595,6 @@ msgstr "Retirada de Consentimento"
 msgid "Write a description to display on your public profile"
 msgstr "Escreva uma descrição para exibir em seu perfil público"
 
-#: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 #: apps/remix/app/components/general/billing-plans.tsx
 msgid "Yearly"
 msgstr "Anual"
@@ -11109,6 +11612,18 @@ msgstr "Sim"
 #: packages/lib/utils/document-audit-logs.ts
 msgid "You"
 msgstr "Você"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You acknowledge that Nomia utilises third-party service providers to host and provide the Nomia App and store User Content and the protection of such User Content will be in accordance with that third-party's safeguards for the protection of the security, confidentiality and integrity of User Content. You are responsible for properly configuring and using the Nomia App and taking appropriate steps to maintain security, protection and backup of any User Content."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You agree that we may reference you as our customer on our website and/or marketing material and that we may reasonably use, on a royalty-free basis, your trademark and/or logo for such purpose."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You agree that you will not, under any circumstances, transmit any User Content (including software, text, images, or other information) that:"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 msgid "You are about to complete approving the following document"
@@ -11258,6 +11773,10 @@ msgstr "Você não está autorizado a ativar este usuário."
 msgid "You are not authorized to reset two factor authentcation for this user."
 msgstr "Você não está autorizado a redefinir a autenticação de dois fatores para este usuário."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You are solely responsible for ensuring that your access to and/or use of the Nomia App is in compliance with all laws, rules and regulations applicable to you."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 msgid "You can add fields manually in the editor."
 msgstr "Você pode adicionar campos manualmente no editor."
@@ -11287,9 +11806,9 @@ msgstr "Você pode ativar o acesso para permitir que todos os membros da organiz
 msgid "You can manage your email preferences here."
 msgstr ""
 
-#: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-page.tsx
-msgid "You can only detect fields in draft envelopes"
-msgstr "Você só pode detectar campos em envelopes de rascunho"
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You can purchase a monthly or annual subscription plan to make use of the Nomia App. All fees due and payable by you to Nomia under these Terms must be paid in full prior to the commencement of your monthly or annual subscription plan and without any deduction, set-off, counterclaim or withholding of any kind unless required by law."
+msgstr ""
 
 #: packages/email/templates/confirm-team-email.tsx
 msgid "You can revoke access at any time in your team settings on Documenso <0>here</0>."
@@ -11314,6 +11833,10 @@ msgstr "Você pode visualizar os documentos criados no seu painel na seção \"D
 #: packages/email/template-components/template-document-rejected.tsx
 msgid "You can view the document and its status by clicking the button below."
 msgstr "Você pode visualizar o documento e seu status clicando no botão abaixo."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "You can, should you choose, disable the cookies from your browser and delete all cookies currently stored on your computer. You can delete cookies at any time, or you can set your browser to reject or disable cookies. If you do disable cookies some functions on the website may not work correctly."
+msgstr ""
 
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
 #: packages/ui/primitives/document-flow/add-signers.tsx
@@ -11447,14 +11970,6 @@ msgstr "Você atingiu o limite máximo de {0} modelos diretos. <0>Atualize sua c
 msgid "You have reached the maximum number of teams for your plan. Please contact sales at <0>{SUPPORT_EMAIL}</0> if you would like to adjust your plan."
 msgstr "Você atingiu o número máximo de equipes para o seu plano. Entre em contato com vendas em <0>{SUPPORT_EMAIL}</0> se desejar ajustar seu plano."
 
-#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
-#: apps/remix/app/components/general/envelope/envelope-drop-zone-wrapper.tsx
-#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
-msgid "You have reached your document limit for this month. Please upgrade your plan."
-msgstr "Você atingiu seu limite de documentos para este mês. Por favor, atualize seu plano."
-
-#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
-#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 #: packages/ui/primitives/document-dropzone.tsx
 msgid "You have reached your document limit."
 msgstr "Você atingiu seu limite de documentos."
@@ -11462,6 +11977,17 @@ msgstr "Você atingiu seu limite de documentos."
 #: apps/remix/app/components/tables/templates-table.tsx
 msgid "You have reached your document limit. <0>Upgrade your account to continue!</0>"
 msgstr "Você atingiu seu limite de documentos. <0>Atualize sua conta para continuar!</0>"
+
+#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
+#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
+msgid "You have reached your document limit. Please upgrade your plan to upload more documents."
+msgstr ""
+
+#: apps/remix/app/components/general/document/document-upload-button-legacy.tsx
+#: apps/remix/app/components/general/envelope/envelope-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
+msgid "You have reached your document limit. Please upgrade your plan."
+msgstr ""
 
 #: packages/email/templates/document-rejection-confirmed.tsx
 msgid "You have rejected the document '{documentName}'"
@@ -11518,8 +12044,8 @@ msgid "You have successfully revoked access."
 msgstr "Você revogou o acesso com sucesso."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "You have the right to withdraw your consent to use electronic signatures at any time before completing the signing process. To withdraw your consent, please contact the sender of the document. In failing to contact the sender you may reach out to <0>{SUPPORT_EMAIL}</0> for assistance. Be aware that withdrawing consent may delay or halt the completion of the related transaction or service."
-msgstr "Você tem o direito de retirar seu consentimento para usar assinaturas eletrônicas a qualquer momento antes de concluir o processo de assinatura. Para retirar seu consentimento, entre em contato com o remetente do documento. Se não conseguir entrar em contato com o remetente, você pode entrar em contato com <0>{SUPPORT_EMAIL}</0> para obter assistência. Esteja ciente de que a retirada do consentimento pode atrasar ou interromper a conclusão da transação ou serviço relacionado."
+msgid "You have the right to withdraw your consent to use electronic signatures at any time before completing the signing process. To withdraw your consent, please contact the sender of the document. In failing to contact the sender you may reach out to <0>help@nomiadocs.com</0> for assistance. Be aware that withdrawing consent may delay or halt the completion of the related transaction or service."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 msgid "You have updated {memberName}."
@@ -11537,6 +12063,10 @@ msgstr "Você atualizou o grupo da equipe."
 #: apps/remix/app/routes/_unauthenticated+/team.verify.email.$token.tsx
 msgid "You have verified your email address for <0>{0}</0>."
 msgstr "Você verificou seu endereço de e-mail para <0>{0}</0>."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You may not assign your rights under these Terms to any other party without Nomia's express prior written consent. Nomia may assign its rights under these Terms to any thirds party without condition."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/organisation-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx
@@ -11578,6 +12108,10 @@ msgstr "Você precisa estar logado para visualizar esta página."
 #: apps/remix/app/components/general/document-signing/document-signing-auth-2fa.tsx
 msgid "You need to setup 2FA to mark this document as viewed."
 msgstr "Você precisa configurar a 2FA para marcar este documento como visualizado."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.terms.tsx
+msgid "You represent and warrant that: (i) you will respect the intellectual property, other information and all our rights as well as others using the Nomia App; and (ii) any information and/or User Content you provide in connection with your access to and/or use of the Nomia App shall not infringe on any proprietary right of any party including patent, trademark, trade secret, copyright, right of publicity and/or other rights."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/admin-organisation-create-dialog.tsx
 msgid "You will need to configure any claims or subscription after creating this organisation"
@@ -11636,6 +12170,11 @@ msgstr "Sua operação de envio em massa para o modelo \"{templateName}\" foi co
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.billing.tsx
 msgid "Your current {currentProductName} plan is past due. Please update your payment information."
 msgstr "Seu plano atual {currentProductName} está vencido. Por favor, atualize suas informações de pagamento."
+
+#: apps/remix/app/components/forms/subscription-claim-form.tsx
+#: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
+msgid "Your current license does not include these features."
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.support.tsx
 msgid "Your current plan includes the following support channels:"
@@ -11782,6 +12321,10 @@ msgstr "Sua senha foi atualizada."
 #: apps/remix/app/components/general/organisations/organisation-billing-banner.tsx
 msgid "Your payment is overdue. Please settle the payment to avoid any service disruptions."
 msgstr "Seu pagamento está atrasado. Por favor, regularize o pagamento para evitar interrupções no serviço."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.privacy.tsx
+msgid "Your Personal Information is stored in databases that are protected by safeguards and firewalls to ensure the privacy and confidentiality of your information;"
+msgstr ""
 
 #: apps/remix/app/components/tables/user-organisations-table.tsx
 msgid "Your personal organisation"

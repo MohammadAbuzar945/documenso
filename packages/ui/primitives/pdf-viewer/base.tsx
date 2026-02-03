@@ -206,7 +206,7 @@ export const PDFViewer = ({
 
         // Create a copy of the buffer to prevent ArrayBuffer detachment errors
         // when react-pdf transfers data to workers
-        setDocumentBytes(new Uint8Array(bytes.slice()));
+        setDocumentBytes(new Uint8Array(bytes.slice(0)));
 
         setIsDocumentBytesLoading(false);
       } catch (err) {
