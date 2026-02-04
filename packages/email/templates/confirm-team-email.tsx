@@ -20,6 +20,7 @@ import {
 import { useBranding } from '../providers/branding';
 import { TemplateFooter } from '../template-components/template-footer';
 import TemplateImage from '../template-components/template-image';
+import { env } from '@documenso/lib/utils/env';
 
 export type ConfirmTeamEmailProps = {
   assetBaseUrl: string;
@@ -31,7 +32,7 @@ export type ConfirmTeamEmailProps = {
 
 export const ConfirmTeamEmailTemplate = ({
   assetBaseUrl = 'http://localhost:4002',
-  baseUrl = 'https://documenso.com',
+  baseUrl = env('NEXT_PUBLIC_WEBAPP_URL') ?? 'http://localhost:3000',
   teamName = 'Team Name',
   teamUrl = 'demo',
   token = '',
@@ -39,7 +40,7 @@ export const ConfirmTeamEmailTemplate = ({
   const { _ } = useLingui();
   const branding = useBranding();
 
-  const previewText = msg`Accept team email request for ${teamName} on Documenso`;
+  const previewText = msg`Accept team email request for ${teamName} on Nomia`;
 
   return (
     <Html>
@@ -75,7 +76,7 @@ export const ConfirmTeamEmailTemplate = ({
               <Text className="text-center text-base">
                 <Trans>
                   <span className="font-bold">{teamName}</span> has requested to use your email
-                  address for their team on Documenso.
+                  address for their team on Nomia.
                 </Trans>
               </Text>
 
@@ -105,7 +106,7 @@ export const ConfirmTeamEmailTemplate = ({
 
                 <Text className="mt-2 text-sm">
                   <Trans>
-                    You can revoke access at any time in your team settings on Documenso{' '}
+                    You can revoke access at any time in your team settings on Nomia{' '}
                     <Link href={`${baseUrl}/settings/teams`}>here</Link>.
                   </Trans>
                 </Text>

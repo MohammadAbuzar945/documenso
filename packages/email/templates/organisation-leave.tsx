@@ -6,6 +6,7 @@ import { Body, Container, Head, Hr, Html, Img, Preview, Section, Text } from '..
 import { useBranding } from '../providers/branding';
 import { TemplateFooter } from '../template-components/template-footer';
 import TemplateImage from '../template-components/template-image';
+import { env } from '@documenso/lib/utils/env';
 
 export type OrganisationLeaveEmailProps = {
   assetBaseUrl: string;
@@ -18,16 +19,16 @@ export type OrganisationLeaveEmailProps = {
 
 export const OrganisationLeaveEmailTemplate = ({
   assetBaseUrl = 'http://localhost:4002',
-  baseUrl = 'https://documenso.com',
+  baseUrl = env('NEXT_PUBLIC_WEBAPP_URL') ?? 'http://localhost:3000',
   memberName = 'John Doe',
-  memberEmail = 'johndoe@documenso.com',
+  memberEmail = 'johndoe@nomiadocs.com',
   organisationName = 'Organisation Name',
   organisationUrl = 'demo',
 }: OrganisationLeaveEmailProps) => {
   const { _ } = useLingui();
   const branding = useBranding();
 
-  const previewText = msg`A member has left your organisation on Documenso`;
+    const previewText = msg`A member has left your organisation on Nomia`;
 
   return (
     <Html>

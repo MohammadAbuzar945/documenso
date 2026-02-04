@@ -12,7 +12,7 @@ import { nanoid } from 'nanoid';
 import path from 'node:path';
 import { groupBy } from 'remeda';
 
-import { deductUserCredits } from '@documenso/ee/server-only/limits/user-credits';
+import { deductUserCredits, getUserCredits } from '@documenso/ee/server-only/limits/user-credits';
 import { addRejectionStampToPdf } from '@documenso/lib/server-only/pdf/add-rejection-stamp-to-pdf';
 import { generateAuditLogPdf } from '@documenso/lib/server-only/pdf/generate-audit-log-pdf';
 import { generateCertificatePdf } from '@documenso/lib/server-only/pdf/generate-certificate-pdf';
@@ -161,6 +161,17 @@ export const run = async ({
     // Get the rejection reason from the rejected recipient
     const rejectionReason = rejectedRecipient?.rejectionReason ?? '';
 
+    // Check if user has enough credits before proceeding (only for completed documents, not rejected or resealing)
+    if (!isRejected && !isResealing) {
+      const userCredits = await getUserCredits(creditOwnerId);
+      if (userCredits < 1) {
+        throw new AppError(AppErrorCode.INVALID_REQUEST, {
+          message: 'Insufficient credits to seal document',
+          userMessage: 'You do not have enough credits to complete this document. Please purchase more credits.',
+        });
+      }
+    }
+
     // Skip the field check if the document is rejected
     if (!isRejected && fieldsContainUnsignedRequiredField(fields)) {
       throw new Error(`Document ${envelope.id} has unsigned required fields`);
@@ -192,7 +203,8 @@ export const run = async ({
     let certificateDoc: PDF | null = null;
     let auditLogDoc: PDF | null = null;
 
-    if (settings.includeSigningCertificate || settings.includeAuditLog) {
+    // Only generate certificate/audit log if not rejected and not resealing (credits already checked above)
+    if ((settings.includeSigningCertificate || settings.includeAuditLog) && !isRejected && !isResealing) {
       const certificatePayload = {
         envelope,
         recipients: envelope.recipients, // Need to use the recipients from envelope which contains ALL recipients.

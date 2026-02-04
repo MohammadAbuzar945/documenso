@@ -8,6 +8,7 @@ import { Body, Container, Head, Hr, Html, Img, Preview, Section, Text } from '..
 import { useBranding } from '../providers/branding';
 import { TemplateFooter } from '../template-components/template-footer';
 import TemplateImage from '../template-components/template-image';
+import { env } from '@documenso/lib/utils/env';
 
 export type TeamEmailRemovedTemplateProps = {
   assetBaseUrl: string;
@@ -19,7 +20,7 @@ export type TeamEmailRemovedTemplateProps = {
 
 export const TeamEmailRemovedTemplate = ({
   assetBaseUrl = 'http://localhost:4002',
-  baseUrl = 'https://documenso.com',
+  baseUrl = env('NEXT_PUBLIC_WEBAPP_URL') ?? 'http://localhost:3000',
   teamEmail = 'example@documenso.com',
   teamName = 'Team Name',
   teamUrl = 'demo',
@@ -27,7 +28,7 @@ export const TeamEmailRemovedTemplate = ({
   const { _ } = useLingui();
   const branding = useBranding();
 
-  const previewText = msg`Team email removed for ${teamName} on Documenso`;
+  const previewText = msg`Team email removed for ${teamName} on Nomia`;
 
   return (
     <Html>

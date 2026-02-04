@@ -60,6 +60,21 @@ export const OrgMenuSwitcher = () => {
 
   const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
 
+  const sortedOrganisations = useMemo(
+    () => {
+      const personalOwnerOrganisations = organisations.filter(
+        (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
+      );
+
+      const otherOrganisations = organisations.filter(
+        (org) => !(org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL),
+      );
+
+      return [...personalOwnerOrganisations, ...otherOrganisations];
+    },
+    [organisations, user.id],
+  );
+
   const isPathOrgUrl = (orgUrl: string) => {
     if (!pathname || !pathname.startsWith(`/o/`)) {
       return false;
@@ -164,7 +179,7 @@ export const OrgMenuSwitcher = () => {
               </h3>
             </div>
             <div className="flex-1 space-y-1 overflow-y-auto p-1.5">
-              {organisations.map((org) => (
+              {sortedOrganisations.map((org) => (
                 <div
                   className="group relative"
                   key={org.id}

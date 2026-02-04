@@ -85,7 +85,7 @@ export const AppNavMobile = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileProps
         <Link to="/" onClick={handleMenuItemClick}>
           <img
             src="/static/logo.png"
-            alt="Documenso Logo"
+            alt="Nomia Logo"
             className="dark:invert"
             width={170}
             height={25}
