@@ -84,7 +84,7 @@ export default function SettingsLayout() {
       icon: ShieldCheckIcon,
     },
     {
-      path: `/o/${organisation.url}/settings/billing`,
+      path: `/price-plans`,
       label: t`Billing`,
       icon: CreditCardIcon,
     },

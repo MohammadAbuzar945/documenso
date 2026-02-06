@@ -84,8 +84,8 @@ export const DocumentUploadButton = ({
               <Link
                 to={
                   isPersonalLayoutMode
-                    ? `/settings/billing`
-                    : `/o/${organisation.url}/settings/billing`
+                    ? `/price-plans`
+                    : `/price-plans` 
                 }
               >
                 <Trans>Upgrade</Trans>
