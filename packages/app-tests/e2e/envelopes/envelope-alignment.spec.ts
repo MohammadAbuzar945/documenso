@@ -34,7 +34,7 @@ test.describe.configure({ mode: 'parallel', timeout: 60000 });
 test.skip('seed alignment test document', async ({ page }) => {
   const user = await prisma.user.findFirstOrThrow({
     where: {
-      email: 'example@documenso.com',
+      email: 'example@nomiadocs.com',
     },
     include: {
       ownedOrganisations: {

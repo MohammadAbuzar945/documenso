@@ -416,7 +416,7 @@ test.describe('Placeholder-based field creation', () => {
 
     await addRecipients(request, envelope.id, [
       {
-        email: 'second.recipient@documenso.com',
+        email: 'second.recipient@nomiadocs.com',
         name: 'Second Recipient',
         role: RecipientRole.SIGNER,
         signingOrder: 2,
@@ -424,7 +424,7 @@ test.describe('Placeholder-based field creation', () => {
         actionAuth: [],
       },
       {
-        email: 'first.recipient@documenso.com',
+        email: 'first.recipient@nomiadocs.com',
         name: 'First Recipient',
         role: RecipientRole.SIGNER,
         signingOrder: 1,
