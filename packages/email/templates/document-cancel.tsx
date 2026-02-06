@@ -10,9 +10,9 @@ import { TemplateFooter } from '../template-components/template-footer';
 export type DocumentCancelEmailTemplateProps = Partial<TemplateDocumentCancelProps>;
 
 export const DocumentCancelTemplate = ({
-  inviterName = 'Lucas Smith',
-  inviterEmail = 'lucas@documenso.com',
-  documentName = 'Open Source Pledge.pdf',
+  inviterName = 'Abuzar ',
+  inviterEmail = 'abuzarmohammad945@gmail.com',
+  documentName = 'Nomia.pdf',
   assetBaseUrl = 'http://localhost:4002',
   cancellationReason,
 }: DocumentCancelEmailTemplateProps) => {

@@ -11,8 +11,8 @@ import { TemplateResetPassword } from '../template-components/template-reset-pas
 export type ResetPasswordTemplateProps = Partial<TemplateResetPasswordProps>;
 
 export const ResetPasswordTemplate = ({
-  userName = 'Lucas Smith',
-  userEmail = 'lucas@documenso.com',
+  userName = 'Abuzar ',
+  userEmail = 'abuzarmohammad945@gmail.com',
   assetBaseUrl = 'http://localhost:4002',
 }: ResetPasswordTemplateProps) => {
   const { _ } = useLingui();
@@ -72,8 +72,8 @@ export const ResetPasswordTemplate = ({
                 <Trans>
                   Didn't request a password change? We are here to help you secure your account,
                   just{' '}
-                  <Link className="font-normal text-documenso-700" href="mailto:hi@documenso.com">
-                    contact us
+                  <Link className="font-normal text-documenso-700" href="mailto:help@nomiadocs.com">
+                    contact us  
                   </Link>
                   .
                 </Trans>

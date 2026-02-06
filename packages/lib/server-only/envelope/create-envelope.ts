@@ -471,7 +471,7 @@ export const createEnvelope = async ({
           uniqueRecipientRefs.entries(),
           ([recipientIndex, name]) => ({
             envelopeId: envelope.id,
-            email: `recipient.${recipientIndex}@documenso.com`,
+            email: `recipient.${recipientIndex}@nomiadocs.com`,
             name,
             role: RecipientRole.SIGNER,
             signingOrder: recipientIndex,
