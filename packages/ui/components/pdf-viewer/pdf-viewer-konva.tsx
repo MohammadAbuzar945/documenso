@@ -8,7 +8,10 @@ import { Loader } from 'lucide-react';
 import { type PDFDocumentProxy } from 'pdfjs-dist';
 import { Document as PDFDocument, Page as PDFPage, pdfjs } from 'react-pdf';
 
-import { useCurrentEnvelopeRender } from '@documenso/lib/client-only/providers/envelope-render-provider';
+import {
+  useCurrentEnvelopeRender,
+  useOptionalEnvelopeRender,
+} from '@documenso/lib/client-only/providers/envelope-render-provider';
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { cn } from '@documenso/ui/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@documenso/ui/primitives/alert';
@@ -76,7 +79,18 @@ export const PdfViewerKonva = ({
 
   const $el = useRef<HTMLDivElement>(null);
 
-  const { getPdfBuffer, currentEnvelopeItem, renderError } = useCurrentEnvelopeRender();
+  const envelopeRender = useOptionalEnvelopeRender();
+
+  if (!envelopeRender) {
+    console.warn('PdfViewerKonva: EnvelopeRenderProvider is missing; rendering fallback.');
+    return (
+      <div className="flex w-full items-center justify-center py-8 text-sm text-muted-foreground">
+        {t`Unable to load document viewer.`}
+      </div>
+    );
+  }
+
+  const { getPdfBuffer, currentEnvelopeItem, renderError } = envelopeRender;
 
   const [width, setWidth] = useState(0);
   const [numPages, setNumPages] = useState(0);

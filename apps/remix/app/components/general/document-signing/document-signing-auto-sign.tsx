@@ -1,18 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Plural, Trans } from '@lingui/react/macro';
 import type { Field, Recipient } from '@prisma/client';
-import { FieldType } from '@prisma/client';
+import { FieldType } from '@documenso/prisma/client';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
-import { P, match } from 'ts-pattern';
+import { match } from 'ts-pattern';
 
-import { unsafe_useEffectOnce } from '@documenso/lib/client-only/hooks/use-effect-once';
 import { AUTO_SIGNABLE_FIELD_TYPES } from '@documenso/lib/constants/autosign';
-import { DocumentAuth } from '@documenso/lib/types/document-auth';
 import { extractInitials } from '@documenso/lib/utils/recipient-formatter';
+import type { TSignEnvelopeFieldValue } from '@documenso/trpc/server/envelope-router/sign-envelope-field.types';
 import { trpc } from '@documenso/trpc/react';
 import { Button } from '@documenso/ui/primitives/button';
 import {
@@ -28,19 +27,11 @@ import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { DocumentSigningDisclosure } from '~/components/general/document-signing/document-signing-disclosure';
 
-import { useRequiredDocumentSigningAuthContext } from './document-signing-auth-provider';
-import { useRequiredDocumentSigningContext } from './document-signing-provider';
+import { useDocumentSigningContext } from './document-signing-provider';
+import { useEnvelopeSigningContext } from './envelope-signing-provider';
 
-// The action auth types that are not allowed to be auto signed
-//
-// Reasoning: If the action auth is a passkey or 2FA, it's likely that the owner of the document
-// intends on having the user manually sign due to the additional security measures employed for
-// other field types.
-const NON_AUTO_SIGNABLE_ACTION_AUTH_TYPES: string[] = [
-  DocumentAuth.PASSKEY,
-  DocumentAuth.PASSWORD,
-  DocumentAuth.TWO_FACTOR_AUTH,
-];
+// Note: Auto-signing only targets non-signature fields (NAME/INITIALS/EMAIL/DATE).
+// Action auth applies to signatures only; see `validateFieldAuth` server-side.
 
 // The threshold for the number of fields that could be autosigned before displaying the dialog
 //
@@ -51,21 +42,38 @@ const AUTO_SIGN_THRESHOLD = 5;
 export type DocumentSigningAutoSignProps = {
   recipient: Pick<Recipient, 'id' | 'token'>;
   fields: Field[];
+  fullName?: string;
+  email?: string;
 };
 
-export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAutoSignProps) => {
+export const DocumentSigningAutoSign = ({
+  recipient,
+  fields,
+  fullName: fullNameProp,
+  email: emailProp,
+}: DocumentSigningAutoSignProps) => {
   const { _ } = useLingui();
   const { toast } = useToast();
   const { revalidate } = useRevalidator();
 
-  const { email, fullName } = useRequiredDocumentSigningContext();
-  const { derivedRecipientActionAuth } = useRequiredDocumentSigningAuthContext();
+  // V1 context (document signing)
+  const documentSigningContext = useDocumentSigningContext();
+  // V2 context (envelope signing)
+  const envelopeSigningContext = useEnvelopeSigningContext();
+
+  const fullName = fullNameProp ?? envelopeSigningContext?.fullName ?? documentSigningContext?.fullName ?? '';
+  const email = emailProp ?? envelopeSigningContext?.email ?? documentSigningContext?.email ?? '';
 
   const [open, setOpen] = useState(false);
+  const hasAutoOpenedRef = useRef(false);
 
   const form = useForm();
 
+  // V1 uses signFieldWithToken mutation directly
   const { mutateAsync: signFieldWithToken } = trpc.field.signFieldWithToken.useMutation();
+
+  // V2 uses signField from envelope signing context (updates local state properly)
+  const signFieldV2 = envelopeSigningContext?.signField;
 
   const autoSignableFields = fields.filter((field) => {
     if (field.inserted) {
@@ -91,13 +99,48 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
     return true;
   });
 
-  const actionAuthAllowsAutoSign = derivedRecipientActionAuth.every(
-    (actionAuth) => !NON_AUTO_SIGNABLE_ACTION_AUTH_TYPES.includes(actionAuth),
-  );
-
   const onSubmit = async () => {
     const results = await Promise.allSettled(
       autoSignableFields.map(async (field) => {
+        // Use V2 signing method if available (updates local state immediately)
+        if (signFieldV2) {
+          // V2 expects FieldType enum and different value types per field
+          // We know field.type is one of AUTO_SIGNABLE_FIELD_TYPES, so we can safely match
+          if (field.type === FieldType.NAME) {
+            if (!fullName) {
+              throw new Error('No value to sign');
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return await signFieldV2(field.id, { type: FieldType.NAME, value: fullName } as any);
+          }
+
+          if (field.type === FieldType.INITIALS) {
+            const initials = extractInitials(fullName);
+            if (!initials) {
+              throw new Error('No value to sign');
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return await signFieldV2(field.id, { type: FieldType.INITIALS, value: initials } as any);
+          }
+
+          if (field.type === FieldType.EMAIL) {
+            if (!email) {
+              throw new Error('No value to sign');
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return await signFieldV2(field.id, { type: FieldType.EMAIL, value: email } as any);
+          }
+
+          if (field.type === FieldType.DATE) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return await signFieldV2(field.id, { type: FieldType.DATE, value: true } as any);
+          }
+
+          // This should never happen since we filter autoSignableFields, but TypeScript needs this
+          throw new Error(`Unsupported field type for auto-sign: ${field.type}`);
+        }
+
+        // Fallback to V1 method
         const value = match(field.type)
           .with(FieldType.NAME, () => fullName)
           .with(FieldType.INITIALS, () => extractInitials(fullName))
@@ -105,35 +148,16 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
           .with(FieldType.DATE, () => new Date().toISOString())
           .otherwise(() => '');
 
-        const authOptions = match(derivedRecipientActionAuth.at(0))
-          .with(DocumentAuth.ACCOUNT, () => ({
-            type: DocumentAuth.ACCOUNT,
-          }))
-          .with(DocumentAuth.EXPLICIT_NONE, () => ({
-            type: DocumentAuth.EXPLICIT_NONE,
-          }))
-          .with(undefined, () => undefined)
-          .with(
-            P.union(DocumentAuth.PASSKEY, DocumentAuth.TWO_FACTOR_AUTH, DocumentAuth.PASSWORD),
-            // This is a bit dirty, but the sentinel value used here is incredibly short-lived.
-            () => 'NOT_SUPPORTED' as const,
-          )
-          .exhaustive();
-
-        if (authOptions === 'NOT_SUPPORTED') {
-          throw new Error('Action auth is not supported for auto signing');
-        }
-
         if (!value) {
           throw new Error('No value to sign');
         }
 
+        // Fallback to V1 method
         return await signFieldWithToken({
           token: recipient.token,
           fieldId: field.id,
           value,
           isBase64: false,
-          authOptions,
         });
       }),
     );
@@ -149,18 +173,49 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
       });
     }
 
-    await revalidate();
+    // V1 needs revalidation to refresh loader data
+    if (!signFieldV2) {
+      await revalidate();
+    }
+
+    setOpen(false);
   };
 
-  unsafe_useEffectOnce(() => {
-    if (actionAuthAllowsAutoSign && autoSignableFields.length > AUTO_SIGN_THRESHOLD) {
-      setOpen(true);
+  useEffect(() => {
+    if (hasAutoOpenedRef.current) {
+      return;
     }
-  });
+
+    console.log('autoSignableFields', autoSignableFields);
+    console.log('AUTO_SIGN_THRESHOLD', AUTO_SIGN_THRESHOLD);
+
+    if (autoSignableFields.length <= AUTO_SIGN_THRESHOLD) {
+      return;
+    }
+
+    hasAutoOpenedRef.current = true;
+    setOpen(true);
+  }, [autoSignableFields.length]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+    <>
+      {!open && autoSignableFields.length > AUTO_SIGN_THRESHOLD && (
+        <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+          <Button
+            type="button"
+            className="shadow-lg"
+            onClick={() => {
+              hasAutoOpenedRef.current = true;
+              setOpen(true);
+            }}
+          >
+            <Trans>Auto-sign fields</Trans>
+          </Button>
+        </div>
+      )}
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
         <DialogHeader>
           <DialogTitle>Automatically sign fields</DialogTitle>
         </DialogHeader>
@@ -218,7 +273,8 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

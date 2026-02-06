@@ -29,6 +29,7 @@ import { DocumentSigningAttachmentsPopover } from '../document-signing/document-
 import { EnvelopeItemSelector } from '../envelope-editor/envelope-file-selector';
 import EnvelopeSignerForm from '../envelope-signing/envelope-signer-form';
 import { EnvelopeSignerHeader } from '../envelope-signing/envelope-signer-header';
+import { DocumentSigningAutoSign } from './document-signing-auto-sign';
 import { DocumentSigningMobileWidget } from './document-signing-mobile-widget';
 import { DocumentSigningRejectDialog } from './document-signing-reject-dialog';
 import { useRequiredEnvelopeSigningContext } from './envelope-signing-provider';
@@ -48,6 +49,8 @@ export const DocumentSigningPageViewV2 = () => {
     recipientFieldsRemaining,
     requiredRecipientFields,
     selectedAssistantRecipientFields,
+    fullName,
+    email,
   } = useRequiredEnvelopeSigningContext();
 
   const {
@@ -260,6 +263,15 @@ export const DocumentSigningPageViewV2 = () => {
           </div>
         </div>
       </div>
+
+      {recipient.role !== RecipientRole.ASSISTANT && (
+        <DocumentSigningAutoSign
+          recipient={recipient}
+          fields={recipientFields}
+          fullName={fullName}
+          email={email}
+        />
+      )}
     </div>
   );
 };

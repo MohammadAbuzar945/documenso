@@ -51,6 +51,7 @@ type EnvelopeRenderProviderValue = {
 
   renderError: boolean;
   setRenderError: (renderError: boolean) => void;
+  refreshEnvelopeItems: (envelopeItemIds?: string[]) => Promise<void> | void;
   overrideSettings?: EnvelopeRenderOverrideSettings;
 };
 
@@ -99,6 +100,10 @@ export const useCurrentEnvelopeRender = () => {
   return context;
 };
 
+export const useOptionalEnvelopeRender = () => {
+  return useContext(EnvelopeRenderContext);
+};
+
 /**
  * Manages fetching and storing PDF files to render on the client.
  */
@@ -122,46 +127,49 @@ export const EnvelopeRenderProvider = ({
     [envelope.envelopeItems],
   );
 
-  const loadEnvelopeItemPdfFile = async (envelopeItem: EnvelopeRenderItem) => {
-    if (files[envelopeItem.id]?.status === 'loading') {
-      return;
-    }
+  const loadEnvelopeItemPdfFile = useCallback(
+    async (envelopeItem: EnvelopeRenderItem, options?: { force?: boolean }) => {
+      const force = options?.force ?? false;
 
-    if (!files[envelopeItem.id]) {
+      if (!force && files[envelopeItem.id]?.status === 'loading') {
+        return;
+      }
+
       setFiles((prev) => ({
         ...prev,
         [envelopeItem.id]: {
           status: 'loading',
         },
       }));
-    }
 
-    try {
-      const downloadUrl = getEnvelopeItemPdfUrl({
-        type: 'view',
-        envelopeItem: envelopeItem,
-        token,
-      });
+      try {
+        const downloadUrl = getEnvelopeItemPdfUrl({
+          type: 'view',
+          envelopeItem: envelopeItem,
+          token,
+        });
 
-      const blob = await fetch(downloadUrl).then(async (res) => await res.blob());
-      setFiles((prev) => ({
-        ...prev,
-        [envelopeItem.id]: {
-          blob,
-          status: 'loaded',
-        },
-      }));
-    } catch (error) {
-      console.error(error);
+        const blob = await fetch(downloadUrl).then(async (res) => await res.blob());
+        setFiles((prev) => ({
+          ...prev,
+          [envelopeItem.id]: {
+            blob,
+            status: 'loaded',
+          },
+        }));
+      } catch (error) {
+        console.error(error);
 
-      setFiles((prev) => ({
-        ...prev,
-        [envelopeItem.id]: {
-          status: 'error',
-        },
-      }));
-    }
-  };
+        setFiles((prev) => ({
+          ...prev,
+          [envelopeItem.id]: {
+            status: 'error',
+          },
+        }));
+      }
+    },
+    [files, token],
+  );
 
   const getPdfBuffer = useCallback(
     (envelopeItemId: string) => {
@@ -175,6 +183,20 @@ export const EnvelopeRenderProvider = ({
 
     setCurrentItem(foundItem ?? null);
   };
+
+  const refreshEnvelopeItems = useCallback(
+    async (envelopeItemIds?: string[]) => {
+      const targetItems =
+        envelopeItemIds && envelopeItemIds.length > 0
+          ? envelopeItems.filter((item) => envelopeItemIds.includes(item.id))
+          : envelopeItems;
+
+      for (const item of targetItems) {
+        void loadEnvelopeItemPdfFile(item, { force: true });
+      }
+    },
+    [envelopeItems, loadEnvelopeItemPdfFile],
+  );
 
   // Set the selected item to the first item if none is set.
   useEffect(() => {
@@ -226,6 +248,7 @@ export const EnvelopeRenderProvider = ({
         getRecipientColorKey,
         renderError,
         setRenderError,
+        refreshEnvelopeItems,
         overrideSettings,
       }}
     >

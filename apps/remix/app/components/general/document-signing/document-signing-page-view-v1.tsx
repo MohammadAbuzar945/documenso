@@ -142,6 +142,8 @@ export const DocumentSigningPageViewV1 = ({
   const targetSigner =
     recipient.role === RecipientRole.ASSISTANT && selectedSigner ? selectedSigner : null;
 
+    console.log("targetSigner", targetSigner);
+
   const nextRecipient = useMemo(() => {
     if (!documentMeta?.signingOrder || documentMeta.signingOrder !== 'SEQUENTIAL') {
       return undefined;
@@ -397,6 +399,9 @@ export const DocumentSigningPageViewV1 = ({
         />
 
         {recipient.role !== RecipientRole.ASSISTANT && (
+
+
+          // console.log('fields', fields);
           <DocumentSigningAutoSign recipient={recipient} fields={fields} />
         )}
 
