@@ -384,8 +384,8 @@ export default function PricePlansPage() {
 
   const { subscriptions, organisation } = useSuperLoaderData<typeof loader>();
   const currentSubscriptionData: any = subscriptions?.find((data: any) => data.status === 'ACTIVE');
-  const planId = currentSubscriptionData?.planId;
-  const priceId = currentSubscriptionData?.priceId;
+  const activeSubscriptionPlanId = currentSubscriptionData?.planId;
+  const activeSubscriptionCode = currentSubscriptionData?.priceId;
   const trxref: any = new URLSearchParams(location.search).get('trxref');
 
   // State for polling
@@ -476,7 +476,13 @@ export default function PricePlansPage() {
     return null;
   };
 
-  const activePlanDetails = getActiveSubscriptionDetails(planId);
+  const activePlanDetails = getActiveSubscriptionDetails(activeSubscriptionPlanId);
+
+  const [isCancelPreviousSubscriptionDialogOpen, setIsCancelPreviousSubscriptionDialogOpen] =
+    useState(false);
+  const [pendingNewSubscriptionPlanId, setPendingNewSubscriptionPlanId] = useState<string | null>(
+    null,
+  );
 
   async function handleApiPaystack(
     isOneTime: boolean,
@@ -490,6 +496,20 @@ export default function PricePlansPage() {
     if (isOneTime) {
       // console.log('Metadata', metadata);
       handleApiPaystackOneTimeTransaction(email, amount, metadata);
+      return;
+    }
+
+    const hasActivePaidSubscription =
+      Boolean(currentSubscriptionData) && activePlanDetails?.label !== 'Pay as you go';
+
+    const isTryingToSwitchPlans =
+      hasActivePaidSubscription &&
+      Boolean(activeSubscriptionPlanId) &&
+      activeSubscriptionPlanId !== planId;
+
+    if (isTryingToSwitchPlans) {
+      setPendingNewSubscriptionPlanId(planId);
+      setIsCancelPreviousSubscriptionDialogOpen(true);
       return;
     }
 
@@ -647,6 +667,63 @@ export default function PricePlansPage() {
   return (
     <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
       <div className="w-full">
+        <Dialog
+          open={isCancelPreviousSubscriptionDialogOpen}
+          onOpenChange={setIsCancelPreviousSubscriptionDialogOpen}
+        >
+          <DialogContent className="w-full max-w-lg p-6">
+            <DialogHeader>
+              <DialogTitle className="text-primary text-xl font-bold">
+                <Trans>Cancel current subscription first</Trans>
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-3 text-sm text-gray-600">
+              <p>
+                <Trans>
+                  You already have an active subscription. To start a new monthly/annual subscription,
+                  please cancel your current one first.
+                </Trans>
+              </p>
+
+              {activePlanDetails?.label && (
+                <p className="text-gray-500">
+                  <Trans>Current plan:</Trans> <span className="font-medium">{activePlanDetails.label}</span>
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setPendingNewSubscriptionPlanId(null);
+                  setIsCancelPreviousSubscriptionDialogOpen(false);
+                }}
+              >
+                <Trans>Close</Trans>
+              </Button>
+
+              <Button
+                onClick={() => {
+                  if (!activeSubscriptionCode) {
+                    setIsCancelPreviousSubscriptionDialogOpen(false);
+                    setPendingNewSubscriptionPlanId(null);
+                    return;
+                  }
+
+                  handleApiCancelPaystackSubscription(activeSubscriptionCode);
+                  setIsCancelPreviousSubscriptionDialogOpen(false);
+
+                  // Keep pendingNewSubscriptionPlanId so user can click proceed again after cancelling.
+                }}
+              >
+                <Trans>Cancel current subscription</Trans>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Loading indicator when polling */}
         {isPolling && (
           <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
@@ -740,7 +817,7 @@ export default function PricePlansPage() {
                   <div className="flex items-center space-x-2">
                     <Button
                       onClick={() => {
-                        handleApiCancelPaystackSubscription(priceId);
+                        handleApiCancelPaystackSubscription(activeSubscriptionCode);
                       }}
                       className=""
                     >
@@ -749,7 +826,7 @@ export default function PricePlansPage() {
 
                     <Button
                       onClick={() => {
-                        handleManageCards(priceId);
+                        handleManageCards(activeSubscriptionCode);
                       }}
                       className="bg-gradient-to-br from-pink-400 to-blue-400"
                     >
