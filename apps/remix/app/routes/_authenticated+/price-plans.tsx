@@ -312,7 +312,7 @@ function PlanCard({
 }) {
   const [selectedPlan, setSelectedPlan] = useState(plans[0]);
   const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
-  console.log('Metadata', selectedPlan.credits);
+  // console.log('Metadata', selectedPlan.credits);
   return (
     <div className="flex w-full flex-col justify-between rounded-xl border p-4 hover:bg-purple-50 md:w-1/3">
       <div className="h-44">
@@ -500,10 +500,12 @@ export default function PricePlansPage() {
       },
       body: JSON.stringify({
         email,
-        //With this amount, the user will be able to pay for the plan but original amount will be used as mentioned in the plan details in paystack
+        // With this amount, the user will be able to pay for the plan but original amount will be used as mentioned in the plan details in paystack
         amount: 100,
         plan: planId,
         callback_url: callback_url,
+        // Pass credits/envelopes count as metadata so webhook can read metadata.value
+        metadata,
       }),
     });
 
