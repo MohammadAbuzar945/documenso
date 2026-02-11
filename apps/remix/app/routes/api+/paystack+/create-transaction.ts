@@ -7,7 +7,11 @@ const createTransactionSchema = z.object({
   plan: z.string().optional(),
   invoice_limit: z.number().optional(),
   callback_url: z.string().url().optional(),
-  metadata: z.number().optional(),
+  metadata: z
+    .object({
+      value: z.number(),
+    })
+    .optional(),
 });
 
 interface CreateTransactionResponse {
@@ -24,10 +28,9 @@ export async function action({ request }: { request: Request }) {
     const body = await request.json();
     const validatedData = createTransactionSchema.parse(body);
     
-    // Transform metadata to match expected type
     const transactionData = {
       ...validatedData,
-      metadata: validatedData.metadata ? { value: validatedData.metadata } : undefined
+      metadata: validatedData.metadata,
     };
 
     const transaction = await createTransaction(transactionData);

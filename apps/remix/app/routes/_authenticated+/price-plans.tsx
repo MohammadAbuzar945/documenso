@@ -483,7 +483,7 @@ export default function PricePlansPage() {
     email: string,
     amount: number,
     planId: string,
-    metadata?: any,
+    metadata?: number,
     reference: null | string = '',
     callback_url: null | string = `${NEXT_PUBLIC_WEBAPP_URL()}/price-plans`,
   ) {
@@ -505,7 +505,7 @@ export default function PricePlansPage() {
         plan: planId,
         callback_url: callback_url,
         // Pass credits/envelopes count as metadata so webhook can read metadata.value
-        metadata,
+        metadata: metadata ? { value: metadata } : undefined,
       }),
     });
 
@@ -530,7 +530,7 @@ export default function PricePlansPage() {
   async function handleApiPaystackOneTimeTransaction(
     email: string,
     amount: any,
-    metadata: any,
+    metadata?: number,
   ) {
     const sanitizedAmount = amount.replace(/[^\d]/g, '');
     const response = await fetch(`${NEXT_PUBLIC_WEBAPP_URL()}/api/paystack/create-transaction`, {
@@ -541,7 +541,7 @@ export default function PricePlansPage() {
       body: JSON.stringify({
         email,
         amount: parseInt(sanitizedAmount) * 100,
-        metadata,
+        metadata: metadata ? { value: metadata } : undefined,
       }),
     });
 
