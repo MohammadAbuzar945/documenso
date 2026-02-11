@@ -235,7 +235,7 @@ enum SubscriptionStatus {
 model Subscription {
   id                Int                @id @default(autoincrement())
   status            SubscriptionStatus @default(INACTIVE)
-  planId            String             @unique
+  planId            String
   priceId           String
   periodEnd         DateTime?
   createdAt         DateTime           @default(now())
@@ -244,9 +244,10 @@ model Subscription {
 
   customerId String
 
-  organisationId String       @unique
+  organisationId String
   organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
+  @@index([planId])
   @@index([organisationId])
 }
 
@@ -676,8 +677,8 @@ model Organisation {
   url           String           @unique
   avatarImageId String?
 
-  customerId   String?       @unique
-  subscription Subscription?
+  customerId    String?         @unique
+  subscriptions Subscription[]
 
   organisationClaimId String            @unique
   organisationClaim   OrganisationClaim @relation(fields: [organisationClaimId], references: [id])

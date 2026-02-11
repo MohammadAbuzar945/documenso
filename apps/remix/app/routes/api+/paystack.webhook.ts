@@ -47,25 +47,68 @@ export async function action({ request }: { request: Request }){
               'PLN_qcz1c2zdiyk3lw3',
             ];
 
-            const subscription = await prisma.subscription.upsert({   
-              where: {
-                organisationId: organisation.id,
-              },
-              create: {
-                organisationId: organisation.id,
-                planId: plan.plan_code,
-                priceId: subscription_code,
-                customerId: customer.customer_code,
-                status:  PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
-                periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
-              },
-              update: {
-                planId: plan.plan_code,
-                priceId: subscription_code,
-                customerId: customer.customer_code,
-                status:  PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
-                periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
-              },
+            const nextStatus =
+              PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE';
+
+            const subscription = await prisma.$transaction(async (tx) => {
+              const existingSubscription = await tx.subscription.findFirst({
+                where: {
+                  organisationId: organisation.id,
+                  priceId: subscription_code,
+                },
+                orderBy: {
+                  createdAt: 'desc',
+                },
+              });
+
+              if (nextStatus !== 'INACTIVE') {
+                await tx.subscription.updateMany({
+                  where: {
+                    organisationId: organisation.id,
+                    status: {
+                      not: 'INACTIVE',
+                    },
+                    NOT: existingSubscription
+                      ? {
+                          id: existingSubscription.id,
+                        }
+                      : undefined,
+                  },
+                  data: {
+                    status: 'INACTIVE',
+                  },
+                });
+              }
+
+              if (existingSubscription) {
+                return await tx.subscription.update({
+                  where: {
+                    id: existingSubscription.id,
+                  },
+                  data: {
+                    planId: plan.plan_code,
+                    priceId: subscription_code,
+                    customerId: customer.customer_code,
+                    status: nextStatus,
+                    periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code)
+                      ? null
+                      : next_payment_date,
+                  },
+                });
+              }
+
+              return await tx.subscription.create({
+                data: {
+                  organisationId: organisation.id,
+                  planId: plan.plan_code,
+                  priceId: subscription_code,
+                  customerId: customer.customer_code,
+                  status: nextStatus,
+                  periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code)
+                    ? null
+                    : next_payment_date,
+                },
+              });
             });
 
             // Get existing credits
