@@ -47,9 +47,19 @@ export async function action({ request }: { request: Request }){
               'PLN_qcz1c2zdiyk3lw3',
             ];
 
-            const subscription = await prisma.subscription.create({
-              data: {
+            const subscription = await prisma.subscription.upsert({   
+              where: {
                 organisationId: organisation.id,
+              },
+              create: {
+                organisationId: organisation.id,
+                planId: plan.plan_code,
+                priceId: subscription_code,
+                customerId: customer.customer_code,
+                status:  PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
+                periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
+              },
+              update: {
                 planId: plan.plan_code,
                 priceId: subscription_code,
                 customerId: customer.customer_code,
