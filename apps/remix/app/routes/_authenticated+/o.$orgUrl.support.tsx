@@ -61,7 +61,7 @@ export default function SupportPage() {
               </Link>
             </h2>
             <p className="text-muted-foreground mt-1">
-              <Trans>Read our documentation to get started with Documenso.</Trans>
+              <Trans>Read our documentation to get started with Nomia.</Trans>
             </p>
           </div>
           <div className="rounded-lg border p-4">

@@ -209,7 +209,7 @@ export default function OrganisationSignIn({ loaderData }: Route.ComponentProps)
 
         <div className="text-muted-foreground mt-1 flex items-center justify-center text-xs">
           <Link to="/signin">
-            <Trans>Return to Documenso sign in page here</Trans>
+            <Trans>Return to Nomia sign in page here</Trans>
           </Link>
         </div>
       </div>

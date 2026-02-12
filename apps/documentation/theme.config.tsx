@@ -6,8 +6,8 @@ const themeConfig: DocsThemeConfig = {
   head: function useHead() {
     const config = useConfig();
 
-    const title = `${config.frontMatter.title} | Documenso Docs` || 'Documenso Docs';
-    const description = config.frontMatter.description || 'The official Documenso documentation';
+    const title = `${config.frontMatter.title} | Nomia Docs` || 'Nomia Docs';
+    const description = config.frontMatter.description || 'The official Nomia documentation';
 
     return (
       <>

@@ -25,6 +25,7 @@ import { getTeamSettings } from '@documenso/lib/server-only/team/get-team-settin
 import { getUserByEmail } from '@documenso/lib/server-only/user/get-user-by-email';
 import { DocumentAccessAuth } from '@documenso/lib/types/document-auth';
 import { extractDocumentAuthMethods } from '@documenso/lib/utils/document-auth';
+import { env } from '@documenso/lib/utils/env';
 import { prisma } from '@documenso/prisma';
 import { SigningCard3D } from '@documenso/ui/components/signing-card';
 
@@ -368,10 +369,10 @@ const SigningPageV1 = ({ data }: { data: Awaited<ReturnType<typeof handleV1Loade
               <Trans>
                 Want to send slick signing links like this one?{' '}
                 <Link
-                  to="https://documenso.com"
+                  to={env('NEXT_PUBLIC_WEBAPP_URL')}
                   className="text-documenso-700 hover:text-documenso-600"
                 >
-                  Check out Documenso
+                  Check out Nomia
                 </Link>
                 .
               </Trans>
@@ -468,10 +469,10 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
               <Trans>
                 Want to send slick signing links like this one?{' '}
                 <Link
-                  to="https://documenso.com"
+                  to={env('NEXT_PUBLIC_WEBAPP_URL')}
                   className="text-documenso-700 hover:text-documenso-600"
                 >
-                  Check out Documenso
+                  Check out Nomia
                 </Link>
                 .
               </Trans>

@@ -214,7 +214,7 @@ export const sendOrganisationMemberInviteEmail = async ({
   await mailer.sendMail({
     to: email,
     from: senderEmail,
-    subject: i18n._(msg`You have been invited to join ${organisation.name} on Documenso`),
+    subject: i18n._(msg`You have been invited to join ${organisation.name} on Nomia`),
     html,
     text,
   });
