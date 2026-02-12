@@ -369,7 +369,7 @@ const SigningPageV1 = ({ data }: { data: Awaited<ReturnType<typeof handleV1Loade
               <Trans>
                 Want to send slick signing links like this one?{' '}
                 <Link
-                  to={env('NEXT_PUBLIC_WEBAPP_URL')}
+                  to={env('NEXT_PUBLIC_WEBAPP_URL') ?? '/'}
                   className="text-documenso-700 hover:text-documenso-600"
                 >
                   Check out Nomia
@@ -469,7 +469,7 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
               <Trans>
                 Want to send slick signing links like this one?{' '}
                 <Link
-                  to={env('NEXT_PUBLIC_WEBAPP_URL')}
+                  to={env('NEXT_PUBLIC_WEBAPP_URL') ?? '/'}
                   className="text-documenso-700 hover:text-documenso-600"
                 >
                   Check out Nomia
