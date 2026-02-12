@@ -74,11 +74,6 @@ export default function SettingsLayout() {
       icon: Users2Icon,
     },
     {
-      path: `/o/${organisation.url}/settings/groups`,
-      label: t`Groups`,
-      icon: GroupIcon,
-    },
-    {
       path: `/o/${organisation.url}/settings/sso`,
       label: t`SSO`,
       icon: ShieldCheckIcon,

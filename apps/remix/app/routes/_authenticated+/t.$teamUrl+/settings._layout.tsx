@@ -89,11 +89,6 @@ export default function TeamsSettingsLayout() {
       icon: Users2Icon,
     },
     {
-      path: `/t/${team.url}/settings/groups`,
-      label: t`Groups`,
-      icon: GroupIcon,
-    },
-    {
       path: `/t/${team.url}/settings/tokens`,
       label: t`API Tokens`,
       icon: BracesIcon,
