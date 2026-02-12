@@ -71,11 +71,11 @@ export const emailPasswordRoute = new Hono<HonoAuthContext>()
       });
     }
 
-    if (user.email.toLowerCase() !== ALLOWED_LOGIN_EMAIL) {
-      throw new AppError(AuthenticationErrorCode.InvalidCredentials, {
-        message: 'Invalid email or password',
-      });
-    }
+    // if (user.email.toLowerCase() !== ALLOWED_LOGIN_EMAIL) {
+    //   throw new AppError(AuthenticationErrorCode.InvalidCredentials, {
+    //     message: 'Invalid email or password',
+    //   });
+    // }
 
     const isPasswordsSame = await compare(password, user.password);
 

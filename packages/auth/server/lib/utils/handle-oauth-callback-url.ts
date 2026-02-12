@@ -28,11 +28,11 @@ export const handleOAuthCallbackUrl = async (options: HandleOAuthCallbackUrlOpti
   const { email, name, sub, accessToken, accessTokenExpiresAt, idToken, redirectPath } =
     await validateOauth({ c, clientOptions });
 
-  if (email.toLowerCase() !== ALLOWED_LOGIN_EMAIL) {
-    throw new AppError(AuthenticationErrorCode.InvalidRequest, {
-      message: 'Account is not permitted to sign in',
-    });
-  }
+  // if (email.toLowerCase() !== ALLOWED_LOGIN_EMAIL) {
+  //   throw new AppError(AuthenticationErrorCode.InvalidRequest, {
+  //     message: 'Account is not permitted to sign in',
+  //   });
+  // }
 
   // Find the account if possible.
   const existingAccount = await prisma.account.findFirst({
