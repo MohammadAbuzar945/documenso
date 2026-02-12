@@ -145,7 +145,7 @@ export const DocumentPageViewDropdown = ({ envelope }: DocumentPageViewDropdownP
           recipients={nonSignedRecipients}
         />
 
-        <DocumentShareButton
+        {/* <DocumentShareButton
           documentId={mapSecondaryIdToDocumentId(envelope.secondaryId)}
           token={isOwner ? undefined : recipient?.token}
           trigger={({ loading, disabled }) => (
@@ -156,7 +156,7 @@ export const DocumentPageViewDropdown = ({ envelope }: DocumentPageViewDropdownP
               </div>
             </DropdownMenuItem>
           )}
-        />
+        /> */}
       </DropdownMenuContent>
 
       <DocumentDeleteDialog

@@ -244,11 +244,11 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
             ))}
 
           <div className="mt-8 flex w-full max-w-xs flex-col items-stretch gap-4 md:w-auto md:max-w-none md:flex-row md:items-center">
-            <DocumentShareButton
+            {/* <DocumentShareButton
               documentId={document.id}
               token={recipient.token}
               className="w-full max-w-none md:flex-1"
-            />
+            /> */}
 
             {isDocumentCompleted(document) && (
               <EnvelopeDownloadDialog

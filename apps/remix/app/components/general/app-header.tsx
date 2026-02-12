@@ -1,6 +1,5 @@
 import { type HTMLAttributes, useEffect, useState } from 'react';
 
-import { ReadStatus } from '@prisma/client';
 import { InboxIcon, MenuIcon, SearchIcon } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 
@@ -39,6 +38,17 @@ export const Header = ({ className, ...props }: HeaderProps) => {
     },
   );
 
+  const { data: pendingInvitesData } = trpc.organisation.member.invite.getMany.useQuery(
+    {
+      status: OrganisationMemberInviteStatus.PENDING,
+    },
+    {},
+  );
+
+  const unreadCount = unreadCountData?.count ?? 0;
+  const pendingInvitesCount = pendingInvitesData?.length ?? 0;
+  const attentionCount = unreadCount + pendingInvitesCount;
+
   useEffect(() => {
     const onScroll = () => {
       setScrollY(window.scrollY);
@@ -72,9 +82,9 @@ export const Header = ({ className, ...props }: HeaderProps) => {
           <Link to="/inbox" className="relative block h-10 w-10">
             <InboxIcon className="text-muted-foreground hover:text-foreground h-5 w-5 flex-shrink-0 transition-colors" />
 
-            {unreadCountData && unreadCountData.count > 0 && (
+            {attentionCount > 0 && (
               <span className="bg-primary text-primary-foreground absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold">
-                {unreadCountData.count > 99 ? '99+' : unreadCountData.count}
+                {attentionCount > 99 ? '99+' : attentionCount}
               </span>
             )}
           </Link>
