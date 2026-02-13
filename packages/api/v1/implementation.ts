@@ -551,7 +551,7 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
       const createdTemplate = await createEnvelope({
         userId: user.id,
         teamId: team.id,
-        internalVersion: 1,
+        internalVersion: 2,
         data: {
           type: EnvelopeType.TEMPLATE,
           envelopeItems: [
