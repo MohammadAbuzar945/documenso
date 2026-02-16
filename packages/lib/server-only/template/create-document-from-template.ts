@@ -56,6 +56,7 @@ import type { EnvelopeIdOptions } from '../../utils/envelope';
 import { mapSecondaryIdToTemplateId } from '../../utils/envelope';
 import { buildTeamWhereQuery } from '../../utils/teams';
 import { getEnvelopeWhereInput } from '../envelope/get-envelope-by-id';
+import { processExternalId } from '../envelope/create-envelope';
 import { incrementDocumentId } from '../envelope/increment-id';
 import { insertFormValuesInPdf } from '../pdf/insert-form-values-in-pdf';
 import { getTeamSettings } from '../team/get-team-settings';
@@ -524,6 +525,9 @@ export const createDocumentFromTemplate = async ({
     }),
   });
 
+  const finalExternalId = externalId || template.externalId;
+  const { processedExternalId, fromNomia } = processExternalId(finalExternalId || undefined);
+
   return await prisma.$transaction(async (tx) => {
     const envelope = await tx.envelope.create({
       data: {
@@ -533,7 +537,8 @@ export const createDocumentFromTemplate = async ({
         internalVersion: template.internalVersion,
         qrToken: prefixedId('qr'),
         source: DocumentSource.TEMPLATE,
-        externalId: externalId || template.externalId,
+        externalId: processedExternalId,
+        fromNomia,
         templateId: legacyTemplateId, // The template this envelope was created from.
         userId,
         folderId,

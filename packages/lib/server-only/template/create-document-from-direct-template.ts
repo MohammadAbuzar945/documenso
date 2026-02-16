@@ -53,6 +53,7 @@ import { formatDocumentsPath } from '../../utils/teams';
 import { sendDocument } from '../document/send-document';
 import { validateFieldAuth } from '../document/validate-field-auth';
 import { getEmailContext } from '../email/get-email-context';
+import { processExternalId } from '../envelope/create-envelope';
 import { incrementDocumentId } from '../envelope/increment-id';
 import { triggerWebhook } from '../webhooks/trigger/trigger-webhook';
 
@@ -351,6 +352,8 @@ export const createDocumentFromDirectTemplate = async ({
 
   const incrementedDocumentId = await incrementDocumentId();
 
+  const { processedExternalId, fromNomia } = processExternalId(directTemplateExternalId);
+
   const { createdEnvelope, recipientId, token } = await prisma.$transaction(async (tx) => {
     // Create the envelope and non direct template recipients.
     const createdEnvelope = await tx.envelope.create({
@@ -367,7 +370,8 @@ export const createDocumentFromDirectTemplate = async ({
         title: directTemplateEnvelope.title,
         createdAt: initialRequestTime,
         status: DocumentStatus.PENDING,
-        externalId: directTemplateExternalId,
+        externalId: processedExternalId,
+        fromNomia,
         visibility: settings.documentVisibility,
         envelopeItems: {
           createMany: {

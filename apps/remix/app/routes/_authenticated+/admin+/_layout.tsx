@@ -1,12 +1,10 @@
 import { Trans } from '@lingui/react/macro';
 import {
   BarChart3,
-  Building2Icon,
   FileStack,
   Settings,
   Trophy,
   Users,
-  Wallet2,
 } from 'lucide-react';
 import { Link, Outlet, redirect, useLocation } from 'react-router';
 
@@ -81,20 +79,6 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
               <Trans>Organisations</Trans>
             </Link>
           </Button> */}
-
-          <Button
-            variant="ghost"
-            className={cn(
-              'justify-start md:w-full',
-              pathname?.startsWith('/admin/claims') && 'bg-secondary',
-            )}
-            asChild
-          >
-            <Link to="/admin/claims">
-              <Wallet2 className="mr-2 h-5 w-5" />
-              <Trans>Claims</Trans>
-            </Link>
-          </Button>
 
           <Button
             variant="ghost"

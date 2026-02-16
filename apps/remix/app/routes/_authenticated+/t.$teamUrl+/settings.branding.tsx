@@ -1,8 +1,10 @@
-import { useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { Loader } from 'lucide-react';
 
+import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { putFile } from '@documenso/lib/universal/upload/put-file';
 import { trpc } from '@documenso/trpc/react';
+import { Alert, AlertDescription, AlertTitle } from '@documenso/ui/primitives/alert';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import {
@@ -19,6 +21,7 @@ export function meta() {
 
 export default function TeamsSettingsPage() {
   const team = useCurrentTeam();
+  const organisation = useCurrentOrganisation();
 
   const { t } = useLingui();
   const { toast } = useToast();
@@ -81,14 +84,31 @@ export default function TeamsSettingsPage() {
         subtitle={t`Here you can set preferences and defaults for branding.`}
       />
 
-      <section>
-        <BrandingPreferencesForm
-          canInherit={true}
-          context="Team"
-          settings={teamWithSettings.teamSettings}
-          onFormSubmit={onBrandingPreferencesFormSubmit}
-        />
-      </section>
+      {organisation.organisationClaim.flags.allowCustomBranding ? (
+        <section>
+          <BrandingPreferencesForm
+            canInherit={true}
+            context="Team"
+            settings={teamWithSettings.teamSettings}
+            onFormSubmit={onBrandingPreferencesFormSubmit}
+          />
+        </section>
+      ) : (
+        <Alert
+          className="mt-8 flex flex-col justify-between p-6 sm:flex-row sm:items-center"
+          variant="neutral"
+        >
+          <div className="mb-4 sm:mb-0">
+            <AlertTitle>
+              <Trans>Branding Preferences</Trans>
+            </AlertTitle>
+
+            <AlertDescription className="mr-2">
+              <Trans>Branding is not enabled for your current plan.</Trans>
+            </AlertDescription>
+          </div>
+        </Alert>
+      )}
     </div>
   );
 }

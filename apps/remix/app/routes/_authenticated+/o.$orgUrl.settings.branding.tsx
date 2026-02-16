@@ -4,7 +4,6 @@ import { Link } from 'react-router';
 
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { useSession } from '@documenso/lib/client-only/providers/session';
-import { IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
 import { putFile } from '@documenso/lib/universal/upload/put-file';
 import { canExecuteOrganisationAction, isPersonalLayout } from '@documenso/lib/utils/organisations';
 import { trpc } from '@documenso/trpc/react';
@@ -96,8 +95,7 @@ export default function OrganisationSettingsBrandingPage() {
     <div className="max-w-2xl">
       <SettingsHeader title={settingsHeaderText} subtitle={settingsHeaderSubtitle} />
 
-      {organisationWithSettings.organisationClaim.flags.allowCustomBranding ||
-      !IS_BILLING_ENABLED() ? (
+      {organisationWithSettings.organisationClaim.flags.allowCustomBranding ? (
         <section>
           <BrandingPreferencesForm
             context="Organisation"

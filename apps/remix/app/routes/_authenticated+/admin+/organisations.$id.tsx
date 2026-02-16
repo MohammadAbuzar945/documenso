@@ -403,7 +403,11 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
 
   const { mutateAsync: updateOrganisation } = trpc.admin.organisation.update.useMutation();
 
-  const hasRestrictedEnterpriseFeatures = Object.values(SUBSCRIPTION_CLAIM_FEATURE_FLAGS).some(
+  const visibleFeatureFlags = Object.values(SUBSCRIPTION_CLAIM_FEATURE_FLAGS).filter(
+    (flag) => flag.key === 'allowCustomBranding',
+  );
+
+  const hasRestrictedEnterpriseFeatures = visibleFeatureFlags.some(
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     (flag) => flag.isEnterprise && !licenseFlags?.[flag.key as keyof TLicenseClaim],
   );
@@ -603,7 +607,7 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
           </FormLabel>
 
           <div className="mt-2 space-y-2 rounded-md border p-4">
-            {Object.values(SUBSCRIPTION_CLAIM_FEATURE_FLAGS).map(({ key, label, isEnterprise }) => {
+            {visibleFeatureFlags.map(({ key, label, isEnterprise }) => {
               const isRestrictedFeature =
                 isEnterprise && !licenseFlags?.[key as keyof TLicenseClaim]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
 
@@ -639,7 +643,7 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
             })}
           </div>
 
-          {hasRestrictedEnterpriseFeatures && (
+          {/* {hasRestrictedEnterpriseFeatures && (
             <Alert variant="neutral" className="mt-4">
               <AlertDescription>
                 <span>¹&nbsp;</span>
@@ -653,7 +657,7 @@ const OrganisationAdminForm = ({ organisation, licenseFlags }: OrganisationAdmin
                 </Link>
               </AlertDescription>
             </Alert>
-          )}
+          )} */}
         </div>
 
         <div className="flex justify-end">

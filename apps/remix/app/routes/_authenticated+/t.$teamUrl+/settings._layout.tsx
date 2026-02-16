@@ -98,7 +98,13 @@ export default function TeamsSettingsLayout() {
       label: t`Webhooks`,
       icon: WebhookIcon,
     },
-  ];
+  ].filter((route) => {
+    if (!organisation.organisationClaim.flags.allowCustomBranding && route.path.includes('/branding')) {
+      return false;
+    }
+
+    return true;
+  });
 
   if (!canExecuteTeamAction('MANAGE_TEAM', team.currentTeamRole)) {
     return (

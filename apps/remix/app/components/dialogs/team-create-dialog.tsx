@@ -13,7 +13,6 @@ import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-upda
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import {
-  IS_BILLING_ENABLED,
   NEXT_PUBLIC_WEBAPP_URL,
   SUPPORT_EMAIL,
 } from '@documenso/lib/constants/app';
@@ -133,10 +132,6 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
   const dialogState = useMemo(() => {
     if (!fullOrganisation) {
       return 'loading';
-    }
-
-    if (!IS_BILLING_ENABLED()) {
-      return 'form';
     }
 
     if (fullOrganisation.organisationClaim.teamCount === 0) {

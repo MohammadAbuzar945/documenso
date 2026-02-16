@@ -1,4 +1,4 @@
-import type { DocumentMeta, DocumentVisibility, TemplateType } from '@prisma/client';
+import type { DocumentMeta, DocumentVisibility, TemplateType, Prisma } from '@prisma/client';
 import {
   DocumentSource,
   EnvelopeType,
@@ -43,6 +43,34 @@ import { incrementDocumentId, incrementTemplateId } from '../envelope/increment-
 import { getTeamSettings } from '../team/get-team-settings';
 import { triggerWebhook } from '../webhooks/trigger/trigger-webhook';
 
+const NOMIA_PREFIX = 'NomiaSigns-';
+
+export type ProcessExternalIdResult = {
+  processedExternalId: string | undefined;
+  fromNomia: boolean;
+};
+
+export const processExternalId = (externalId: string | undefined): ProcessExternalIdResult => {
+  if (!externalId) {
+    return {
+      processedExternalId: undefined,
+      fromNomia: false,
+    };
+  }
+
+  if (externalId.startsWith(NOMIA_PREFIX)) {
+    return {
+      processedExternalId: externalId.replace(NOMIA_PREFIX, ''),
+      fromNomia: true,
+    };
+  }
+
+  return {
+    processedExternalId: externalId,
+    fromNomia: false,
+  };
+};
+
 type CreateEnvelopeRecipientFieldOptions = TFieldAndMeta & {
   documentDataId: string;
   page: number;
@@ -78,6 +106,7 @@ export type CreateEnvelopeOptions = {
       placeholders?: PlaceholderInfo[];
     }[];
     formValues?: TDocumentFormValues;
+    fromNomia?: boolean;
 
     userTimezone?: string;
 
@@ -116,6 +145,7 @@ export const createEnvelope = async ({
     title,
     externalId,
     formValues,
+    
     userTimezone,
     folderId,
     templateType,
@@ -305,6 +335,8 @@ export const createEnvelope = async ({
   const delegatedOwner = await getValidatedDelegatedOwner();
   const envelopeOwnerId = delegatedOwner?.id ?? userId;
 
+  const { processedExternalId, fromNomia } = processExternalId(externalId);
+
   const createdEnvelope = await prisma.$transaction(async (tx) => {
     const envelope = await tx.envelope.create({
       data: {
@@ -314,7 +346,8 @@ export const createEnvelope = async ({
         type,
         title,
         qrToken: prefixedId('qr'),
-        externalId,
+        externalId: processedExternalId,
+        fromNomia,
         envelopeItems: {
           createMany: {
             data: envelopeItems.map((item, i) => ({
@@ -347,7 +380,7 @@ export const createEnvelope = async ({
         templateType: type === EnvelopeType.TEMPLATE ? templateType : undefined,
         publicTitle: type === EnvelopeType.TEMPLATE ? publicTitle : undefined,
         publicDescription: type === EnvelopeType.TEMPLATE ? publicDescription : undefined,
-      },
+      } as any,
       include: {
         envelopeItems: true,
       },
