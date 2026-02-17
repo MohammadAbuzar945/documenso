@@ -1,13 +1,12 @@
 import { prisma } from '@documenso/prisma';
 import { PLAN_DOCUMENT_QUOTAS } from '@documenso/ee/server-only/limits/constants';
 import { ensureUserCredits } from '@documenso/ee/server-only/limits/user-credits';
-import { Prisma } from '@prisma/client';
 
 export async function action({ request }: { request: Request }){
   try {
     const event = await request.json();
     console.log('Paystack webhook received event:', JSON.stringify(event));
-    if (event.event === 'subscription.create' || event.event === 'invoice.update' ) {
+    if (event.event === 'subscription.create' || event.event === 'invoice.update') {
       const { customer, plan, subscription_code, next_payment_date } = event.data;
 
     
@@ -49,29 +48,18 @@ export async function action({ request }: { request: Request }){
               'PLN_qcz1c2zdiyk3lw3',
             ];
 
-            const subscriptionData = {
-              organisationId: organisation.id,
-              // Store the Paystack subscription instance code as our unique subscription identifier.
-              // This allows multiple subscription records per organisation.
-              planId: plan.plan_code,
-              // Store Paystack plan code as the price identifier (similar to Stripe priceId).
-              priceId: subscription_code,
-              customerId: customer.customer_code,
-              status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
-              periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
-            } as const;
+            const subscription = await prisma.subscription.create({   
 
-            const subscription = await prisma.subscription
-              .create({
-                data: subscriptionData,
-              })
-              .catch(async (error) => {
-                if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-                  console.error('Subscription already exists:', error.message);
-                }
-
-                throw error;
-              });
+              data: {
+                organisationId: organisation.id,
+                planId: plan.plan_code,
+                priceId: subscription_code,
+                customerId: customer.customer_code,
+                status:  PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
+                periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
+              },
+             
+            });
 
             // Ensure user has a credits record
             const userCreditsRecord = await ensureUserCredits(user.id);
@@ -108,7 +96,7 @@ export async function action({ request }: { request: Request }){
       
       try {
         const existingSubscription = await prisma.subscription.findFirst({
-          where: { planId: subscription_code }
+          where: { priceId: subscription_code }
         });
         if (existingSubscription) {
           const subscription = await prisma.subscription.update({
@@ -125,7 +113,7 @@ export async function action({ request }: { request: Request }){
       const { subscription_code } = event.data;
       console.log('Processing subscription update:', subscription_code);
       const existingSubscription = await prisma.subscription.findFirst({
-        where: { planId: subscription_code }
+        where: { priceId: subscription_code }
       });
       if (existingSubscription) {
         const subscription = await prisma.subscription.update({
@@ -138,7 +126,7 @@ export async function action({ request }: { request: Request }){
       const { subscription_code } = event.data;
       console.log('Processing subscription update:', subscription_code);
       const existingSubscription = await prisma.subscription.findFirst({
-        where: { planId: subscription_code }
+        where: { priceId: subscription_code }
       });
       if (existingSubscription) {
         const subscription = await prisma.subscription.update({
