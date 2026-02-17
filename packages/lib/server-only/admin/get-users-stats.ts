@@ -8,15 +8,13 @@ export const getUsersCount = async () => {
 };
 
 export const getOrganisationsWithSubscriptionsCount = async () => {
-  return await prisma.organisation.count({
-    where: {
-      subscriptions: {
-        some: {
-          status: SubscriptionStatus.ACTIVE,
-        },
+    const result = await prisma.subscription.groupBy({
+      by: ['organisationId'],
+      where: {
+        status: SubscriptionStatus.ACTIVE,
       },
-    },
-  });
+    });
+    return result.length;
 };
 
 export type GetUserWithDocumentMonthlyGrowth = Array<{
