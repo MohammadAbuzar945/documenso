@@ -101,7 +101,7 @@ export async function action({ request }: { request: Request }) {
     // Verify the subscription exists for this organisation and is active
     const subscription = await prisma.subscription.findFirst({
       where: {
-        priceId: subscriptionCode,
+        planId: subscriptionCode,
         organisationId: organisation.id,
         status: 'ACTIVE',
       },

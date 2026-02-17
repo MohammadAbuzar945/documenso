@@ -21,6 +21,7 @@ import { validateIfSubscriptionIsRequired } from '../../utils/billing';
 import { buildOrganisationWhereQuery } from '../../utils/organisations';
 import { renderEmailWithI18N } from '../../utils/render-email-with-i18n';
 import { getEmailContext } from '../email/get-email-context';
+import { getCurrentSubscriptionByOrganisationId } from '../subscription/get-current-subscription-by-organisation-id';
 import { getMemberOrganisationRole } from '../team/get-member-roles';
 
 export type CreateOrganisationMemberInvitesOptions = {
@@ -63,7 +64,6 @@ export const createOrganisationMemberInvites = async ({
       },
       organisationGlobalSettings: true,
       organisationClaim: true,
-      subscription: true,
     },
   });
 
@@ -73,7 +73,11 @@ export const createOrganisationMemberInvites = async ({
 
   const { organisationClaim } = organisation;
 
-  const subscription = validateIfSubscriptionIsRequired(organisation.subscription);
+  const currentSubscription = await getCurrentSubscriptionByOrganisationId({
+    organisationId: organisation.id,
+  });
+
+  const subscription = validateIfSubscriptionIsRequired(currentSubscription);
 
   const currentOrganisationMemberRole = await getMemberOrganisationRole({
     organisationId: organisation.id,

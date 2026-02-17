@@ -70,7 +70,6 @@ export const createTeam = async ({
     }),
     include: {
       groups: true,
-      subscription: true,
       organisationClaim: true,
       owner: {
         select: {

@@ -1,4 +1,5 @@
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
+import { getCurrentSubscriptionByOrganisationId } from '@documenso/lib/server-only/subscription/get-current-subscription-by-organisation-id';
 import { prisma } from '@documenso/prisma';
 
 import { authenticatedProcedure } from '../trpc';
@@ -50,7 +51,6 @@ export const getOrganisation = async ({
     },
     include: {
       organisationGlobalSettings: true,
-      subscription: true,
       organisationClaim: true,
       members: {
         select: {
@@ -83,8 +83,13 @@ export const getOrganisation = async ({
     });
   }
 
+  const subscription = await getCurrentSubscriptionByOrganisationId({
+    organisationId: organisation.id,
+  });
+
   return {
     ...organisation,
+    subscription,
     teams: organisation.teams,
   };
 };

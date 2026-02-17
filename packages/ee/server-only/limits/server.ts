@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 
 import { IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
 import { INTERNAL_CLAIM_ID } from '@documenso/lib/types/subscription';
+import { getCurrentSubscriptionByOrganisationId } from '@documenso/lib/server-only/subscription/get-current-subscription-by-organisation-id';
 import { prisma } from '@documenso/prisma';
 
 import {
@@ -83,7 +84,6 @@ export const getServerLimits = async ({
       },
     },
     include: {
-      subscription: true,
       organisationClaim: true,
     },
   });
@@ -98,7 +98,9 @@ export const getServerLimits = async ({
     throw new Error(ERROR_CODES.USER_FETCH_FAILED);
   }
 
-  const subscription = organisation.subscription;
+  const subscription = await getCurrentSubscriptionByOrganisationId({
+    organisationId: organisation.id,
+  });
   
   // Use organization owner's credits for all members in the organization
   // This allows organization members to share and use the owner's credits

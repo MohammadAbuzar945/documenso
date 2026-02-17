@@ -42,7 +42,6 @@ export const onSubscriptionUpdated = async ({
     },
     include: {
       organisationClaim: true,
-      subscription: true,
     },
   });
 
@@ -54,14 +53,6 @@ export const onSubscriptionUpdated = async ({
       } satisfies StripeWebhookResponse,
       { status: 500 },
     );
-  }
-
-  if (
-    organisation.subscription &&
-    organisation.subscription.status !== SubscriptionStatus.INACTIVE &&
-    organisation.subscription.planId !== subscription.id
-  ) {
-    console.error('[WARNING]: Organisation might have two subscriptions');
   }
 
   const previousItem = previousAttributes?.items?.data[0];
@@ -114,12 +105,23 @@ export const onSubscriptionUpdated = async ({
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.subscription.update({
+    await tx.subscription.upsert({
       where: {
-        organisationId: organisation.id,
+        planId: subscription.id,
       },
-      data: {
-        status: status,
+      create: {
+        organisationId: organisation.id,
+        customerId,
+        status,
+        planId: subscription.id,
+        priceId: subscription.items.data[0].price.id,
+        periodEnd,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      },
+      update: {
+        organisationId: organisation.id,
+        customerId,
+        status,
         planId: subscription.id,
         priceId: subscription.items.data[0].price.id,
         periodEnd,

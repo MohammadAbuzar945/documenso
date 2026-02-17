@@ -1,6 +1,7 @@
 import { syncMemberCountWithStripeSeatPlan } from '@documenso/ee/server-only/stripe/update-subscription-item-quantity';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { jobs } from '@documenso/lib/jobs/client';
+import { getCurrentSubscriptionByOrganisationId } from '@documenso/lib/server-only/subscription/get-current-subscription-by-organisation-id';
 import { validateIfSubscriptionIsRequired } from '@documenso/lib/utils/billing';
 import { buildOrganisationWhereQuery } from '@documenso/lib/utils/organisations';
 import { prisma } from '@documenso/prisma';
@@ -29,7 +30,6 @@ export const leaveOrganisationRoute = authenticatedProcedure
       where: buildOrganisationWhereQuery({ organisationId, userId }),
       include: {
         organisationClaim: true,
-        subscription: true,
         invites: {
           where: {
             status: OrganisationMemberInviteStatus.PENDING,
@@ -52,7 +52,11 @@ export const leaveOrganisationRoute = authenticatedProcedure
 
     const { organisationClaim } = organisation;
 
-    const subscription = validateIfSubscriptionIsRequired(organisation.subscription);
+    const currentSubscription = await getCurrentSubscriptionByOrganisationId({
+      organisationId: organisation.id,
+    });
+
+    const subscription = validateIfSubscriptionIsRequired(currentSubscription);
 
     const inviteCount = organisation.invites.length;
     const newMemberCount = organisation.members.length + inviteCount - 1;

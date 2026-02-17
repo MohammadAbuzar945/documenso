@@ -1,4 +1,5 @@
 import { getHighestOrganisationRoleInGroup } from '@documenso/lib/utils/organisations';
+import { getCurrentSubscriptionsByOrganisationIds } from '@documenso/lib/server-only/subscription/get-current-subscriptions-by-organisation-ids';
 import {
   buildTeamWhereQuery,
   extractDerivedTeamSettings,
@@ -35,7 +36,6 @@ export const getOrganisationSession = async ({
     include: {
       organisationClaim: true,
       organisationGlobalSettings: true,
-      subscription: true,
       groups: {
         where: {
           organisationGroupMembers: {
@@ -72,11 +72,16 @@ export const getOrganisationSession = async ({
     },
   });
 
+  const subscriptionsByOrganisationId = await getCurrentSubscriptionsByOrganisationIds({
+    organisationIds: organisations.map((organisation) => organisation.id),
+  });
+
   return organisations.map((organisation) => {
     const { organisationGlobalSettings } = organisation;
 
     return {
       ...organisation,
+      subscription: subscriptionsByOrganisationId[organisation.id] ?? null,
       teams: organisation.teams.map((team) => {
         const derivedSettings = extractDerivedTeamSettings(
           organisationGlobalSettings,

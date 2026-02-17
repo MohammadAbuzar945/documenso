@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 import type { FindResultResponse } from '@documenso/lib/types/search-params';
+import { getCurrentSubscriptionsByOrganisationIds } from '@documenso/lib/server-only/subscription/get-current-subscriptions-by-organisation-ids';
 import { prisma } from '@documenso/prisma';
 
 import { adminProcedure } from '../trpc';
@@ -142,7 +143,6 @@ export const findAdminOrganisations = async ({
             name: true,
           },
         },
-        subscription: true,
       },
     }),
     prisma.organisation.count({
@@ -150,8 +150,15 @@ export const findAdminOrganisations = async ({
     }),
   ]);
 
+  const subscriptionsByOrganisationId = await getCurrentSubscriptionsByOrganisationIds({
+    organisationIds: data.map((organisation) => organisation.id),
+  });
+
   return {
-    data,
+    data: data.map((organisation) => ({
+      ...organisation,
+      subscription: subscriptionsByOrganisationId[organisation.id] ?? null,
+    })),
     count,
     currentPage: Math.max(page, 1),
     perPage,

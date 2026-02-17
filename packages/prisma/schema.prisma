@@ -244,7 +244,7 @@ model Subscription {
 
   customerId String
 
-  organisationId String       @unique
+  organisationId String
   organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
   @@index([organisationId])
@@ -678,7 +678,6 @@ model Organisation {
   avatarImageId String?
 
   customerId   String?       @unique
-  subscription Subscription?
 
   organisationClaimId String            @unique
   organisationClaim   OrganisationClaim @relation(fields: [organisationClaimId], references: [id])
@@ -702,6 +701,8 @@ model Organisation {
 
   organisationAuthenticationPortalId String                           @unique
   organisationAuthenticationPortal   OrganisationAuthenticationPortal @relation(fields: [organisationAuthenticationPortalId], references: [id])
+
+  subscriptions Subscription[]
 
   @@index([name])
   @@index([ownerUserId])
