@@ -888,6 +888,7 @@ model Team {
   url           String   @unique
   createdAt     DateTime @default(now())
   avatarImageId String?
+  creditConsumed Int      @default(0)
 
   teamEmail         TeamEmail?
   emailVerification TeamEmailVerification?

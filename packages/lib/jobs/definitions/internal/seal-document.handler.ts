@@ -316,6 +316,15 @@ export const run = async ({
         },
       });
 
+      // Increment creditConsumed for the team when document is completed (not rejected)
+      if (!isRejected && !isResealing) {
+        await tx.$executeRaw`
+          UPDATE "Team"
+          SET "creditConsumed" = "creditConsumed" + 1
+          WHERE id = ${envelope.teamId}
+        `;
+      }
+
       await tx.documentAuditLog.create({
         data: createDocumentAuditLogData({
           type: DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED,

@@ -1,5 +1,6 @@
 import { prisma } from '@documenso/prisma';
 import { PLAN_DOCUMENT_QUOTAS } from '@documenso/ee/server-only/limits/constants';
+import { ensureUserCredits } from '@documenso/ee/server-only/limits/user-credits';
 
 export async function action({ request }: { request: Request }){
   try {
@@ -68,18 +69,22 @@ export async function action({ request }: { request: Request }){
               },
             });
 
-            // Get existing credits
-            const existingCredits = user.userCredits[0]?.credits ?? 0;
-            // Get new plan credits
+            // Ensure user has a credits record
+            const userCreditsRecord = await ensureUserCredits(user.id);
+            
+            // Get new plan credits based on plan code
             const newPlanCredits = PLAN_DOCUMENT_QUOTAS[plan.plan_code] ?? 0;
 
+            if (newPlanCredits === 0) {
+              console.warn(`Plan code ${plan.plan_code} not found in PLAN_DOCUMENT_QUOTAS. No credits will be added.`);
+            }
 
-            
+            // Add credits to existing credits
             const userCredits = await prisma.userCredits.update({
-              where: { id: user.userCredits[0]?.id },
+              where: { id: userCreditsRecord.id },
               data: {
-                credits: Number(existingCredits) + Number(newPlanCredits),
-                expiresAt: next_payment_date,
+                credits: Number(userCreditsRecord.credits) + Number(newPlanCredits),
+                expiresAt: next_payment_date ? new Date(next_payment_date) : null,
               },
             });
 
@@ -164,15 +169,18 @@ export async function action({ request }: { request: Request }){
       });
 
       if (user) {
-        const existingCredits = user.userCredits[0]?.credits ?? 0;
+        // Ensure user has a credits record
+        const userCreditsRecord = await ensureUserCredits(user.id);
         const newPlanCredits = refferCredits ?? 0;
 
-        await prisma.userCredits.update({
-          where: { id: user.userCredits[0]?.id },
-          data: {
-            credits: Number(existingCredits) + Number(newPlanCredits),
-          },
-        });
+        if (newPlanCredits > 0) {
+          await prisma.userCredits.update({
+            where: { id: userCreditsRecord.id },
+            data: {
+              credits: Number(userCreditsRecord.credits) + Number(newPlanCredits),
+            },
+          });
+        }
       }
     }
     return new Response(JSON.stringify({ success: true }), { status: 200 });
