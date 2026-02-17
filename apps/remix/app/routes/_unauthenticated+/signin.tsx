@@ -69,45 +69,40 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-b from-background via-background to-muted px-4 py-8">
-      <div className="w-full max-w-lg">
-        <div className="border-border bg-background/90 dark:bg-background z-10 rounded-2xl border p-8 shadow-sm backdrop-blur">
-          <div className="flex flex-col items-center text-center">
-            <BrandingLogo className="mb-4 h-10 w-auto" />
+    <div className="w-screen max-w-lg px-4">
+      <div className="border-border dark:bg-background z-10 rounded-xl border bg-neutral-100 p-6">
+        <BrandingLogo className="mb-6 h-10 w-auto" />
 
-            <h1 className="text-2xl font-semibold tracking-tight">
-              <Trans>Sign in to your account</Trans>
-            </h1>
+        <h1 className="text-2xl font-semibold">
+          <Trans>Sign in to your account</Trans>
+        </h1>
 
-            <p className="text-muted-foreground mt-2 text-sm">
-              <Trans>Welcome back, we are lucky to have you.</Trans>
-            </p>
-          </div>
+        <p className="text-muted-foreground mt-2 text-sm">
+          <Trans>Welcome back, we are lucky to have you.</Trans>
+        </p>
+        <hr className="-mx-6 my-4" />
 
-          <div className="mt-6">
-            <SignInForm
-              isGoogleSSOEnabled={isGoogleSSOEnabled}
-              isMicrosoftSSOEnabled={isMicrosoftSSOEnabled}
-              isOIDCSSOEnabled={isOIDCSSOEnabled}
-              oidcProviderLabel={oidcProviderLabel}
-              returnTo={returnTo}
-            />
-          </div>
+        <SignInForm
+          isGoogleSSOEnabled={isGoogleSSOEnabled}
+          isMicrosoftSSOEnabled={isMicrosoftSSOEnabled}
+          isOIDCSSOEnabled={isOIDCSSOEnabled}
+          oidcProviderLabel={oidcProviderLabel}
+          returnTo={returnTo}
+        />
 
-          {!isEmbeddedRedirect && env('NEXT_PUBLIC_DISABLE_SIGNUP') !== 'true' && (
-            <p className="text-muted-foreground mt-8 text-center text-sm">
-              <Trans>
-                Don't have an account?{' '}
-                <Link
-                  to={returnTo ? `/signup?returnTo=${encodeURIComponent(returnTo)}` : '/signup'}
-                  className="text-documenso-700 duration-200 hover:opacity-70"
-                >
-                  Sign up
-                </Link>
-              </Trans>
-            </p>
-          )}
-        </div>
+        {!isEmbeddedRedirect && env('NEXT_PUBLIC_DISABLE_SIGNUP') !== 'true' && (
+          <p className="text-muted-foreground mt-6 text-center text-sm">
+            <Trans>
+              Don't have an account?{' '}
+              <Link
+                to={returnTo ? `/signup?returnTo=${encodeURIComponent(returnTo)}` : '/signup'}
+                className="text-documenso-700 duration-200 hover:opacity-70"
+              >
+                Sign up
+              </Link>
+            </Trans>
+          </p>
+        )}
       </div>
     </div>
   );
