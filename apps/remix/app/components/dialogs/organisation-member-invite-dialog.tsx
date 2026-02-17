@@ -186,9 +186,9 @@ export const OrganisationMemberInviteDialog = ({
     }
 
     // This is probably going to screw us over in the future.
-    if (fullOrganisation.organisationClaim.originalSubscriptionClaimId !== INTERNAL_CLAIM_ID.TEAM) {
-      return 'alert';
-    }
+    // if (fullOrganisation.organisationClaim.originalSubscriptionClaimId !== INTERNAL_CLAIM_ID.TEAM) {
+    //   return 'alert';
+    // }
 
     return 'form';
   }, [fullOrganisation]);
@@ -262,7 +262,7 @@ export const OrganisationMemberInviteDialog = ({
     });
 
     downloadFile({
-      filename: 'nomia-organisation-member-invites-template.csv',
+      filename: 'organisation-member-invites-template.csv',
       data: blob,
     });
   };
@@ -294,28 +294,7 @@ export const OrganisationMemberInviteDialog = ({
 
         {dialogState === 'loading' && <SpinnerBox className="py-32" />}
 
-        {dialogState === 'alert' && (
-          <>
-            <Alert
-              className="flex flex-col justify-between p-6 sm:flex-row sm:items-center"
-              variant="neutral"
-            >
-              <AlertDescription>
-                <Trans>
-                  Your plan does not support inviting members. Please upgrade or your plan or
-                  contact sales at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> if you
-                  would like to discuss your options.
-                </Trans>
-              </AlertDescription>
-            </Alert>
 
-            <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-                <Trans>Cancel</Trans>
-              </Button>
-            </DialogFooter>
-          </>
-        )}
 
         {dialogState === 'form' && (
           <Tabs
