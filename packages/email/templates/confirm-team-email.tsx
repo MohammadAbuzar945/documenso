@@ -51,7 +51,7 @@ export const ConfirmTeamEmailTemplate = ({
         <Section className="bg-white">
           <Container className="mx-auto mb-2 mt-8 max-w-xl rounded-lg border border-solid border-slate-200 px-2 pt-2 backdrop-blur-sm">
             {branding.brandingEnabled && branding.brandingLogo ? (
-              <Img src={branding.brandingLogo} alt="Branding Logo" className="mb-4 h-6 p-2" />
+              <Img src={branding.brandingLogo} alt="Branding Logo" className="mb-4 h-13 p-2" />
             ) : (
               <TemplateImage
                 assetBaseUrl={assetBaseUrl}
