@@ -184,7 +184,7 @@ const TEST_PLANS_DATA = {
     {
       name: '6000 envelopes',
       credits: 6000,
-      amount: 'ZAR 32,500',
+      amount: 'ZAR 33,000',
       planCode: 'PLN_moko1x694rvm5l8',
       label: 'Annually',
     },
