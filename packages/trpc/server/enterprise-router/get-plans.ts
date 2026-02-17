@@ -15,8 +15,8 @@ export const getPlansRoute = authenticatedProcedure.query(async ({ ctx }) => {
     const numberOfFreeOrganisations = await prisma.organisation.count({
       where: {
         ownerUserId: userId,
-        subscription: {
-          is: null,
+        subscriptions: {
+          none: {},
         },
       },
     });

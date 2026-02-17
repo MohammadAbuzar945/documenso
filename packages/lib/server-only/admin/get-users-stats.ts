@@ -10,8 +10,10 @@ export const getUsersCount = async () => {
 export const getOrganisationsWithSubscriptionsCount = async () => {
   return await prisma.organisation.count({
     where: {
-      subscription: {
-        status: SubscriptionStatus.ACTIVE,
+      subscriptions: {
+        some: {
+          status: SubscriptionStatus.ACTIVE,
+        },
       },
     },
   });
