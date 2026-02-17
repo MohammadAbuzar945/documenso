@@ -208,9 +208,9 @@ export const SignUpForm = ({
         <div className="bg-background/50 absolute -inset-8 -z-[1] backdrop-blur-[2px]" />
 
         <div className="relative flex h-full w-full flex-col items-center justify-evenly">
-          <div className="bg-background rounded-2xl border px-4 py-1 text-sm font-medium">
+          {/* <div className="bg-background rounded-2xl border px-4 py-1 text-sm font-medium">
             <Trans>User profiles are here!</Trans>
-          </div>
+          </div> */}
 
           <div className="w-full max-w-md">
             <UserProfileTimur

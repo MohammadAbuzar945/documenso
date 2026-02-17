@@ -70,8 +70,10 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="w-screen max-w-lg px-4">
-      <div className="border-border dark:bg-background z-10 rounded-xl border bg-neutral-100 p-6">
-        <BrandingLogo className="mb-6 h-10 w-auto" />
+      <div className="border-border dark:bg-background z-10 rounded-xl border bg-white p-6">
+        <div className="flex justify-center mb-6">
+          <BrandingLogo className="h-14 w-auto" />
+        </div>
 
         <h1 className="text-2xl font-semibold">
           <Trans>Sign in to your account</Trans>
