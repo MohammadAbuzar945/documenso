@@ -355,7 +355,7 @@ export const EnvelopeEditorUploadPage = () => {
                                 </div>
                               )}
 
-                              {!localFile.isUploading && localFile.envelopeItemId && (
+                              {localFiles.length > 1 && !localFile.isUploading && localFile.envelopeItemId && (
                                 <EnvelopeItemDeleteDialog
                                   canItemBeDeleted={canItemsBeModified}
                                   envelopeId={envelope.id}
