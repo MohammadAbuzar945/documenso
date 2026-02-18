@@ -114,6 +114,8 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
         <meta name="google" content="notranslate" />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
 
+
+
         {disableAnimations && (
           <style
             dangerouslySetInnerHTML={{
@@ -150,6 +152,67 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
 
         <ScrollRestoration />
         <Scripts />
+
+                {/* Cleanup: remove stray "$" text nodes that can be injected by CDNs between streaming markers */}
+                <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const isDollarText = (n) => n && n.nodeType === Node.TEXT_NODE && /^\\s*\\$\\s*$/.test(n.nodeValue || '');
+
+    const removeDollarTextsIn = (root) => {
+      if (!root) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const victims = [];
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (isDollarText(node)) victims.push(node);
+      }
+      victims.forEach((n) => n.parentNode && n.parentNode.removeChild(n));
+    };
+
+    const run = () => removeDollarTextsIn(document.body || document);
+
+    // If parsing isn't finished, schedule cleanup when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', run, { once: true });
+    } else {
+      // Run as soon as possible, then in the next tick to catch parser-inserted nodes
+      run();
+      setTimeout(run, 0);
+    }
+
+    // Also run after window load (some CDNs inject at onload)
+    window.addEventListener('load', () => {
+      run();
+      setTimeout(run, 0);
+      setTimeout(run, 200);
+    }, { once: true });
+
+    // Watch for post-load insertions (e.g., beacons injected after streaming completes)
+    const obs = new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (isDollarText(m.target)) {
+          m.target.parentNode && m.target.parentNode.removeChild(m.target);
+          continue;
+        }
+        for (const n of m.addedNodes) {
+          if (isDollarText(n)) {
+            n.parentNode && n.parentNode.removeChild(n);
+          } else if (n.nodeType === Node.ELEMENT_NODE) {
+            removeDollarTextsIn(n);
+          }
+        }
+      }
+    });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Optional: stop observing after a few seconds to avoid long-lived observers
+    setTimeout(() => { try { obs.disconnect(); } catch (_) {} }, 5000);
+  } catch (_) {}
+})();`,
+          }}
+        />
 
         <script
           dangerouslySetInnerHTML={{

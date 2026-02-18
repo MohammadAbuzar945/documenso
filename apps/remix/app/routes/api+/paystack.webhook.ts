@@ -5,7 +5,11 @@ import { ensureUserCredits } from '@documenso/ee/server-only/limits/user-credits
 export async function action({ request }: { request: Request }){
   try {
     const event = await request.json();
+    
     console.log('Paystack webhook received event:', JSON.stringify(event));
+
+
+
     if (event.event === 'subscription.create' || event.event === 'invoice.update') {
       const { customer, plan, subscription_code, next_payment_date } = event.data;
 
