@@ -35,10 +35,6 @@ export const appMetaTags = (title?: string) => {
       content: description,
     },
     {
-      property: 'og:image',
-      content: `${env('NEXT_PUBLIC_WEBAPP_URL')}/opengraph-image.jpg`,
-    },
-    {
       property: 'og:type',
       content: 'website',
     },
@@ -53,10 +49,6 @@ export const appMetaTags = (title?: string) => {
     {
       name: 'twitter:description',
       content: description,
-    },
-    {
-      name: 'twitter:image',
-      content: `${env('NEXT_PUBLIC_WEBAPP_URL')}/opengraph-image.jpg`,
-    },
+    }
   ];
 };
