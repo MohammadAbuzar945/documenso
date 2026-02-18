@@ -118,6 +118,7 @@ export const DocumentPageViewDropdown = ({ envelope }: DocumentPageViewDropdownP
           <Trans>Delete</Trans>
         </DropdownMenuItem>
 
+        {/*
         <DropdownMenuLabel>
           <Trans>Share</Trans>
         </DropdownMenuLabel>
@@ -136,6 +137,7 @@ export const DocumentPageViewDropdown = ({ envelope }: DocumentPageViewDropdownP
             }
           />
         )}
+        */}
 
         <DocumentResendDialog
           document={{
