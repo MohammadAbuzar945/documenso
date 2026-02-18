@@ -136,12 +136,40 @@ export async function action({ request }: { request: Request }){
       }
     }
     else if (event.event === 'charge.success') {
-      const { customer, metadata } = event.data;
+      const { customer, metadata, plan } = event.data;
       const customerEmail = customer.email;
       
       // Extract referral code from referrer URL
       const refferCredits = metadata.value as number;
-     
+
+      const planCode = plan?.plan_code;
+
+      //check if plan code is empty
+      if (!planCode) {
+
+        const user = await prisma.user.findUnique({
+          where: { email: customerEmail },
+        });
+
+        if (!user) {
+          console.error('User not found');
+          return;
+        }
+
+        //update user credits 
+        const userCreditsRecord = await ensureUserCredits(user.id);
+
+        if (userCreditsRecord) {
+          await prisma.userCredits.update({
+            where: { id: userCreditsRecord.id },
+            data: { credits: Number(userCreditsRecord.credits) + Number(refferCredits) },
+          });
+        }
+
+      
+        return new Response(JSON.stringify({ success: true, message: 'Credits added successfully' }), { status: 200 });
+      }
+
 
       console.log('Charge success details:', {
         customerEmail,
