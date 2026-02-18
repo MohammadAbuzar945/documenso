@@ -519,7 +519,10 @@ const decorateAndSignPdf = async ({
 
   pdfDoc = await PDF.load(await pdfDoc.save({ useXRefStream: true }));
 
-  const pdfBytes = await signPdf({ pdf: pdfDoc });
+  // Do not cryptographically sign rejected documents; only sign completed ones
+  const pdfBytes = isRejected
+    ? await pdfDoc.save({ useXRefStream: true })
+    : await signPdf({ pdf: pdfDoc });
 
   const { name } = path.parse(envelopeItem.title);
 
