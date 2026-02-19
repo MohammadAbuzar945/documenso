@@ -161,13 +161,15 @@ export const run = async ({
     // Get the rejection reason from the rejected recipient
     const rejectionReason = rejectedRecipient?.rejectionReason ?? '';
 
+    const creditsToConsume = envelopeItems.length;
+
     // Check if user has enough credits before proceeding (only for completed documents, not rejected or resealing)
     if (!isRejected && !isResealing) {
       const userCredits = await getUserCredits(creditOwnerId);
-      if (userCredits < 1) {
+      if (userCredits < creditsToConsume) {
         throw new AppError(AppErrorCode.INVALID_REQUEST, {
           message: 'Insufficient credits to seal document',
-          userMessage: 'You do not have enough credits to complete this document. Please purchase more credits.',
+          userMessage: `You do not have enough credits to complete this document. This envelope requires ${creditsToConsume} credit(s). Please purchase more credits.`,
         });
       }
     }
@@ -320,7 +322,7 @@ export const run = async ({
       if (!isRejected && !isResealing) {
         await tx.$executeRaw`
           UPDATE "Team"
-          SET "creditConsumed" = "creditConsumed" + 1
+          SET "creditConsumed" = "creditConsumed" + ${creditsToConsume}
           WHERE id = ${envelope.teamId}
         `;
       }
@@ -342,7 +344,7 @@ export const run = async ({
     // Deduct credits when document is completed (not rejected)
     // Use organization owner's credits if document is in an organization
     if (!isRejected && !isResealing) {
-      await deductUserCredits(creditOwnerId, 1);
+      await deductUserCredits(creditOwnerId, creditsToConsume);
     }
 
     return {
@@ -532,7 +534,7 @@ const decorateAndSignPdf = async ({
   const newDocumentData = await putPdfFileServerSide({
     name: `${name}${suffix}`,
     type: 'application/pdf',
-    arrayBuffer: async () => Promise.resolve(pdfBytes),
+    arrayBuffer: async () => Promise.resolve(pdfArrayBuffer),
   });
 
   return {
