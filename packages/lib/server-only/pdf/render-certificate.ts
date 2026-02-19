@@ -545,7 +545,7 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   const branding = new Konva.Group();
 
   const qrSize = qrToken ? 72 : 0;
-  const cardWidth = 500;
+  const cardWidth = 600;
   const dividerHeight = 1;
   const dividerMargin = 8;
 
@@ -562,20 +562,10 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   // Card container
   const cardY = qrSize + dividerMargin + dividerHeight + 8;
 
-  // Lock icon (using Unicode character)
-  const lockIcon = new Konva.Text({
-    x: 0,
-    y: 0,
-    text: '🔒',
-    fontFamily: 'Inter',
-    fontSize: 14,
-    height: 16,
-  });
-
   // Title text
   const titleText = new Konva.Text({
-    x: lockIcon.width() + 6,
-    y: 0,
+    x: 0,
+    y: cardY,
     text: 'Digitally Signed & Verified',
     fontFamily: 'Inter',
     fontSize: textSm,
@@ -584,23 +574,18 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
     height: 16,
   });
 
-  const headerGroup = new Konva.Group({
-    x: 0,
-    y: cardY,
-  });
-  headerGroup.add(lockIcon);
-  headerGroup.add(titleText);
-  branding.add(headerGroup);
+  branding.add(titleText);
 
-  // Body text
+  // Body text - full width, right aligned, no line breaks, smaller font
   const bodyText = new Konva.Text({
     x: 0,
     y: cardY + 20,
-    text: 'This document is digitally signed by\nNomia Africa (Pty) Ltd using Adobe AATL\ntrusted certificate issued by SSL.com.\n\nThis signature includes Long-Term Validation (LTV) metadata, \n ensuring the document\'s authenticity and integrity \ncan be verified for long-term archival purposes.',
+    text: 'This document is digitally signed by Nomia Africa (Pty) Ltd using Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document\'s authenticity and integrity can be verified for long-term archival purposes.',
     fontFamily: 'Inter',
-    fontSize: textXs,
+    fontSize: 7,
     fill: '#444',
     width: cardWidth,
+    align: 'right',
     wrap: 'word',
     lineHeight: 1.3,
   });
