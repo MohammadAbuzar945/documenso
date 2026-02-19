@@ -545,20 +545,67 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   const branding = new Konva.Group();
 
   const qrSize = qrToken ? 72 : 0;
+  const cardWidth = 500;
+  const dividerHeight = 1;
+  const dividerMargin = 8;
 
-  const text = new Konva.Text({
+  // Divider line above section
+  const divider = new Konva.Line({
+    points: [0, 0, cardWidth, 0],
+    stroke: '#e5e7eb',
+    strokeWidth: dividerHeight,
     x: 0,
-    y: qrSize + 16,
-    text: 'This document is digitally signed by Nomia Africa (Pty) Ltd using an Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document\'s authenticity and integrity can be verified for long-term archival purposes.',
+    y: qrSize + dividerMargin,
+  });
+  branding.add(divider);
+
+  // Card container
+  const cardY = qrSize + dividerMargin + dividerHeight + 8;
+
+  // Lock icon (using Unicode character)
+  const lockIcon = new Konva.Text({
+    x: 0,
+    y: 0,
+    text: '🔒',
     fontFamily: 'Inter',
-    fontSize: textXs,
-    fill: '#666666',
-    width: 500,
-    wrap: 'word',
-    lineHeight: 1.4,
+    fontSize: 14,
+    height: 16,
   });
 
-  branding.add(text);
+  // Title text
+  const titleText = new Konva.Text({
+    x: lockIcon.width() + 6,
+    y: 0,
+    text: 'Digitally Signed & Verified',
+    fontFamily: 'Inter',
+    fontSize: textSm,
+    fontStyle: fontMedium,
+    fill: '#444',
+    height: 16,
+  });
+
+  const headerGroup = new Konva.Group({
+    x: 0,
+    y: cardY,
+  });
+  headerGroup.add(lockIcon);
+  headerGroup.add(titleText);
+  branding.add(headerGroup);
+
+  // Body text
+  const bodyText = new Konva.Text({
+    x: 0,
+    y: cardY + 20,
+    text: 'This document is digitally signed by\nNomia Africa (Pty) Ltd using Adobe AATL\ntrusted certificate issued by SSL.com.\n\nThis signature includes Long-Term Validation (LTV) metadata, \n ensuring the document\'s authenticity and integrity \ncan be verified for long-term archival purposes.',
+    fontFamily: 'Inter',
+    fontSize: textXs,
+    fill: '#444',
+    width: cardWidth,
+    wrap: 'word',
+    lineHeight: 1.3,
+  });
+
+  branding.add(bodyText);
 
   if (qrToken) {
     const qrSvg = renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${qrToken}`, {

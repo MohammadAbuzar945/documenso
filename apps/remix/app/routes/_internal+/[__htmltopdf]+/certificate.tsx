@@ -7,6 +7,7 @@ import { redirect } from 'react-router';
 import { prop, sortBy } from 'remeda';
 import { match } from 'ts-pattern';
 import { UAParser } from 'ua-parser-js';
+import { LockIcon } from 'lucide-react';
 import { renderSVG } from 'uqr';
 
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
@@ -386,7 +387,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
       </Card>
 
       {!hidePoweredBy && (
-        <div className="my-8 flex-row-reverse space-y-4">
+        <div className="my-6 flex-row-reverse space-y-4">
           <div className="flex items-end justify-end gap-x-4">
             <div
               className="flex h-24 w-24 justify-center"
@@ -399,9 +400,30 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
           </div>
 
           <div className="flex items-end justify-end">
-            <p className="max-w-[500px] text-xs leading-relaxed print:text-[8px]" style={{ color: '#666666' }}>
-              This document is digitally signed by Nomia Africa (Pty) Ltd using an Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document's authenticity and integrity can be verified for long-term archival purposes.
-            </p>
+            <div className="max-w-[500px]">
+              {/* Divider line */}
+              <div className="mb-2 border-t border-gray-200" />
+              
+              {/* Verification card */}
+              <div className="space-y-2">
+                {/* Header with lock icon */}
+                <div className="flex items-center gap-2">
+                  <LockIcon className="h-3.5 w-3.5 print:h-3 print:w-3" style={{ color: '#444' }} />
+                  <h3 className="text-sm font-medium print:text-xs" style={{ color: '#444' }}>
+                    Digitally Signed & Verified
+                  </h3>
+                </div>
+                
+                {/* Body text */}
+                <p className="text-xs leading-relaxed print:text-[8px]" style={{ color: '#444' }}>
+                  This document is digitally signed by<br />
+                  Nomia Africa (Pty) Ltd using Adobe AATL<br />
+                  trusted certificate issued by SSL.com.<br />
+                  <br />
+                  This signature includes Long-Term Validation (LTV) metadata <br />, ensuring the document's authenticity and integrity <br /> can be verified for long-term archival purposes.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
