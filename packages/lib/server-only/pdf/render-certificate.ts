@@ -548,6 +548,31 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   const cardWidth = 600;
   const dividerHeight = 1;
   const dividerMargin = 8;
+  const qrSpacing = qrToken ? 16 : 0;
+
+  // Ensure the group has enough width to accommodate both QR code and text
+  const groupWidth = cardWidth + qrSize + qrSpacing;
+
+  // QR code positioned first (on the right)
+  if (qrToken) {
+    const qrSvg = renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${qrToken}`, {
+      ecc: 'Q',
+    });
+
+    const svgImage = await svgToPng(qrSvg);
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const qrSkiaImage = new SkiaImage(svgImage) as unknown as HTMLImageElement;
+    const qrImage = new Konva.Image({
+      image: qrSkiaImage,
+      height: qrSize,
+      width: qrSize,
+      x: groupWidth - qrSize,
+      y: 0,
+    });
+
+    branding.add(qrImage);
+  }
 
   // Divider line above section
   const divider = new Konva.Line({
@@ -562,7 +587,7 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   // Card container
   const cardY = qrSize + dividerMargin + dividerHeight + 8;
 
-  // Title text
+  // Title text - right aligned with width constraint
   const titleText = new Konva.Text({
     x: 0,
     y: cardY,
@@ -571,6 +596,8 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
     fontSize: textSm,
     fontStyle: fontMedium,
     fill: '#444',
+    width: cardWidth,
+    align: 'right',
     height: 16,
   });
 
@@ -591,26 +618,6 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   });
 
   branding.add(bodyText);
-
-  if (qrToken) {
-    const qrSvg = renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${qrToken}`, {
-      ecc: 'Q',
-    });
-
-    const svgImage = await svgToPng(qrSvg);
-
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const qrSkiaImage = new SkiaImage(svgImage) as unknown as HTMLImageElement;
-    const qrImage = new Konva.Image({
-      image: qrSkiaImage,
-      height: qrSize,
-      width: qrSize,
-      x: branding.getClientRect().width - qrSize,
-      y: 0,
-    });
-
-    branding.add(qrImage);
-  }
 
   return branding;
 };
@@ -750,6 +757,8 @@ export async function renderCertificate({
 
   const brandingGroup = await renderBranding({ qrToken, i18n });
   const brandingRect = brandingGroup.getClientRect();
+  // Ensure we account for the full cardWidth (600px) plus QR code if present
+  const brandingWidth = Math.max(brandingRect.width, qrToken ? 600 + 72 + 16 : 600);
   const brandingTopPadding = 24;
 
   const pages: Uint8Array[] = [];
@@ -788,7 +797,7 @@ export async function renderCertificate({
 
       if (brandingRect.height + brandingTopPadding <= remainingHeight) {
         brandingGroup.setAttrs({
-          x: pageWidth - brandingRect.width - margin,
+          x: pageWidth - brandingWidth - margin,
           y: group.getClientRect().height + brandingTopPadding,
         } satisfies Partial<Konva.GroupConfig>);
 
@@ -811,7 +820,7 @@ export async function renderCertificate({
     const page = new Konva.Layer();
 
     brandingGroup.setAttrs({
-      x: pageWidth - brandingRect.width - margin,
+      x: pageWidth - brandingWidth - margin,
       y: pageTopMargin / 2, // Less padding since there's nothing else on this page.
     } satisfies Partial<Konva.GroupConfig>);
 

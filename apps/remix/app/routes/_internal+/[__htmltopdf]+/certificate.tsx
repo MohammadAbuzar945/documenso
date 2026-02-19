@@ -406,7 +406,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
               {/* Verification card */}
               <div className="space-y-2">
                 {/* Header */}
-                <h3 className="text-sm font-medium print:text-xs" style={{ color: '#444' }}>
+                <h3 className="text-right text-sm font-medium print:text-xs" style={{ color: '#444' }}>
                   Digitally Signed & Verified
                 </h3>
                 
