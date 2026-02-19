@@ -5,7 +5,6 @@ import { Link, redirect } from 'react-router';
 import { getOptionalLoaderContext } from 'server/utils/get-loader-session';
 import { match } from 'ts-pattern';
 
-import signingCelebration from '@documenso/assets/images/signing-celebration.png';
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import { EnvelopeRenderProvider } from '@documenso/lib/client-only/providers/envelope-render-provider';
 import { useOptionalSession } from '@documenso/lib/client-only/providers/session';
@@ -338,7 +337,6 @@ const SigningPageV1 = ({ data }: { data: Awaited<ReturnType<typeof handleV1Loade
         <SigningCard3D
           name={recipient.name}
           signature={recipientSignature}
-          signingCelebrationImage={signingCelebration}
         />
 
         <div className="relative mt-2 flex w-full flex-col items-center">
@@ -438,7 +436,6 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
         <SigningCard3D
           name={recipient.name}
           signature={recipientSignature || undefined}
-          signingCelebrationImage={signingCelebration}
         />
 
         <div className="relative mt-2 flex w-full flex-col items-center">

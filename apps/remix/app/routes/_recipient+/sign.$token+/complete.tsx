@@ -5,7 +5,6 @@ import { CheckCircle2, Clock8, DownloadIcon, Loader2 } from 'lucide-react';
 import { Link } from 'react-router';
 import { match } from 'ts-pattern';
 
-import signingCelebration from '@documenso/assets/images/signing-celebration.png';
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import { useOptionalSession } from '@documenso/lib/client-only/providers/session';
 import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document/get-document-by-token';
@@ -168,7 +167,6 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
           <SigningCard3D
             name={recipientName}
             signature={signatures.at(0)}
-            signingCelebrationImage={signingCelebration}
           />
 
           <h2 className="mt-6 max-w-[35ch] text-center text-2xl font-semibold leading-normal md:text-3xl lg:text-4xl">
