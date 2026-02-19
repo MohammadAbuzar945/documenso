@@ -386,40 +386,35 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
       </Card>
 
       {!hidePoweredBy && (
-  <div className="my-6 w-full">
+        <div className="my-6 w-full">
+          <div className="mb-4 border-t border-gray-200" />
 
-    {/* Top Divider */}
-    <div className="mb-4 border-t border-gray-200" />
+          <div className="flex flex-col items-end gap-4">
+            <div
+              className="h-24 w-24"
+              dangerouslySetInnerHTML={{
+                __html: renderSVG(
+                  `${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`,
+                  { ecc: 'Q' },
+                ),
+              }}
+            />
 
-    <div className="flex flex-col items-end gap-4">
+            <div className="max-w-md space-y-2 text-right">
+              <h3 className="text-sm font-medium text-[#444] print:text-xs">
+                Digitally Signed & Verified
+              </h3>
 
-      {/* QR Section */}
-      <div className="flex flex-col items-end">
-        <div
-          className="h-24 w-24"
-          dangerouslySetInnerHTML={{
-            __html: renderSVG(
-              `${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`,
-              { ecc: 'Q' }
-            ),
-          }}
-        />
-      </div>
-
-      {/* Verification Text */}
-      <div className="max-w-md text-right space-y-2">
-        <h3 className="text-sm font-medium text-[#444] print:text-xs">
-          Digitally Signed & Verified
-        </h3>
-
-        <p className="text-[8px] leading-relaxed text-[#444] print:text-[7px]">
-          This document is digitally signed by Nomia Africa (Pty) Ltd using Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document's authenticity and integrity can be verified for long-term archival purposes.
-        </p>
-      </div>
-
-    </div>
-  </div>
-)}
+              <p className="text-[8px] leading-relaxed text-[#444] print:text-[7px]">
+                This document is digitally signed by Nomia Africa (Pty) Ltd using Adobe AATL
+                trusted certificate issued by SSL.com. This signature includes Long-Term Validation
+                (LTV) metadata, ensuring the document's authenticity and integrity can be verified
+                for long-term archival purposes.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

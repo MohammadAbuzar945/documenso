@@ -541,19 +541,21 @@ const renderRow = (options: RenderRowOptions) => {
   return rowGroup;
 };
 
-const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n: I18n }) => {
+const renderBranding = async ({
+  qrToken,
+  i18n,
+  availableWidth,
+}: {
+  qrToken: string | null;
+  i18n: I18n;
+  availableWidth: number;
+}) => {
   const branding = new Konva.Group();
 
   const qrSize = qrToken ? 72 : 0;
-  const cardWidth = 600;
-  const dividerHeight = 1;
-  const dividerMargin = 8;
-  const qrSpacing = qrToken ? 16 : 0;
+  const textGap = 8;
 
-  // Ensure the group has enough width to accommodate both QR code and text
-  const groupWidth = cardWidth + qrSize + qrSpacing;
-
-  // QR code positioned first (on the right)
+  // QR code at top-right
   if (qrToken) {
     const qrSvg = renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${qrToken}`, {
       ecc: 'Q',
@@ -567,69 +569,54 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
       image: qrSkiaImage,
       height: qrSize,
       width: qrSize,
-      x: groupWidth - qrSize,
+      x: availableWidth - qrSize,
       y: 0,
     });
 
     branding.add(qrImage);
   }
 
-  // Divider line above section
+  // Divider line
+  const dividerY = qrSize + textGap;
   const divider = new Konva.Line({
-    points: [0, 0, cardWidth, 0],
+    points: [0, 0, availableWidth, 0],
     stroke: '#e5e7eb',
-    strokeWidth: dividerHeight,
+    strokeWidth: 1,
     x: 0,
-    y: qrSize + dividerMargin,
+    y: dividerY,
   });
   branding.add(divider);
 
-  // Card container
-  const cardY = qrSize + dividerMargin + dividerHeight + 8;
-
-  // Title text - right aligned with width constraint
+  // Title text - right aligned, full available width
+  const titleY = dividerY + textGap;
   const titleText = new Konva.Text({
     x: 0,
-    y: cardY,
+    y: titleY,
     text: 'Digitally Signed & Verified',
     fontFamily: 'Inter',
     fontSize: textSm,
     fontStyle: fontMedium,
     fill: '#444',
-    width: cardWidth,
+    width: availableWidth,
     align: 'right',
-    height: 16,
   });
-
   branding.add(titleText);
 
-  // Body text - full width, right aligned, no line breaks, smaller font
+  // Body text - right aligned, full available width, smaller font
+  const bodyY = titleY + titleText.height() + 6;
   const bodyText = new Konva.Text({
     x: 0,
-    y: cardY + 20,
+    y: bodyY,
     text: 'This document is digitally signed by Nomia Africa (Pty) Ltd using Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document\'s authenticity and integrity can be verified for long-term archival purposes.',
     fontFamily: 'Inter',
     fontSize: 7,
     fill: '#444',
-    width: cardWidth,
+    width: availableWidth,
     align: 'right',
     wrap: 'word',
     lineHeight: 1.3,
   });
-
   branding.add(bodyText);
-  
-  // Add a transparent rect to ensure proper bounds calculation for the group
-  // This helps prevent clipping when the group is positioned
-  const boundsRect = new Konva.Rect({
-    x: 0,
-    y: 0,
-    width: groupWidth,
-    height: branding.getClientRect().height,
-    visible: false,
-    listening: false,
-  });
-  branding.add(boundsRect);
 
   return branding;
 };
@@ -767,11 +754,8 @@ export async function renderCertificate({
 
   const tables = renderTables({ groupedRows, columnWidths, i18n });
 
-  const brandingGroup = await renderBranding({ qrToken, i18n });
+  const brandingGroup = await renderBranding({ qrToken, i18n, availableWidth: tableWidth });
   const brandingRect = brandingGroup.getClientRect();
-  // Ensure we account for the full cardWidth (600px) plus QR code if present
-  // Add extra padding to prevent clipping
-  const brandingWidth = Math.max(brandingRect.width, qrToken ? 600 + 72 + 16 : 600) + 20;
   const brandingTopPadding = 24;
 
   const pages: Uint8Array[] = [];
@@ -810,7 +794,7 @@ export async function renderCertificate({
 
       if (brandingRect.height + brandingTopPadding <= remainingHeight) {
         brandingGroup.setAttrs({
-          x: pageWidth - brandingWidth - margin,
+          x: margin,
           y: group.getClientRect().height + brandingTopPadding,
         } satisfies Partial<Konva.GroupConfig>);
 
@@ -833,7 +817,7 @@ export async function renderCertificate({
     const page = new Konva.Layer();
 
     brandingGroup.setAttrs({
-      x: pageWidth - brandingWidth - margin,
+      x: margin,
       y: pageTopMargin / 2, // Less padding since there's nothing else on this page.
     } satisfies Partial<Konva.GroupConfig>);
 
