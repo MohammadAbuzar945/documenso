@@ -3,7 +3,7 @@ import { env } from '@documenso/lib/utils/env';
 
 export const appMetaTags = (title?: string) => {
   const description =
-    'Streamline your document signing with Nomia’s intuitive e-signature platform. Quick, easy, and secure, our solution makes e-signing effortless and affordable. Create reusable templates, manage individual or bulk signings, track document status, and send reminders—all within a seamless, integrated workflow.';
+    'An intuitive, affordable app with pay-as-you-go pricing bundles and unlimited seats. Premium e-sign without the premium price tag. Fully AATL compliant.';
 
   return [
     {
@@ -28,7 +28,7 @@ export const appMetaTags = (title?: string) => {
     },
     {
       property: 'og:title',
-      content: 'Nomia - The e-signature platform',
+      content: 'Nomia | E-Sign App with Unlimited Seats',
     },
     {
       property: 'og:description',
