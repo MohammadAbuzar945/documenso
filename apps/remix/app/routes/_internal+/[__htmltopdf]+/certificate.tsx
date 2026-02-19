@@ -386,39 +386,41 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
       </Card>
 
       {!hidePoweredBy && (
-        <div className="my-6 flex-row-reverse space-y-4">
-          <div className="flex items-end justify-end gap-x-4">
-            <div
-              className="flex h-24 w-24 justify-center"
-              dangerouslySetInnerHTML={{
-                __html: renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`, {
-                  ecc: 'Q',
-                }),
-              }}
-            />
-          </div>
+  <div className="my-6 w-full">
 
-          <div className="flex items-end justify-end">
-            <div className="w-full max-w-[600px]">
-              {/* Divider line */}
-              <div className="mb-2 border-t border-gray-200" />
-              
-              {/* Verification card */}
-              <div className="space-y-2">
-                {/* Header */}
-                <h3 className="text-right text-sm font-medium print:text-xs" style={{ color: '#444' }}>
-                  Digitally Signed & Verified
-                </h3>
-                
-                {/* Body text - full width, right aligned, no line breaks, smaller font */}
-                <p className="text-right text-[10px] leading-relaxed print:text-[7px]" style={{ color: '#444' }}>
-                  This document is digitally signed by Nomia Africa (Pty) Ltd using Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document's authenticity and integrity can be verified for long-term archival purposes.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+    {/* Top Divider */}
+    <div className="mb-4 border-t border-gray-200" />
+
+    <div className="flex flex-col items-end gap-4">
+
+      {/* QR Section */}
+      <div className="flex flex-col items-end">
+        <div
+          className="h-24 w-24"
+          dangerouslySetInnerHTML={{
+            __html: renderSVG(
+              `${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`,
+              { ecc: 'Q' }
+            ),
+          }}
+        />
+      </div>
+
+      {/* Verification Text */}
+      <div className="max-w-md text-right space-y-2">
+        <h3 className="text-sm font-medium text-[#444] print:text-xs">
+          Digitally Signed & Verified
+        </h3>
+
+        <p className="text-[8px] leading-relaxed text-[#444] print:text-[7px]">
+          This document is digitally signed by Nomia Africa (Pty) Ltd using Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document's authenticity and integrity can be verified for long-term archival purposes.
+        </p>
+      </div>
+
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

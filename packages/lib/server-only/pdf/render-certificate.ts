@@ -618,6 +618,18 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
   });
 
   branding.add(bodyText);
+  
+  // Add a transparent rect to ensure proper bounds calculation for the group
+  // This helps prevent clipping when the group is positioned
+  const boundsRect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: groupWidth,
+    height: branding.getClientRect().height,
+    visible: false,
+    listening: false,
+  });
+  branding.add(boundsRect);
 
   return branding;
 };
@@ -758,7 +770,8 @@ export async function renderCertificate({
   const brandingGroup = await renderBranding({ qrToken, i18n });
   const brandingRect = brandingGroup.getClientRect();
   // Ensure we account for the full cardWidth (600px) plus QR code if present
-  const brandingWidth = Math.max(brandingRect.width, qrToken ? 600 + 72 + 16 : 600);
+  // Add extra padding to prevent clipping
+  const brandingWidth = Math.max(brandingRect.width, qrToken ? 600 + 72 + 16 : 600) + 20;
   const brandingTopPadding = 24;
 
   const pages: Uint8Array[] = [];
