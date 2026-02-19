@@ -186,8 +186,8 @@ export const DocumentSigningAutoSign = ({
       return;
     }
 
-    console.log('autoSignableFields', autoSignableFields);
-    console.log('AUTO_SIGN_THRESHOLD', AUTO_SIGN_THRESHOLD);
+    // console.log('autoSignableFields', autoSignableFields);
+    // console.log('AUTO_SIGN_THRESHOLD', AUTO_SIGN_THRESHOLD);
 
     if (autoSignableFields.length <= AUTO_SIGN_THRESHOLD) {
       return;
