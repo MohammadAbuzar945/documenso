@@ -534,7 +534,7 @@ const decorateAndSignPdf = async ({
   const newDocumentData = await putPdfFileServerSide({
     name: `${name}${suffix}`,
     type: 'application/pdf',
-    arrayBuffer: async () => Promise.resolve(pdfArrayBuffer),
+    arrayBuffer: async () => Promise.resolve(pdfBytes),
   });
 
   return {
