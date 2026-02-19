@@ -33,8 +33,6 @@ import {
   TableRow,
 } from '@documenso/ui/primitives/table';
 
-import { BrandingLogo } from '~/components/general/branding-logo';
-
 import type { Route } from './+types/certificate';
 
 const FRIENDLY_SIGNING_REASONS = {
@@ -400,11 +398,10 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
             />
           </div>
 
-          <div className="flex items-end justify-end gap-x-4">
-            <p className="flex-shrink-0 text-sm font-medium print:text-xs">
-              {_(msg`Signing certificate provided by`)}:
+          <div className="flex items-end justify-end">
+            <p className="max-w-[500px] text-xs leading-relaxed print:text-[8px]" style={{ color: '#666666' }}>
+              This document is digitally signed by Nomia Africa (Pty) Ltd using an Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document's authenticity and integrity can be verified for long-term archival purposes.
             </p>
-            <BrandingLogo className="max-h-6 print:max-h-4" />
           </div>
         </div>
       )}

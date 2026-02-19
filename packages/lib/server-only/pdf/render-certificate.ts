@@ -544,40 +544,21 @@ const renderRow = (options: RenderRowOptions) => {
 const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n: I18n }) => {
   const branding = new Konva.Group();
 
-  const brandingHeight = 12;
+  const qrSize = qrToken ? 72 : 0;
 
   const text = new Konva.Text({
     x: 0,
-    verticalAlign: 'middle',
-    text: i18n._(msg`Signing certificate provided by`) + ':',
-    fontStyle: fontMedium,
-    fontFamily: 'Inter',
-    fontSize: textSm,
-    height: brandingHeight,
-  });
-
-  const logoPath = path.join(process.cwd(), 'public/static/logo.png');
-  const logo = fs.readFileSync(logoPath);
-
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const img = new SkiaImage(logo) as unknown as HTMLImageElement;
-
-  const documensoImage = new Konva.Image({
-    image: img,
-    height: brandingHeight,
-    width: brandingHeight * (img.width / img.height),
-    x: text.width() + 16,
-  });
-
-  const qrSize = qrToken ? 72 : 0;
-
-  const logoGroup = new Konva.Group({
     y: qrSize + 16,
+    text: 'This document is digitally signed by Nomia Africa (Pty) Ltd using an Adobe AATL trusted certificate issued by SSL.com. This signature includes Long-Term Validation (LTV) metadata, ensuring the document\'s authenticity and integrity can be verified for long-term archival purposes.',
+    fontFamily: 'Inter',
+    fontSize: textXs,
+    fill: '#666666',
+    width: 500,
+    wrap: 'word',
+    lineHeight: 1.4,
   });
-  logoGroup.add(text);
-  logoGroup.add(documensoImage);
 
-  branding.add(logoGroup);
+  branding.add(text);
 
   if (qrToken) {
     const qrSvg = renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${qrToken}`, {
