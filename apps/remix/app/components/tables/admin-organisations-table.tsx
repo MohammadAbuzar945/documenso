@@ -4,7 +4,6 @@ import { useLingui } from '@lingui/react/macro';
 import { Trans } from '@lingui/react/macro';
 import {
   CreditCardIcon,
-  ExternalLinkIcon,
   MoreHorizontalIcon,
   SettingsIcon,
   UserIcon,
@@ -12,7 +11,6 @@ import {
 import { Link, useSearchParams } from 'react-router';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
-import { SUBSCRIPTION_STATUS_MAP } from '@documenso/lib/constants/billing';
 import { ZUrlSearchParamsSchema } from '@documenso/lib/types/search-params';
 import { trpc } from '@documenso/trpc/react';
 import { Badge } from '@documenso/ui/primitives/badge';
@@ -100,43 +98,6 @@ export const AdminOrganisationsTable = ({
             {row.original.owner.id === memberUserId ? t`Owner` : t`Member`}
           </Badge>
         ),
-      },
-      {
-        id: 'billingStatus',
-        header: t`Status`,
-        cell: ({ row }) => {
-          const subscription = row.original.subscription;
-          const isPaid = subscription && subscription.status === 'ACTIVE';
-          return (
-            <div
-              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                isPaid ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}
-            >
-              {isPaid ? (
-                <Trans context="Subscription status">Paid</Trans>
-              ) : (
-                <Trans context="Subscription status">Free</Trans>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        header: t`Subscription`,
-        cell: ({ row }) =>
-          row.original.subscription ? (
-            <Link
-              to={`https://dashboard.stripe.com/subscriptions/${row.original.subscription.planId}`}
-              target="_blank"
-              className="flex flex-row items-center gap-2"
-            >
-              {SUBSCRIPTION_STATUS_MAP[row.original.subscription.status]}
-              <ExternalLinkIcon className="h-4 w-4" />
-            </Link>
-          ) : (
-            <Trans>None</Trans>
-          ),
       },
       {
         id: 'actions',

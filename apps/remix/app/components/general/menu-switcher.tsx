@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { ChevronsUpDown, CreditCardIcon, Plus } from 'lucide-react';
+import { ChevronsUpDown, CreditCardIcon } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { authClient } from '@documenso/auth/client';
@@ -11,7 +11,6 @@ import { useSession } from '@documenso/lib/client-only/providers/session';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { isAdmin } from '@documenso/lib/utils/is-admin';
 import { extractInitials } from '@documenso/lib/utils/recipient-formatter';
-import { OrganisationType } from '@documenso/prisma/generated/types';
 import { LanguageSwitcherDialog } from '@documenso/ui/components/common/language-switcher-dialog';
 import { cn } from '@documenso/ui/lib/utils';
 import { AvatarWithText } from '@documenso/ui/primitives/avatar';
@@ -20,7 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@documenso/ui/primitives/dropdown-menu';
 
@@ -32,12 +30,6 @@ export const MenuSwitcher = () => {
   const [languageSwitcherOpen, setLanguageSwitcherOpen] = useState(false);
 
   const isUserAdmin = isAdmin(user);
-
-  const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
-  const hasPersonalOrganisation = organisations.some(
-    (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
-  );
-  const canCreateOrganisation = isUserAdmin && (!hasPersonalOrganisation || ownedOrganisationsCount < 2);
 
   const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
 
@@ -75,21 +67,6 @@ export const MenuSwitcher = () => {
         align="end"
         forceMount
       >
-        {canCreateOrganisation && (
-          <>
-        <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
-          <Link
-            to="/settings/organisations?action=add-organisation"
-            className="flex items-center justify-between"
-          >
-            <Trans>Create Organisation</Trans>
-            <Plus className="ml-2 h-4 w-4" />
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-          </>
-        )}
-
         {isUserAdmin && (
           <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
             <Link to="/admin">

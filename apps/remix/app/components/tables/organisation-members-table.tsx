@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { OrganisationGroupType } from '@prisma/client';
 import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useSearchParams } from 'react-router';
 
@@ -101,11 +100,6 @@ export const OrganisationMembersDataTable = () => {
         cell: ({ row }) => i18n.date(row.original.createdAt),
       },
       {
-        header: _(msg`Groups`),
-        cell: ({ row }) =>
-          row.original.groups.filter((group) => group.type === OrganisationGroupType.CUSTOM).length,
-      },
-      {
         header: _(msg`Actions`),
         cell: ({ row }) => (
           <DropdownMenu>
@@ -201,9 +195,6 @@ export const OrganisationMembersDataTable = () => {
             </TableCell>
             <TableCell>
               <Skeleton className="h-4 w-20 rounded-full" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-6 rounded-full" />
             </TableCell>
           </>
         ),

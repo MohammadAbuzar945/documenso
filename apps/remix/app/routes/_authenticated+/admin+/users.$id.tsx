@@ -23,7 +23,6 @@ import { Input } from '@documenso/ui/primitives/input';
 import { SpinnerBox } from '@documenso/ui/primitives/spinner';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
-import { AdminOrganisationCreateDialog } from '~/components/dialogs/admin-organisation-create-dialog';
 import { AdminUserDeleteDialog } from '~/components/dialogs/admin-user-delete-dialog';
 import { AdminUserDisableDialog } from '~/components/dialogs/admin-user-disable-dialog';
 import { AdminUserEnableDialog } from '~/components/dialogs/admin-user-enable-dialog';
@@ -201,15 +200,6 @@ const AdminUserPage = ({ user }: { user: TGetUserResponse }) => {
               <Trans>Organisations that the user is a member of.</Trans>
             </p>
           </div>
-
-          <AdminOrganisationCreateDialog
-            ownerUserId={user.id}
-            trigger={
-              <Button variant="outline" size="sm">
-                <Trans>Create Organisation</Trans>
-              </Button>
-            }
-          />
         </div>
 
         <AdminOrganisationsTable
