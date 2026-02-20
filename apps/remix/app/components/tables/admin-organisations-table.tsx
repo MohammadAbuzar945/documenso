@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { useLingui } from '@lingui/react/macro';
 import { Trans } from '@lingui/react/macro';
 import {
-  CreditCardIcon,
   MoreHorizontalIcon,
   SettingsIcon,
   UserIcon,
@@ -123,14 +122,6 @@ export const AdminOrganisationsTable = ({
                 <Link to={`/admin/users/${row.original.owner.id}`}>
                   <UserIcon className="mr-2 h-4 w-4" />
                   <Trans>View owner</Trans>
-                </Link>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem disabled={!row.original.customerId} asChild>
-                <Link to={`https://dashboard.stripe.com/customers/${row.original.customerId}`}>
-                  <CreditCardIcon className="mr-2 h-4 w-4" />
-                  <Trans>Stripe</Trans>
-                  {!row.original.customerId && <span>&nbsp;(N/A)</span>}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
