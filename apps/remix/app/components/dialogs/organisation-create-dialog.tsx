@@ -105,12 +105,19 @@ export const OrganisationCreateDialog = ({ trigger, ...props }: OrganisationCrea
 
   // If open prop is provided, the dialog is controlled and we shouldn't render the trigger
   const isControlled = props.open !== undefined;
+  const openValue = isControlled ? props.open : open;
+  const setOpenValue = (value: boolean) => {
+    if (!form.formState.isSubmitting) {
+      setOpen(value);
+      props.onOpenChange?.(value);
+    }
+  };
 
   return (
     <Dialog
       {...props}
-      open={open}
-      onOpenChange={(value) => !form.formState.isSubmitting && setOpen(value)}
+      open={openValue}
+      onOpenChange={setOpenValue}
     >
       {!isControlled && (
         <DialogTrigger onClick={(e) => e.stopPropagation()} asChild={true}>

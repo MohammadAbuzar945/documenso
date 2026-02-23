@@ -81,8 +81,8 @@ export const OrgMenuSwitcher = () => {
   const handleCreateOrganisationClick = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (canCreateOrganisation) {
-      setIsOpen(false);
       setCreateDialogOpen(true);
+      setIsOpen(false);
     } else {
       setContactModalOpen(true);
     }
