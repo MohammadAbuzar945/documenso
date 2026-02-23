@@ -2,19 +2,55 @@ import { prisma } from '@documenso/prisma';
 import { PLAN_DOCUMENT_QUOTAS } from '@documenso/ee/server-only/limits/constants';
 import { ensureOrganisationCredits } from '@documenso/ee/server-only/limits/user-credits';
 
-export async function action({ request }: { request: Request }){
+export async function action({ request }: { request: Request }) {
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  let event: { event?: string; data?: Record<string, unknown> };
   try {
-    const event = await request.json();
-    
+    const contentType = request.headers.get('content-type') ?? '';
+    if (!contentType.includes('application/json')) {
+      console.warn('Paystack webhook received non-JSON content-type:', contentType);
+    }
+    event = (await request.json()) as { event?: string; data?: Record<string, unknown> };
+  } catch (parseError) {
+    const message = parseError instanceof Error ? parseError.message : 'Invalid JSON';
+    console.error('Paystack webhook JSON parse error:', message, parseError);
+    return new Response(
+      JSON.stringify({ success: false, error: 'Invalid JSON body', detail: message }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  if (!event || typeof event !== 'object' || !event.event || !event.data) {
+    console.error('Paystack webhook invalid payload shape:', { hasEvent: !!event?.event, hasData: !!event?.data });
+    return new Response(
+      JSON.stringify({ success: false, error: 'Missing event or data in payload' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  try {
     console.log('Paystack webhook received event:', JSON.stringify(event));
 
 
 
     if (event.event === 'subscription.create' || event.event === 'invoice.update') {
-      const { customer, plan, subscription_code, next_payment_date } = event.data;
-
-    
-        console.log('Extracted from event:', { email: customer.email, plan, reference: subscription_code, next_payment_date });
+      const { customer, plan, subscription_code, next_payment_date } = event.data as {
+        customer?: { email?: string; customer_code?: string };
+        plan?: { plan_code?: string };
+        subscription_code?: string;
+        next_payment_date?: string | null;
+      };
+      if (!customer?.email || !plan?.plan_code) {
+        console.warn('Paystack webhook: missing customer.email or plan.plan_code', event.data);
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
+      console.log('Extracted from event:', { email: customer.email, plan, reference: subscription_code, next_payment_date });
       // Find user by email
       const user = await prisma.user.findUnique({ 
         where: { email: customer.email },
@@ -52,17 +88,15 @@ export async function action({ request }: { request: Request }){
               'PLN_qcz1c2zdiyk3lw3',
             ];
 
-            const subscription = await prisma.subscription.create({   
-
+            const subscription = await prisma.subscription.create({
               data: {
                 organisationId: organisation.id,
                 planId: plan.plan_code,
-                priceId: subscription_code,
-                customerId: customer.customer_code,
-                status:  PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
+                priceId: subscription_code ?? '',
+                customerId: customer.customer_code ?? '',
+                status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
                 periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
               },
-             
             });
 
             // Ensure organisation has a credits record
@@ -95,12 +129,12 @@ export async function action({ request }: { request: Request }){
       
       
     } else if (event.event === 'subscription.disable') {
-      const { subscription_code } = event.data;
+      const subscription_code = event.data?.subscription_code as string | undefined;
       console.log('Processing subscription disable:', subscription_code);
-      
+
       try {
         const existingSubscription = await prisma.subscription.findFirst({
-          where: { priceId: subscription_code }
+          where: { priceId: subscription_code },
         });
         if (existingSubscription) {
           const subscription = await prisma.subscription.update({
@@ -114,10 +148,10 @@ export async function action({ request }: { request: Request }){
       }
     }
     else if (event.event === 'subscription.not_renew') {
-      const { subscription_code } = event.data;
+      const subscription_code = event.data?.subscription_code as string | undefined;
       console.log('Processing subscription update:', subscription_code);
       const existingSubscription = await prisma.subscription.findFirst({
-        where: { priceId: subscription_code }
+        where: { priceId: subscription_code },
       });
       if (existingSubscription) {
         const subscription = await prisma.subscription.update({
@@ -127,10 +161,10 @@ export async function action({ request }: { request: Request }){
       }
     }
     else if (event.event === 'invoice.payment_failed') {
-      const { subscription_code } = event.data;
+      const subscription_code = event.data?.subscription_code as string | undefined;
       console.log('Processing subscription update:', subscription_code);
       const existingSubscription = await prisma.subscription.findFirst({
-        where: { priceId: subscription_code }
+        where: { priceId: subscription_code },
       });
       if (existingSubscription) {
         const subscription = await prisma.subscription.update({
@@ -140,8 +174,16 @@ export async function action({ request }: { request: Request }){
       }
     }
     else if (event.event === 'charge.success') {
-      const { customer, metadata, plan } = event.data;
-      const customerEmail = customer.email;
+      const { customer, metadata, plan } = event.data as {
+        customer?: { email?: string };
+        metadata?: { value?: number; organisationId?: string };
+        plan?: { plan_code?: string };
+      };
+      const customerEmail = customer?.email;
+      if (!customerEmail) {
+        console.warn('Paystack webhook charge.success: missing customer.email', event.data);
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
       
       // Extract referral code from referrer URL
       const refferCredits = metadata?.value as number | undefined;
@@ -157,8 +199,8 @@ export async function action({ request }: { request: Request }){
         });
 
         if (!user) {
-          console.error('User not found');
-          return;
+          console.error('Paystack webhook charge.success: user not found for email', customerEmail);
+          return new Response(JSON.stringify({ success: true }), { status: 200 });
         }
 
         // Use organisationId from metadata when present, otherwise find by owner
@@ -225,7 +267,16 @@ export async function action({ request }: { request: Request }){
     }
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
-    console.error('Paystack webhook error:', error);
-    return new Response(JSON.stringify({ success: false, error: 'Invalid webhook' }), { status: 400 });
+    const message = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack : undefined;
+    console.error('Paystack webhook error:', message, stack ?? error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Webhook processing failed',
+        detail: message,
+      }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
   }
 } 

@@ -258,9 +258,9 @@ export function AppCommandMenu({ open, onOpenChange }: AppCommandMenuProps) {
               <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('language')}>
                 Change language
               </CommandItem>
-              <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('theme')}>
+              {/* <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('theme')}>
                 Change theme
-              </CommandItem>
+              </CommandItem> */}
             </CommandGroup>
 
             {searchResults.length > 0 && (
@@ -271,7 +271,7 @@ export function AppCommandMenu({ open, onOpenChange }: AppCommandMenuProps) {
           </>
         )}
 
-        {currentPage === 'theme' && <ThemeCommands />}
+        {/* {currentPage === 'theme' && <ThemeCommands />} */}
         {currentPage === 'language' && <LanguageCommands />}
       </CommandList>
     </CommandDialog>
@@ -300,28 +300,28 @@ const Commands = ({
   ));
 };
 
-const ThemeCommands = () => {
-  const { _ } = useLingui();
+// const ThemeCommands = () => {
+//   const { _ } = useLingui();
 
-  const [, setTheme] = useTheme();
+//   const [, setTheme] = useTheme();
 
-  const themes = [
-    { label: msg`Light Mode`, theme: Theme.LIGHT, icon: Sun },
-    { label: msg`Dark Mode`, theme: Theme.DARK, icon: Moon },
-    { label: msg`System Theme`, theme: null, icon: Monitor },
-  ] as const;
+//   const themes = [
+//     { label: msg`Light Mode`, theme: Theme.LIGHT, icon: Sun },
+//     { label: msg`Dark Mode`, theme: Theme.DARK, icon: Moon },
+//     { label: msg`System Theme`, theme: null, icon: Monitor },
+//   ] as const;
 
-  return themes.map((theme) => (
-    <CommandItem
-      key={theme.theme}
-      onSelect={() => setTheme(theme.theme)}
-      className="-my-1 mx-2 rounded-lg first:mt-2 last:mb-2"
-    >
-      <theme.icon className="mr-2" />
-      {_(theme.label)}
-    </CommandItem>
-  ));
-};
+//   return themes.map((theme) => (
+//     <CommandItem
+//       key={theme.theme}
+//       onSelect={() => setTheme(theme.theme)}
+//       className="-my-1 mx-2 rounded-lg first:mt-2 last:mb-2"
+//     >
+//       <theme.icon className="mr-2" />
+//       {_(theme.label)}
+//     </CommandItem>
+//   ));
+// };
 
 const LanguageCommands = () => {
   const { i18n, _ } = useLingui();
