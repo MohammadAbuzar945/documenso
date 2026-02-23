@@ -73,9 +73,22 @@ export const createOrganisationRoute = authenticatedProcedure
       }
     }
 
+    const trimmedName = name.trim();
+    const existingWithSameName = await prisma.organisation.findFirst({
+      where: {
+        ownerUserId: ctx.user.id,
+        name: { equals: trimmedName, mode: 'insensitive' },
+      },
+    });
+    if (existingWithSameName) {
+      throw new AppError(AppErrorCode.ALREADY_EXISTS, {
+        message: 'An organisation with this name already exists.',
+      });
+    }
+
     await createOrganisation({
       userId: ctx.user.id,
-      name,
+      name: trimmedName,
       type: OrganisationType.ORGANISATION,
       claim: internalClaims[INTERNAL_CLAIM_ID.FREE],
     });

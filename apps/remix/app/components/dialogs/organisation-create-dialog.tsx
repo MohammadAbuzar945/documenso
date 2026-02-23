@@ -72,7 +72,7 @@ export const OrganisationCreateDialog = ({ trigger, ...props }: OrganisationCrea
       });
 
       await refreshSession();
-      setOpen(false);
+      setOpenValue(false);
 
       toast({
         title: t`Success`,
@@ -84,9 +84,14 @@ export const OrganisationCreateDialog = ({ trigger, ...props }: OrganisationCrea
 
       console.error(error);
 
+      const isDuplicateName = error.code === 'ALREADY_EXISTS';
       toast({
-        title: t`An unknown error occurred`,
-        description: error.message || t`We encountered an unknown error while attempting to create a organisation. Please try again later.`,
+        title: isDuplicateName ? t`Organisation already exists` : t`An unknown error occurred`,
+        description:
+          error.message ||
+          (isDuplicateName
+            ? t`You already have an organisation with this name. Please choose a different name.`
+            : t`We encountered an unknown error while attempting to create a organisation. Please try again later.`),
         variant: 'destructive',
       });
     }
@@ -112,6 +117,8 @@ export const OrganisationCreateDialog = ({ trigger, ...props }: OrganisationCrea
       props.onOpenChange?.(value);
     }
   };
+
+  const handleClose = () => setOpenValue(false);
 
   return (
     <Dialog
@@ -163,7 +170,7 @@ export const OrganisationCreateDialog = ({ trigger, ...props }: OrganisationCrea
               />
 
               <DialogFooter>
-                <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+                <Button type="button" variant="secondary" onClick={handleClose}>
                   <Trans>Cancel</Trans>
                 </Button>
 
