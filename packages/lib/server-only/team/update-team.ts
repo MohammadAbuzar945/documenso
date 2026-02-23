@@ -18,35 +18,74 @@ export type UpdateTeamOptions = {
 
 export const updateTeam = async ({ userId, teamId, data }: UpdateTeamOptions): Promise<void> => {
   try {
-    const foundTeamWithUrl = await prisma.team.findFirst({
-      where: {
-        url: data.url,
-        id: {
-          not: teamId,
-        },
+    const teamWhere = buildTeamWhereQuery({
+      teamId,
+      userId,
+      roles: TEAM_MEMBER_ROLE_PERMISSIONS_MAP['MANAGE_TEAM'],
+    });
+
+    const existingTeam = await prisma.team.findUnique({
+      where: teamWhere,
+      select: {
+        id: true,
+        organisationId: true,
       },
     });
 
-    const foundOrganisationWithUrl = await prisma.organisation.findFirst({
-      where: {
-        url: data.url,
-      },
-    });
-
-    if (foundTeamWithUrl || foundOrganisationWithUrl) {
-      throw new AppError(AppErrorCode.ALREADY_EXISTS, {
-        message: 'Team URL already exists.',
+    if (!existingTeam) {
+      throw new AppError(AppErrorCode.NOT_FOUND, {
+        message: 'Team not found.',
       });
     }
 
+    const organisationScopedTeamUrl =
+      data.url !== undefined ? `${existingTeam.organisationId}-${data.url}` : undefined;
+
+    if (organisationScopedTeamUrl) {
+      const foundTeamWithUrl = await prisma.team.findFirst({
+        where: {
+          url: organisationScopedTeamUrl,
+          id: {
+            not: teamId,
+          },
+        },
+      });
+
+      const foundOrganisationWithUrl = await prisma.organisation.findFirst({
+        where: {
+          url: organisationScopedTeamUrl,
+        },
+      });
+
+      if (foundTeamWithUrl || foundOrganisationWithUrl) {
+        throw new AppError(AppErrorCode.ALREADY_EXISTS, {
+          message: 'Team URL already exists.',
+        });
+      }
+    }
+
+    if (data.name) {
+      const existingTeamWithNameInOrganisation = await prisma.team.findFirst({
+        where: {
+          organisationId: existingTeam.organisationId,
+          name: data.name,
+          id: {
+            not: teamId,
+          },
+        },
+      });
+
+      if (existingTeamWithNameInOrganisation) {
+        throw new AppError(AppErrorCode.ALREADY_EXISTS, {
+          message: 'Team name already exists in this organisation.',
+        });
+      }
+    }
+
     await prisma.team.update({
-      where: buildTeamWhereQuery({
-        teamId,
-        userId,
-        roles: TEAM_MEMBER_ROLE_PERMISSIONS_MAP['MANAGE_TEAM'],
-      }),
+      where: teamWhere,
       data: {
-        url: data.url,
+        url: organisationScopedTeamUrl,
         name: data.name,
       },
     });

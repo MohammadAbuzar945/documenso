@@ -62,6 +62,8 @@ export const createTeam = async ({
   organisationId,
   inheritMembers,
 }: CreateTeamOptions) => {
+  const organisationScopedTeamUrl = `${organisationId}-${teamUrl}`;
+
   const organisation = await prisma.organisation.findFirst({
     where: buildOrganisationWhereQuery({
       organisationId,
@@ -84,6 +86,19 @@ export const createTeam = async ({
   if (!organisation) {
     throw new AppError(AppErrorCode.NOT_FOUND, {
       message: 'Organisation not found.',
+    });
+  }
+
+  const existingTeamWithNameInOrganisation = await prisma.team.findFirst({
+    where: {
+      organisationId,
+      name: teamName,
+    },
+  });
+
+  if (existingTeamWithNameInOrganisation) {
+    throw new AppError(AppErrorCode.ALREADY_EXISTS, {
+      message: 'Team name already exists in this organisation.',
     });
   }
 
@@ -148,7 +163,7 @@ export const createTeam = async ({
         const team = await tx.team.create({
           data: {
             name: teamName,
-            url: teamUrl,
+            url: organisationScopedTeamUrl,
             organisationId,
             teamGlobalSettingsId: teamSettings.id,
             teamGroups: {

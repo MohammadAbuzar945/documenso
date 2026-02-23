@@ -47,7 +47,12 @@ export default function TeamsSettingsPage({ loaderData }: Route.ComponentProps) 
 
       <AvatarImageForm team={currentTeam} className="mb-8" />
 
-      <TeamUpdateForm teamId={team.id} teamName={team.name} teamUrl={team.url} />
+      <TeamUpdateForm
+        teamId={team.id}
+        teamName={team.name}
+        teamUrl={team.url}
+        organisationId={organisation.id}
+      />
 
       <section className="mt-6 space-y-6">
         {(team.teamEmail || team.emailVerification) && (

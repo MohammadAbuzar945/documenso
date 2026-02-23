@@ -27,6 +27,7 @@ export type UpdateTeamDialogProps = {
   teamId: number;
   teamName: string;
   teamUrl: string;
+  organisationId: string;
 };
 
 const ZTeamUpdateFormSchema = ZUpdateTeamRequestSchema.shape.data.pick({
@@ -36,7 +37,12 @@ const ZTeamUpdateFormSchema = ZUpdateTeamRequestSchema.shape.data.pick({
 
 type TTeamUpdateFormSchema = z.infer<typeof ZTeamUpdateFormSchema>;
 
-export const TeamUpdateForm = ({ teamId, teamName, teamUrl }: UpdateTeamDialogProps) => {
+export const TeamUpdateForm = ({
+  teamId,
+  teamName,
+  teamUrl,
+  organisationId,
+}: UpdateTeamDialogProps) => {
   const navigate = useNavigate();
   const { _ } = useLingui();
   const { toast } = useToast();
@@ -45,7 +51,7 @@ export const TeamUpdateForm = ({ teamId, teamName, teamUrl }: UpdateTeamDialogPr
     resolver: zodResolver(ZTeamUpdateFormSchema),
     defaultValues: {
       name: teamName,
-      url: teamUrl,
+      url: teamUrl.startsWith(`${organisationId}-`) ? teamUrl.slice(organisationId.length + 1) : teamUrl,
     },
   });
 
@@ -73,16 +79,26 @@ export const TeamUpdateForm = ({ teamId, teamName, teamUrl }: UpdateTeamDialogPr
       });
 
       if (url !== teamUrl) {
-        await navigate(`/t/${url}/settings`);
+        const organisationScopedTeamUrl = `${organisationId}-${url}`;
+        await navigate(`/t/${organisationScopedTeamUrl}/settings`);
       }
     } catch (err) {
       const error = AppError.parseError(err);
 
       if (error.code === AppErrorCode.ALREADY_EXISTS) {
-        form.setError('url', {
-          type: 'manual',
-          message: _(msg`This URL is already in use.`),
-        });
+        const message = error.message ?? '';
+
+        if (message.toLowerCase().includes('name')) {
+          form.setError('name', {
+            type: 'manual',
+            message: _(msg`This team name is already in use in this organisation.`),
+          });
+        } else {
+          form.setError('url', {
+            type: 'manual',
+            message: _(msg`This URL is already in use.`),
+          });
+        }
 
         return;
       }

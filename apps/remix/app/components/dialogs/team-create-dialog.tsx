@@ -107,10 +107,19 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
       const error = AppError.parseError(err);
 
       if (error.code === AppErrorCode.ALREADY_EXISTS) {
-        form.setError('teamUrl', {
-          type: 'manual',
-          message: _(msg`This URL is already in use.`),
-        });
+        const message = error.message ?? '';
+
+        if (message.toLowerCase().includes('name')) {
+          form.setError('teamName', {
+            type: 'manual',
+            message: _(msg`This team name is already in use in this organisation.`),
+          });
+        } else {
+          form.setError('teamUrl', {
+            type: 'manual',
+            message: _(msg`This URL is already in use.`),
+          });
+        }
 
         return;
       }
@@ -257,7 +266,7 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                       {!form.formState.errors.teamUrl && (
                         <span className="text-foreground/50 text-xs font-normal">
                           {field.value ? (
-                            `${NEXT_PUBLIC_WEBAPP_URL()}/t/${field.value}`
+                            `${NEXT_PUBLIC_WEBAPP_URL()}/t/${organisation.id}-${field.value}`
                           ) : (
                             <Trans>A unique URL to identify your team</Trans>
                           )}

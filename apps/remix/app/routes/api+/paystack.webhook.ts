@@ -289,6 +289,8 @@ export async function action({ request }: { request: Request }) {
 
       const planCode = plan?.plan_code;
 
+      console.log('Plan code:', planCode);
+
       //check if plan code is empty
       if (!planCode) {
 
