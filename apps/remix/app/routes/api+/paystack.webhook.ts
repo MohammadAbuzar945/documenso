@@ -1,6 +1,7 @@
 import { prisma } from '@documenso/prisma';
 import { PLAN_DOCUMENT_QUOTAS } from '@documenso/ee/server-only/limits/constants';
 import { ensureOrganisationCredits } from '@documenso/ee/server-only/limits/user-credits';
+import { verifyTransaction } from '@documenso/lib/server-only/paystack';
 
 /** GET requests (e.g. browser or health checks) get 405 so the route is handled instead of framework error. */
 export async function loader() {
@@ -182,11 +183,25 @@ export async function action({ request }: { request: Request }) {
       }
     }
     else if (event.event === 'charge.success') {
-      const { customer, metadata, plan } = event.data as {
+      const { customer, metadata, plan, reference } = event.data as {
         customer?: { email?: string };
         metadata?: { value?: number; organisationId?: string };
         plan?: { plan_code?: string };
+        reference?: string;
       };
+
+      // Verify transaction via Paystack API
+      if (reference) {
+        try {
+          const verifyResponse = await verifyTransaction(reference);
+          if (verifyResponse.status) {
+            console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
+          }
+        } catch (verifyError) {
+          console.error('Paystack transaction verify failed:', reference, verifyError);
+        }
+      }
+
       const customerEmail = customer?.email;
       if (!customerEmail) {
         console.warn('Paystack webhook charge.success: missing customer.email', event.data);
