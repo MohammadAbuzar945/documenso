@@ -191,16 +191,22 @@ export async function action({ request }: { request: Request }) {
       };
 
       // Verify transaction via Paystack API
-      // if (reference) {
-      //   try {
-      //     const verifyResponse = await verifyTransaction(reference);
-      //     if (verifyResponse.status) {
-      //       console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
-      //     }
-      //   } catch (verifyError) {
-      //     console.error('Paystack transaction verify failed:', reference, verifyError);
-      //   }
-      // }
+      if (reference) {
+        try {
+          const verifyResponse = await verifyTransaction(reference);
+          if (verifyResponse.status) {
+            console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
+         let isVerified = true;
+         let organisationId = metadata?.organisationId;
+        
+         
+         
+         
+          }
+        } catch (verifyError) {
+          console.error('Paystack transaction verify failed:', reference, verifyError);
+        }
+      }
 
       const customerEmail = customer?.email;
       if (!customerEmail) {
