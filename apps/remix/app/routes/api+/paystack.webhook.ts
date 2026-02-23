@@ -2,6 +2,14 @@ import { prisma } from '@documenso/prisma';
 import { PLAN_DOCUMENT_QUOTAS } from '@documenso/ee/server-only/limits/constants';
 import { ensureOrganisationCredits } from '@documenso/ee/server-only/limits/user-credits';
 
+/** GET requests (e.g. browser or health checks) get 405 so the route is handled instead of framework error. */
+export async function loader() {
+  return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 export async function action({ request }: { request: Request }) {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), {
@@ -230,6 +238,10 @@ export async function action({ request }: { request: Request }) {
 
       
         return new Response(JSON.stringify({ success: true, message: 'Credits added successfully' }), { status: 200 });
+      }
+      else
+      {
+        console.log('Plan code found:', planCode);
       }
 
 

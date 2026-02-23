@@ -26,7 +26,15 @@ export const ensureOrganisationCredits = async (organisationId: string, userId: 
   });
 
   if (!userCredits) {
-    throw new Error(`UserCredits record not found for organisation ${organisationId}. Credits should be initialized during user signup.`);
+    // Create a user credit record with 0 credits for this organisation
+    userCredits = await prisma.userCredits.create({
+      data: {
+        userId,
+        organisationId,
+        credits: 0,
+        isActive: true,
+      },
+    });
   }
 
   // Check if credits have expired
