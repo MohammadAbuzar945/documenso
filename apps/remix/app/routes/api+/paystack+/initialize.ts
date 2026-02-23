@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 import { initializeTransaction } from '@documenso/lib/server-only/paystack';
+import { prisma } from '@documenso/prisma';
+// import { SubscriptionStatus } from '@documenso/prisma/generated/zod/inputTypeSchemas/SubscriptionStatusSchema';
 
 const initializeTransactionSchema = z.object({
   email: z.string().email(),
@@ -25,6 +27,21 @@ export async function action({ request }: { request: Request }) {
         { status: 500 },
       );
     }
+
+
+    console.log('Transaction data:', transaction.data);
+    //create subscription record in database
+    const subscription = await prisma.subscription.create({
+      data: {
+        planId: validatedData.plan ?? '',
+        priceId: validatedData.plan ?? '',
+        customerId: validatedData.email,
+        organisationId: validatedData.metadata?.organisationId as string,
+        status: 'PAST_DUE',
+      },
+    });
+
+    console.log('Subscription created:', subscription);
 
     return new Response(
       JSON.stringify({

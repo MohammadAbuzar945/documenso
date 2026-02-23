@@ -8,6 +8,7 @@ import { AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router';
 import { match } from 'ts-pattern';
 
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { useOptionalCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { SUPPORT_EMAIL } from '@documenso/lib/constants/app';
 import { canExecuteOrganisationAction } from '@documenso/lib/utils/organisations';
@@ -32,6 +33,7 @@ export const OrganisationBillingBanner = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const { user } = useSession();
   const organisation = useOptionalCurrentOrganisation();
 
   const { mutateAsync: manageSubscription, isPending } =
@@ -57,6 +59,7 @@ export const OrganisationBillingBanner = () => {
   };
 
   const subscriptionStatus = organisation?.subscription?.status;
+  const isOrganisationOwner = organisation?.ownerUserId === user.id;
 
   if (
     !organisation ||
@@ -123,7 +126,8 @@ export const OrganisationBillingBanner = () => {
               {canExecuteOrganisationAction(
                 'MANAGE_BILLING',
                 organisation.currentOrganisationRole,
-              ) && (
+              ) &&
+                isOrganisationOwner && (
                 <DialogFooter>
                   <Button
                     loading={isPending}
@@ -162,7 +166,8 @@ export const OrganisationBillingBanner = () => {
               {canExecuteOrganisationAction(
                 'MANAGE_BILLING',
                 organisation.currentOrganisationRole,
-              ) && (
+              ) &&
+                isOrganisationOwner && (
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button asChild>

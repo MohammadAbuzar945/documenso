@@ -12,6 +12,7 @@ import {
 import { FaUsers } from 'react-icons/fa6';
 import { Link, NavLink, Outlet } from 'react-router';
 
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
 import { canExecuteOrganisationAction } from '@documenso/lib/utils/organisations';
@@ -30,6 +31,9 @@ export default function SettingsLayout() {
 
   const isBillingEnabled = IS_BILLING_ENABLED();
   const organisation = useCurrentOrganisation();
+  const { user } = useSession();
+
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
 
   const organisationSettingRoutes = [
     {
@@ -82,8 +86,13 @@ export default function SettingsLayout() {
       path: `/o/${organisation.url}/price-plan`,
       label: t`Billing`,
       icon: CreditCardIcon,
+      requiresOwner: true as const,
     },
   ].filter((route) => {
+    if ('requiresOwner' in route && route.requiresOwner && !isOrganisationOwner) {
+      return false;
+    }
+
     if (!isBillingEnabled && route.path.includes('/billing')) {
       return false;
     }

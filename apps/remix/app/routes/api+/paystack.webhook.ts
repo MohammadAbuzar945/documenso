@@ -69,11 +69,12 @@ export async function action({ request }: { request: Request }) {
 
 
     if (event.event === 'subscription.create' || event.event === 'invoice.update') {
-      const { customer, plan, subscription_code, next_payment_date } = event.data as {
+      const { customer, plan, subscription_code, next_payment_date, metadata } = event.data as {
         customer?: { email?: string; customer_code?: string };
         plan?: { plan_code?: string };
         subscription_code?: string;
         next_payment_date?: string | null;
+        metadata?: { organisationId?: string };
       };
       if (!customer?.email || !plan?.plan_code) {
         console.warn('Paystack webhook: missing customer.email or plan.plan_code', event.data);
@@ -88,7 +89,7 @@ export async function action({ request }: { request: Request }) {
         next_payment_date,
       });
       // Find user by email
-      const user = await prisma.user.findUnique({ 
+      const user = await prisma.user.findUnique({
         where: { email: normalisedEmail },
         include: {
           userCredits: {
@@ -99,11 +100,19 @@ export async function action({ request }: { request: Request }) {
         }
       });
       console.log('User lookup result:', user);
-    
-        if (user && plan?.plan_code) {
-          const organisation = await prisma.organisation.findFirst({
-            where: { ownerUserId: user.id }
-          });
+      if (user && plan?.plan_code) {
+        const organisationIdFromMetadata = metadata?.organisationId;
+
+        const organisation = organisationIdFromMetadata
+          ? await prisma.organisation.findUnique({
+              where: { id: organisationIdFromMetadata },
+            })
+          : await prisma.organisation.findFirst({
+              where: { ownerUserId: user.id },
+            });
+
+          
+
           if (!organisation) {
             console.error('Organisation not found for user:', user.id);
             return new Response(JSON.stringify({ success: false, error: 'Organisation not found' }), { status: 400 });
@@ -124,46 +133,75 @@ export async function action({ request }: { request: Request }) {
               'PLN_qcz1c2zdiyk3lw3',
             ];
 
-            const subscription = await prisma.subscription.create({
-              data: {
-                organisationId: organisation.id,
-                planId: subscription_code ?? '',
-                priceId: plan.plan_code,
-                customerId: customer.customer_code ?? '',
-                status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
-                periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
-              },
-            });
+            const pendingSubscription = await prisma.subscription.findFirst({
 
-            // Ensure organisation has a credits record
-            const userCreditsRecord = await ensureOrganisationCredits(organisation.id, user.id);
-            
-            // Get new plan credits based on plan code
-            const newPlanCredits = PLAN_DOCUMENT_QUOTAS[plan.plan_code] ?? 0;
+              where: { customerId: customer.email ?? '' },
+           
+              });
+            if (pendingSubscription) {
+              console.log('Pending subscription found:', pendingSubscription);
 
-            if (newPlanCredits === 0) {
-              console.warn(`Plan code ${plan.plan_code} not found in PLAN_DOCUMENT_QUOTAS. No credits will be added.`);
+
+
+
+
+              const subscription = await prisma.subscription.update({
+                where: { id: pendingSubscription.id },
+                data: {
+                  planId: subscription_code ?? '',
+                  priceId: plan.plan_code,
+                  customerId: customer.customer_code ?? '',
+                  status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
+                  periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
+                },
+              });
+              console.log('Subscription updated:', subscription);
+            }
+            else {
+              console.log('Pending subscription not found:', pendingSubscription);
             }
 
-            // Add credits to existing credits
-            const userCredits = await prisma.userCredits.update({
-              where: { id: userCreditsRecord.id },
-              data: {
-                credits: Number(userCreditsRecord.credits) + Number(newPlanCredits),
-                expiresAt: next_payment_date ? new Date(next_payment_date) : null,
-              },
-            });
 
-            console.log('Subscription and credits created:', { subscription, userCredits });
+
+
+
+            // const subscription = await prisma.subscription.create({
+            //   data: {
+            //     organisationId: organisation.id,
+            //     planId: subscription_code ?? '',
+            //     priceId: plan.plan_code,
+            //     customerId: customer.customer_code ?? '',
+            //     status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
+            //     periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
+            //   },
+            // });
+
+            // Ensure organisation has a credits record
+            // const userCreditsRecord = await ensureOrganisationCredits(organisation.id, user.id);
+            
+            // Get new plan credits based on plan code
+            // const newPlanCredits = PLAN_DOCUMENT_QUOTAS[plan.plan_code] ?? 0;
+
+            // if (newPlanCredits === 0) {
+            //   console.warn(`Plan code ${plan.plan_code} not found in PLAN_DOCUMENT_QUOTAS. No credits will be added.`);
+            // // }
+
+            // Add credits to existing credits
+            // const userCredits = await prisma.userCredits.update({
+            //   where: { id: userCreditsRecord.id },
+            //   data: {
+            //     credits: Number(userCreditsRecord.credits) + Number(newPlanCredits),
+            //     expiresAt: next_payment_date ? new Date(next_payment_date) : null,
+            //   },
+            // });
+
+            // console.log('Subscription and credits created:', { subscription, userCredits });
           } catch (subError) {
             console.error('Error creating subscription:', subError);
           }
         } else {
           console.warn('User not found or plan_code missing:', { user, plan });
         }
-      
-      
-      
     } else if (event.event === 'subscription.disable') {
       const subscription_code = event.data?.subscription_code as string | undefined;
       console.log('Processing subscription disable:', subscription_code);
@@ -210,6 +248,8 @@ export async function action({ request }: { request: Request }) {
       }
     }
     else if (event.event === 'charge.success') {
+
+      // console.log('Processing charge.success:', event.data);
       const { customer, metadata, plan, reference } = event.data as {
         customer?: { email?: string };
         metadata?: { value?: number; organisationId?: string };

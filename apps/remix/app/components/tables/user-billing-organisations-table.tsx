@@ -17,13 +17,14 @@ import { DataTable } from '@documenso/ui/primitives/data-table';
 
 export const UserBillingOrganisationsTable = () => {
   const { t } = useLingui();
-  const { organisations } = useSession();
+  const { user, organisations } = useSession();
 
   const billingOrganisations = useMemo(() => {
     return organisations.filter((org) =>
-      canExecuteOrganisationAction('MANAGE_BILLING', org.currentOrganisationRole),
+      canExecuteOrganisationAction('MANAGE_BILLING', org.currentOrganisationRole) &&
+      org.ownerUserId === user.id,
     );
-  }, [organisations]);
+  }, [organisations, user.id]);
 
   const getSubscriptionStatusDisplay = (status: SubscriptionStatus | undefined) => {
     return match(status)
