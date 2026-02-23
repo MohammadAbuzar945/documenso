@@ -155,10 +155,10 @@ export async function action({ request }: { request: Request }) {
                   periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
                 },
               });
-              console.log('Subscription updated:', subscription);
+              console.log('Subscription updated in .create or .update:', subscription);
             }
             else {
-              console.log('Pending subscription not found:', pendingSubscription);
+              console.log('Pending subscription not found in .create or .update:', pendingSubscription);
             }
 
 
@@ -257,24 +257,6 @@ export async function action({ request }: { request: Request }) {
         reference?: string;
       };
 
-      // // Verify transaction via Paystack API
-      // if (reference) {
-      //   try {
-      //     const verifyResponse = await verifyTransaction(reference);
-      //     if (verifyResponse.status) {
-      //       console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
-      //    let isVerified = true;
-      //    let organisationId = metadata?.organisationId;
-         
-        
-         
-         
-         
-      //     }
-      //   } catch (verifyError) {
-      //     console.error('Paystack transaction verify failed:', reference, verifyError);
-      //   }
-      // }
 
       const customerEmailRaw = customer?.email;
       if (!customerEmailRaw) {

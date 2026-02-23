@@ -102,7 +102,6 @@ export async function action({ request }: { request: Request }) {
     const subscription = await prisma.subscription.findFirst({
       where: {
         planId: subscriptionCode,
-        organisationId: organisation.id,
         status: 'ACTIVE',
       },
     });
