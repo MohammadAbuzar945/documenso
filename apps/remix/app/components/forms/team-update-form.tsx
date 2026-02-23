@@ -51,7 +51,9 @@ export const TeamUpdateForm = ({
     resolver: zodResolver(ZTeamUpdateFormSchema),
     defaultValues: {
       name: teamName,
-      url: teamUrl.startsWith(`${organisationId}-`) ? teamUrl.slice(organisationId.length + 1) : teamUrl,
+      url: teamUrl.startsWith(`${organisationId.slice(-5)}-`)
+        ? teamUrl.slice(organisationId.slice(-5).length + 1)
+        : teamUrl,
     },
   });
 
@@ -79,7 +81,8 @@ export const TeamUpdateForm = ({
       });
 
       if (url !== teamUrl) {
-        const organisationScopedTeamUrl = `${organisationId}-${url}`;
+        const organisationSuffix = organisationId.slice(-5);
+        const organisationScopedTeamUrl = `${organisationSuffix}-${url}`;
         await navigate(`/t/${organisationScopedTeamUrl}/settings`);
       }
     } catch (err) {

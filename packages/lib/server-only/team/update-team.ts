@@ -38,8 +38,9 @@ export const updateTeam = async ({ userId, teamId, data }: UpdateTeamOptions): P
       });
     }
 
+    const organisationSuffix = existingTeam.organisationId.slice(-5);
     const organisationScopedTeamUrl =
-      data.url !== undefined ? `${existingTeam.organisationId}-${data.url}` : undefined;
+      data.url !== undefined ? `${organisationSuffix}-${data.url}` : undefined;
 
     if (organisationScopedTeamUrl) {
       const foundTeamWithUrl = await prisma.team.findFirst({

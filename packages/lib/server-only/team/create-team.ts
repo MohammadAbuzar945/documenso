@@ -62,7 +62,8 @@ export const createTeam = async ({
   organisationId,
   inheritMembers,
 }: CreateTeamOptions) => {
-  const organisationScopedTeamUrl = `${organisationId}-${teamUrl}`;
+  const organisationSuffix = organisationId.slice(-5);
+  const organisationScopedTeamUrl = `${organisationSuffix}-${teamUrl}`;
 
   const organisation = await prisma.organisation.findFirst({
     where: buildOrganisationWhereQuery({

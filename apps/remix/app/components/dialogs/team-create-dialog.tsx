@@ -266,7 +266,7 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                       {!form.formState.errors.teamUrl && (
                         <span className="text-foreground/50 text-xs font-normal">
                           {field.value ? (
-                            `${NEXT_PUBLIC_WEBAPP_URL()}/t/${organisation.id}-${field.value}`
+                            `${NEXT_PUBLIC_WEBAPP_URL()}/t/${organisation.id.slice(-5)}-${field.value}`
                           ) : (
                             <Trans>A unique URL to identify your team</Trans>
                           )}
