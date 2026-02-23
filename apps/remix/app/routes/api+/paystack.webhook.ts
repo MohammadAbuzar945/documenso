@@ -331,7 +331,40 @@ export async function action({ request }: { request: Request }) {
       }
       else
       {
-        console.log('Plan code found:', planCode);
+          //if plan code found please update the subscription table update the 
+          const pendingSubscription = await prisma.subscription.findFirst({
+            where: { customerId: customerEmail },
+          });
+          if (pendingSubscription) {
+            const organisationId = pendingSubscription.organisationId;
+            console.log('Pending subscription found:', pendingSubscription);
+
+            const user = await prisma.user.findUnique({
+              where: { email: normaliseEmailFromPaystack(customerEmail) },
+            });
+
+            if (!user) {
+              console.error('Paystack webhook charge.success: user not found for email', customerEmail);
+              return new Response(JSON.stringify({ success: true }), { status: 200 });
+            }
+
+            //status active and period end is null
+            const subscription = await prisma.subscription.update({
+              where: { id: pendingSubscription.id },
+              data: { status: 'ACTIVE', periodEnd: null },
+            });
+            console.log('Subscription updated:', subscription);
+
+            //add credits to user credits table
+            const userCreditsRecord = await ensureOrganisationCredits(organisationId, user.id);
+            const newPlanCredits = PLAN_DOCUMENT_QUOTAS[planCode] ?? 0;
+            if (newPlanCredits > 0) {
+              await prisma.userCredits.update({
+                where: { id: userCreditsRecord.id },
+                data: { credits: Number(userCreditsRecord.credits) + newPlanCredits },
+              });
+            }
+          }
       }
 
 
