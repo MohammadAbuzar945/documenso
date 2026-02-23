@@ -150,7 +150,6 @@ export async function action({ request }: { request: Request }) {
                 data: {
                   planId: subscription_code ?? '',
                   priceId: plan.plan_code,
-                  customerId: customer.customer_code ?? '',
                   status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
                   periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
                 },
