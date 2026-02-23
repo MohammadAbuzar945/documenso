@@ -410,8 +410,8 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
   const { orgUrl } = params;
   const { subscriptions, organisation } = useSuperLoaderData<typeof loader>();
   const currentSubscriptionData: any = subscriptions?.find((data: any) => data.status === 'ACTIVE');
-  const activeSubscriptionPlanId = currentSubscriptionData?.planId;
-  const activeSubscriptionCode = currentSubscriptionData?.priceId;
+  const activeSubscriptionPlanId = currentSubscriptionData?.priceId;
+  const activeSubscriptionCode = currentSubscriptionData?.planId;
   const trxref: any = new URLSearchParams(location.search).get('trxref');
 
   // State for polling
