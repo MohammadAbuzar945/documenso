@@ -257,24 +257,24 @@ export async function action({ request }: { request: Request }) {
         reference?: string;
       };
 
-      // Verify transaction via Paystack API
-      if (reference) {
-        try {
-          const verifyResponse = await verifyTransaction(reference);
-          if (verifyResponse.status) {
-            console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
-         let isVerified = true;
-         let organisationId = metadata?.organisationId;
+      // // Verify transaction via Paystack API
+      // if (reference) {
+      //   try {
+      //     const verifyResponse = await verifyTransaction(reference);
+      //     if (verifyResponse.status) {
+      //       console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
+      //    let isVerified = true;
+      //    let organisationId = metadata?.organisationId;
          
         
          
          
          
-          }
-        } catch (verifyError) {
-          console.error('Paystack transaction verify failed:', reference, verifyError);
-        }
-      }
+      //     }
+      //   } catch (verifyError) {
+      //     console.error('Paystack transaction verify failed:', reference, verifyError);
+      //   }
+      // }
 
       const customerEmailRaw = customer?.email;
       if (!customerEmailRaw) {
@@ -333,14 +333,14 @@ export async function action({ request }: { request: Request }) {
       {
           //if plan code found please update the subscription table update the 
           const pendingSubscription = await prisma.subscription.findFirst({
-            where: { customerId: customerEmail },
+            where: { customerId: customerEmailRaw },
           });
           if (pendingSubscription) {
             const organisationId = pendingSubscription.organisationId;
             console.log('Pending subscription found:', pendingSubscription);
 
             const user = await prisma.user.findUnique({
-              where: { email: normaliseEmailFromPaystack(customerEmail) },
+              where: { email: normaliseEmailFromPaystack(customerEmailRaw) },
             });
 
             if (!user) {
