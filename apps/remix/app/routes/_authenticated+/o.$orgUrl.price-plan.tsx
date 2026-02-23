@@ -510,7 +510,7 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
     null,
   );
 
-  const buildPlusAddressEmail = (email: string, planId: string) => {
+  const buildPlusAddressEmail = (email: string, _planId: string) => {
     const atIndex = email.indexOf('@');
 
     if (atIndex === -1) {
@@ -524,13 +524,13 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
       return email;
     }
 
-    const safePlanId = planId.replace(/[^a-zA-Z0-9]/g, '');
+    const randomSuffix = Math.random().toString(36).slice(2, 10);
 
-    if (!safePlanId) {
+    if (!randomSuffix) {
       return email;
     }
 
-    return `${localPart}+${safePlanId}@${domainPart}`;
+    return `${localPart}+${randomSuffix}@${domainPart}`;
   };
 
   async function handleApiPaystack(

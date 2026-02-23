@@ -328,13 +328,16 @@ export async function action({ request }: { request: Request }) {
 
       
         return new Response(JSON.stringify({ success: true, message: 'Credits added successfully' }), { status: 200 });
-      }
-      else
-      {
-          //if plan code found please update the subscription table update the 
-          const pendingSubscription = await prisma.subscription.findFirst({
-            where: { customerId: customerEmailRaw },
-          });
+      } else {
+        //if plan code found please update the subscription table and add credits
+        const pendingSubscription = await prisma.subscription.findFirst({
+          where: {
+            customerId: {
+              equals: customerEmailRaw,
+              mode: 'insensitive',
+            },
+          },
+        });
           if (pendingSubscription) {
             const organisationId = pendingSubscription.organisationId;
             console.log('Pending subscription found:', pendingSubscription);
