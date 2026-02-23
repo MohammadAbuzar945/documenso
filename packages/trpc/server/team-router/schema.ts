@@ -1,8 +1,6 @@
 import { TeamMemberRole } from '@prisma/client';
 import { z } from 'zod';
 
-import { PROTECTED_TEAM_URLS } from '@documenso/lib/constants/teams';
-
 /**
  * Restrict team URLs schema.
  *
@@ -16,7 +14,8 @@ import { PROTECTED_TEAM_URLS } from '@documenso/lib/constants/teams';
  * - 3-30 characters
  * - Cannot start and end with underscores or dashes.
  * - Cannot contain consecutive underscores or dashes.
- * - Cannot be a reserved URL in the PROTECTED_TEAM_URLS list
+ *
+ * Note: Route conflicts are avoided by prefixing team URLs with org suffix (e.g. orgSuffix-teamurl).
  */
 export const ZTeamUrlSchema = z
   .string()
@@ -29,10 +28,7 @@ export const ZTeamUrlSchema = z
   .regex(
     /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
     'Team URL can only contain letters, numbers, dashes and underscores.',
-  )
-  .refine((value) => !PROTECTED_TEAM_URLS.includes(value), {
-    message: 'This URL is already in use.',
-  });
+  );
 
 export const ZTeamNameSchema = z
   .string()
