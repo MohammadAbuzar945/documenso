@@ -326,7 +326,7 @@ export async function action({ request }: { request: Request }) {
           });
         }
 
-      
+        console.log('Pay as you go credits added successfully');
         return new Response(JSON.stringify({ success: true, message: 'Credits added successfully' }), { status: 200 });
       } else {
         //if plan code found please update the subscription table and add credits
@@ -360,22 +360,24 @@ export async function action({ request }: { request: Request }) {
 
             //add credits to user credits table
             const userCreditsRecord = await ensureOrganisationCredits(organisationId, user.id);
+
+            console.log('User credits record:', userCreditsRecord);
             const newPlanCredits = PLAN_DOCUMENT_QUOTAS[planCode] ?? 0;
+            console.log('New plan credits:', newPlanCredits);
             if (newPlanCredits > 0) {
-              await prisma.userCredits.update({
+             const userCredits = await prisma.userCredits.update({
                 where: { id: userCreditsRecord.id },
                 data: { credits: Number(userCreditsRecord.credits) + newPlanCredits },
               });
+              console.log('User credits updated:', userCredits);
             }
+
+            console.log("subscription and credits updated successfully");
           }
       }
 
 
-      console.log('Charge success details:', {
-        customerEmail,
-        refferCredits
-        
-      });
+
 
       // const user = await prisma.user.findUnique({
       //   where: { email: customerEmail },

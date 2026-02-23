@@ -45,7 +45,7 @@ export const ensureOrganisationCredits = async (organisationId: string, userId: 
         id: userCredits.id,
       },
       data: {
-        credits: INITIAL_USER_CREDITS,
+        credits: 0,
         expiresAt: null,
         isActive: true,
       },
