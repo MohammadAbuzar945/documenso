@@ -11,6 +11,26 @@ export async function loader() {
   });
 }
 
+const normaliseEmailFromPaystack = (email: string) => {
+  const atIndex = email.indexOf('@');
+
+  if (atIndex === -1) {
+    return email;
+  }
+
+  const localPart = email.slice(0, atIndex);
+  const domainPart = email.slice(atIndex + 1);
+
+  const plusIndex = localPart.indexOf('+');
+  const cleanedLocalPart = plusIndex === -1 ? localPart : localPart.slice(0, plusIndex);
+
+  if (!cleanedLocalPart) {
+    return email;
+  }
+
+  return `${cleanedLocalPart}@${domainPart}`;
+};
+
 export async function action({ request }: { request: Request }) {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), {
@@ -59,10 +79,17 @@ export async function action({ request }: { request: Request }) {
         console.warn('Paystack webhook: missing customer.email or plan.plan_code', event.data);
         return new Response(JSON.stringify({ success: true }), { status: 200 });
       }
-      console.log('Extracted from event:', { email: customer.email, plan, reference: subscription_code, next_payment_date });
+      const normalisedEmail = normaliseEmailFromPaystack(customer.email);
+      console.log('Extracted from event:', {
+        rawEmail: customer.email,
+        normalisedEmail,
+        plan,
+        reference: subscription_code,
+        next_payment_date,
+      });
       // Find user by email
       const user = await prisma.user.findUnique({ 
-        where: { email: customer.email },
+        where: { email: normalisedEmail },
         include: {
           userCredits: {
             where: { isActive: true },
@@ -209,11 +236,12 @@ export async function action({ request }: { request: Request }) {
         }
       }
 
-      const customerEmail = customer?.email;
-      if (!customerEmail) {
+      const customerEmailRaw = customer?.email;
+      if (!customerEmailRaw) {
         console.warn('Paystack webhook charge.success: missing customer.email', event.data);
         return new Response(JSON.stringify({ success: true }), { status: 200 });
       }
+      const customerEmail = normaliseEmailFromPaystack(customerEmailRaw);
       
       // Extract referral code from referrer URL
       const refferCredits = metadata?.value as number | undefined;

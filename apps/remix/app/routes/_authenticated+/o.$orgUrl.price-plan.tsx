@@ -510,6 +510,29 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
     null,
   );
 
+  const buildPlusAddressEmail = (email: string, planId: string) => {
+    const atIndex = email.indexOf('@');
+
+    if (atIndex === -1) {
+      return email;
+    }
+
+    const localPart = email.slice(0, atIndex);
+    const domainPart = email.slice(atIndex + 1);
+
+    if (!localPart) {
+      return email;
+    }
+
+    const safePlanId = planId.replace(/[^a-zA-Z0-9]/g, '');
+
+    if (!safePlanId) {
+      return email;
+    }
+
+    return `${localPart}+${safePlanId}@${domainPart}`;
+  };
+
   async function handleApiPaystack(
     isOneTime: boolean,
     email: string,
@@ -539,13 +562,15 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
       return;
     }
 
+    const emailForPaystack = buildPlusAddressEmail(email, planId);
+
     const response = await fetch(`${NEXT_PUBLIC_WEBAPP_URL()}/api/paystack/initialize`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email,
+        email: emailForPaystack,
         // With this amount, the user will be able to pay for the plan but original amount will be used as mentioned in the plan details in paystack
         amount: 100,
         plan: planId,
