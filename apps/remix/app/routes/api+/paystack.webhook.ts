@@ -100,8 +100,8 @@ export async function action({ request }: { request: Request }) {
             const subscription = await prisma.subscription.create({
               data: {
                 organisationId: organisation.id,
-                planId: plan.plan_code,
-                priceId: subscription_code ?? '',
+                planId: subscription_code ?? '',
+                priceId: plan.plan_code,
                 customerId: customer.customer_code ?? '',
                 status: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? 'INACTIVE' : 'ACTIVE',
                 periodEnd: PAY_AS_YOU_GO_PLANS.includes(plan.plan_code) ? null : next_payment_date,
@@ -143,7 +143,7 @@ export async function action({ request }: { request: Request }) {
 
       try {
         const existingSubscription = await prisma.subscription.findFirst({
-          where: { priceId: subscription_code },
+          where: { planId: subscription_code },
         });
         if (existingSubscription) {
           const subscription = await prisma.subscription.update({
@@ -160,7 +160,7 @@ export async function action({ request }: { request: Request }) {
       const subscription_code = event.data?.subscription_code as string | undefined;
       console.log('Processing subscription update:', subscription_code);
       const existingSubscription = await prisma.subscription.findFirst({
-        where: { priceId: subscription_code },
+        where: { planId: subscription_code },
       });
       if (existingSubscription) {
         const subscription = await prisma.subscription.update({
@@ -173,7 +173,7 @@ export async function action({ request }: { request: Request }) {
       const subscription_code = event.data?.subscription_code as string | undefined;
       console.log('Processing subscription update:', subscription_code);
       const existingSubscription = await prisma.subscription.findFirst({
-        where: { priceId: subscription_code },
+        where: { planId: subscription_code },
       });
       if (existingSubscription) {
         const subscription = await prisma.subscription.update({
@@ -191,16 +191,16 @@ export async function action({ request }: { request: Request }) {
       };
 
       // Verify transaction via Paystack API
-      if (reference) {
-        try {
-          const verifyResponse = await verifyTransaction(reference);
-          if (verifyResponse.status) {
-            console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
-          }
-        } catch (verifyError) {
-          console.error('Paystack transaction verify failed:', reference, verifyError);
-        }
-      }
+      // if (reference) {
+      //   try {
+      //     const verifyResponse = await verifyTransaction(reference);
+      //     if (verifyResponse.status) {
+      //       console.log('Paystack transaction verified:', JSON.stringify(verifyResponse));
+      //     }
+      //   } catch (verifyError) {
+      //     console.error('Paystack transaction verify failed:', reference, verifyError);
+      //   }
+      // }
 
       const customerEmail = customer?.email;
       if (!customerEmail) {
