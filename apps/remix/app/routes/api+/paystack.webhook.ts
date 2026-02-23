@@ -135,7 +135,7 @@ export async function action({ request }: { request: Request }) {
 
             const pendingSubscription = await prisma.subscription.findFirst({
 
-              where: { customerId: customer.email ?? '' },
+              where: { customerId: customer.email },
            
               });
             if (pendingSubscription) {
