@@ -38,9 +38,8 @@ import { getFileServerSide } from '../../universal/upload/get-file.server';
 import { putPdfFileServerSide } from '../../universal/upload/put-file.server';
 import { extractDerivedDocumentMeta } from '../../utils/document';
 import { createDocumentAuthOptions, createRecipientAuthOptions } from '../../utils/document-auth';
-import { buildTeamWhereQuery } from '../../utils/teams';
+import { buildTeamWhereQuery, extractDerivedTeamSettings } from '../../utils/teams';
 import { incrementDocumentId, incrementTemplateId } from '../envelope/increment-id';
-import { getTeamSettings } from '../team/get-team-settings';
 import { triggerWebhook } from '../webhooks/trigger/trigger-webhook';
 
 const NOMIA_PREFIX = 'NomiaSigns-';
@@ -161,10 +160,12 @@ export const createEnvelope = async ({
     where: buildTeamWhereQuery({ teamId, userId }),
     include: {
       organisation: {
-        select: {
+        include: {
           organisationClaim: true,
+          organisationGlobalSettings: true,
         },
       },
+      teamGlobalSettings: true,
     },
   });
 
@@ -173,6 +174,11 @@ export const createEnvelope = async ({
       message: 'Team not found',
     });
   }
+
+  const settings = extractDerivedTeamSettings(
+    team.organisation.organisationGlobalSettings,
+    team.teamGlobalSettings,
+  );
 
   // Verify that the folder exists and is associated with the team.
   if (folderId) {
@@ -190,11 +196,6 @@ export const createEnvelope = async ({
       });
     }
   }
-
-  const settings = await getTeamSettings({
-    userId,
-    teamId,
-  });
 
   if (data.envelopeItems.length !== 1 && internalVersion === 1) {
     throw new AppError(AppErrorCode.INVALID_BODY, {
@@ -253,9 +254,10 @@ export const createEnvelope = async ({
   );
 
   // Check if user has permission to set the global action auth.
+  const claimFlags = team.organisation?.organisationClaim?.flags as { cfr21?: boolean } | null;
   if (
     (authOptions.globalActionAuth.length > 0 || recipientsHaveActionAuth) &&
-    !team.organisation.organisationClaim.flags.cfr21
+    !claimFlags?.cfr21
   ) {
     throw new AppError(AppErrorCode.UNAUTHORIZED, {
       message: 'You do not have permission to set the action auth',
@@ -337,7 +339,7 @@ export const createEnvelope = async ({
 
   const { processedExternalId, fromNomia } = processExternalId(externalId);
 
-  const createdEnvelope = await prisma.$transaction(async (tx) => {
+  const createdEnvelopeId = await prisma.$transaction(async (tx) => {
     const envelope = await tx.envelope.create({
       data: {
         id: prefixedId('envelope'),
@@ -581,31 +583,7 @@ export const createEnvelope = async ({
       }
     }
 
-    const createdEnvelope = await tx.envelope.findFirst({
-      where: {
-        id: envelope.id,
-      },
-      include: {
-        documentMeta: true,
-        recipients: true,
-        fields: true,
-        folder: true,
-        envelopeAttachments: true,
-        envelopeItems: {
-          include: {
-            documentData: true,
-          },
-        },
-      },
-    });
-
-    if (!createdEnvelope) {
-      throw new AppError(AppErrorCode.NOT_FOUND, {
-        message: 'Envelope not found',
-      });
-    }
-
-    // Only create audit logs and webhook events for documents.
+    // Only create audit logs inside the transaction. Webhook and heavy read run after commit.
     if (type === EnvelopeType.DOCUMENT) {
       await tx.documentAuditLog.create({
         data: createDocumentAuditLogData({
@@ -624,7 +602,6 @@ export const createEnvelope = async ({
         }),
       });
 
-      // Create audit log for delegated owner if validation passed
       if (delegatedOwner) {
         await tx.documentAuditLog.create({
           data: createDocumentAuditLogData({
@@ -642,17 +619,38 @@ export const createEnvelope = async ({
           }),
         });
       }
-
-      await triggerWebhook({
-        event: WebhookTriggerEvents.DOCUMENT_CREATED,
-        data: ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(createdEnvelope)),
-        userId,
-        teamId,
-      });
     }
 
-    return createdEnvelope;
+    return envelope.id;
   });
+
+  // Fetch full envelope after transaction (shorter TX, no webhook/read inside).
+  const createdEnvelope = await prisma.envelope.findFirst({
+    where: { id: createdEnvelopeId },
+    include: {
+      documentMeta: true,
+      recipients: true,
+      fields: true,
+      folder: true,
+      envelopeAttachments: true,
+      envelopeItems: true,
+    },
+  });
+
+  if (!createdEnvelope) {
+    throw new AppError(AppErrorCode.NOT_FOUND, {
+      message: 'Envelope not found',
+    });
+  }
+
+  if (type === EnvelopeType.DOCUMENT) {
+    await triggerWebhook({
+      event: WebhookTriggerEvents.DOCUMENT_CREATED,
+      data: ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(createdEnvelope)),
+      userId,
+      teamId,
+    });
+  }
 
   return createdEnvelope;
 };

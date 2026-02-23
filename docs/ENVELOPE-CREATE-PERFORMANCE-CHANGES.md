@@ -4,6 +4,43 @@ This document outlines concrete code changes to reduce latency for `api/v2/envel
 
 ---
 
+## Compatibility & breakage check (verified)
+
+The following was verified so that implementing these changes **does not break** the app.
+
+### `createEnvelope()` return value – must stay the same shape
+
+- **Envelope router** (`packages/trpc/server/envelope-router/create-envelope.ts`): returns `{ id: envelope.id }`. Only needs `envelope.id`.
+- **Document router** (`packages/trpc/server/document-router/create-document.ts`): returns `{ envelopeId: document.id, id: mapSecondaryIdToDocumentId(document.secondaryId) }`. Needs `envelope.id` and `envelope.secondaryId`.
+- **Document create temporary** (`packages/trpc/server/document-router/create-document-temporary.ts`): uses `createdEnvelope.id`, `createdEnvelope.secondaryId`, `createdEnvelope.documentMeta`, `createdEnvelope.fields`, `createdEnvelope.recipients`, `createdEnvelope.folder`. **Requires the full envelope** with those includes.
+- **Template router** (`packages/trpc/server/template-router/router.ts`): uses `envelope.id` and `envelope.secondaryId` for return; api v1 template create then calls `getTemplateById(createdTemplate.id)` and does not rely on other fields from `createEnvelope`.
+- **API v1** (`packages/api/v1/implementation.ts`): document create uses `envelope.secondaryId`; template create uses `createdTemplate.id` for `getTemplateById`.
+- **Embedding routers**: use `envelope.id`, `envelope.secondaryId`, and (template) `template.envelopeItems[0]`.
+
+**Conclusion:** The **return type of `createEnvelope()` must remain a full envelope** with at least: `id`, `secondaryId`, `documentMeta`, `recipients`, `fields`, `folder`, `envelopeAttachments`, `envelopeItems` (with `documentData` if any caller needs it). So when implementing §1 and §2: **do the heavy `findFirst` after the transaction** and return that same object from `createEnvelope()`. Do not change the public return shape; only move where the read happens (after commit instead of inside the transaction).
+
+### Frontend
+
+- **Envelope create** (`envelope-drop-zone-wrapper.tsx`, `envelope-upload-button.tsx`): expect `{ id }` from the mutation and navigate to `/${id}/edit`. The TRPC route returns `{ id: envelope.id }` — unchanged.
+- **Document create (legacy)** (`document-upload-button-legacy.tsx`): expect `{ envelopeId: id }` from `createDocument` and navigate to `/${id}/edit`. The document route returns `{ envelopeId, id }` — unchanged.
+
+No frontend changes are required.
+
+### Webhook
+
+- `mapEnvelopeToWebhookDocumentPayload(envelope)` expects an envelope with `recipients`, `documentMeta`, and scalar fields (`secondaryId`, `type`, `status`, `createdAt`, etc.). It does **not** use `envelopeItems` or `documentData`.
+- Triggering the webhook **after** the transaction (with the envelope loaded in the post-TX fetch) yields the same payload. Subscribers see no change. Webhooks are async; no code depends on the webhook being sent before the API response.
+
+### `getTeamSettings` (change §3)
+
+- We do **not** change the `getTeamSettings()` function itself. We only change `create-envelope.ts` to stop calling it and instead derive settings from the single team fetch using `extractDerivedTeamSettings(team.organisation.organisationGlobalSettings, team.teamGlobalSettings)`. All other callers of `getTeamSettings()` (e.g. email context, other flows) are unaffected.
+
+### Implementation caveat for §1 + §2
+
+- When you move the `findFirst` to **after** the transaction, use the **exact same** `include` as today: `documentMeta`, `recipients`, `fields`, `folder`, `envelopeAttachments`, `envelopeItems: { include: { documentData: true } }`. That way `create-document-temporary` and any code that expects the full envelope keep working. The gain is from shortening the transaction (no long read + no webhook inside TX), not from slimming the response.
+
+---
+
 ## 1. Move webhook trigger outside the transaction (highest impact)
 
 **File:** `packages/lib/server-only/envelope/create-envelope.ts`
@@ -46,9 +83,7 @@ This document outlines concrete code changes to reduce latency for `api/v2/envel
 
 - Inside the transaction: after creating recipients and placeholder fields, create the audit log(s). Do **not** run the current `findFirst` with full includes.
 - Return from the transaction an object that includes `envelopeId: envelope.id` (and optionally minimal data needed for audit log creation if not already available).
-- After the transaction:  
-  `const createdEnvelope = await prisma.envelope.findFirst({ where: { id: envelopeId }, include: { documentMeta: true, recipients: true, fields: true, folder: true, envelopeAttachments: true, envelopeItems: { include: { documentData: true } } } });`  
-  Use `createdEnvelope` as the return value of `createEnvelope` and for the webhook payload in §1.
+- After the transaction: run **one** `prisma.envelope.findFirst` with the **same full include** as today: `documentMeta`, `recipients`, `fields`, `folder`, `envelopeAttachments`, `envelopeItems: { include: { documentData: true } }`. (Do not slim this include — see “Compatibility & breakage check” above; `create-document-temporary` and others depend on it.) Use the result as the return value of `createEnvelope` and for the webhook payload in §1.
 
 ---
 
