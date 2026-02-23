@@ -45,6 +45,7 @@ export const DocumentDeleteDialog = ({
   const { _ } = useLingui();
 
   const deleteMessage = msg`delete`;
+  const trpcUtils = trpcReact.useUtils();
 
   const [inputValue, setInputValue] = useState('');
   const [isDeleteEnabled, setIsDeleteEnabled] = useState(status === DocumentStatus.DRAFT);
@@ -52,6 +53,11 @@ export const DocumentDeleteDialog = ({
   const { mutateAsync: deleteDocument, isPending } = trpcReact.document.delete.useMutation({
     onSuccess: async () => {
       void refreshLimits();
+
+      await Promise.all([
+        trpcUtils.document.inbox.getCount.invalidate(),
+        trpcUtils.document.inbox.find.invalidate(),
+      ]);
 
       toast({
         title: _(msg`Document deleted`),
