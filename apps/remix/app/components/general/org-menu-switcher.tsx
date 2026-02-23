@@ -67,7 +67,10 @@ export const OrgMenuSwitcher = () => {
   const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
 
   const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
-  const maxOrganisationCount = (user.maxOrganisationCount as number | undefined) ?? 1;
+  const rawMax = user.maxOrganisationCount as number | string | undefined;
+  const numMax = typeof rawMax === 'number' ? rawMax : Number(rawMax);
+  const maxOrganisationCount =
+    !Number.isNaN(numMax) && numMax >= 0 ? numMax : 1;
 
   // Check if user can create more organisations
   // If maxOrganisationCount is 0, it means unlimited (only for admins)
@@ -75,8 +78,10 @@ export const OrgMenuSwitcher = () => {
     (maxOrganisationCount === 0 && isUserAdmin) ||
     (maxOrganisationCount > 0 && ownedOrganisationsCount < maxOrganisationCount);
 
-  const handleCreateOrganisationClick = () => {
+  const handleCreateOrganisationClick = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (canCreateOrganisation) {
+      setIsOpen(false);
       setCreateDialogOpen(true);
     } else {
       setContactModalOpen(true);
@@ -244,9 +249,11 @@ export const OrgMenuSwitcher = () => {
               ))}
 
               <Button
+                type="button"
                 variant="ghost"
                 className="w-full justify-start"
                 onClick={handleCreateOrganisationClick}
+                onPointerDown={(e) => e.stopPropagation()}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 <Trans>Create Organisation</Trans>

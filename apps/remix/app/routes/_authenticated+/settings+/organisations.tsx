@@ -31,7 +31,10 @@ export default function TeamsSettingsPage() {
   const [contactModalOpen, setContactModalOpen] = useState(false);
 
   const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
-  const maxOrganisationCount = (user.maxOrganisationCount as number | undefined) ?? 1;
+  const rawMax = user.maxOrganisationCount as number | string | undefined;
+  const numMax = typeof rawMax === 'number' ? rawMax : Number(rawMax);
+  const maxOrganisationCount =
+    !Number.isNaN(numMax) && numMax >= 0 ? numMax : 1;
 
   // Check if user can create more organisations
   // If maxOrganisationCount is 0, it means unlimited (only for admins)
@@ -53,7 +56,7 @@ export default function TeamsSettingsPage() {
         title={_(msg`Organisations`)}
         subtitle={_(msg`Manage all organisations you are currently associated with.`)}
       >
-        <Button onClick={handleCreateOrganisationClick} variant="secondary">
+        <Button type="button" onClick={handleCreateOrganisationClick} variant="secondary">
           <Trans>Create organisation</Trans>
         </Button>
       </SettingsHeader>
