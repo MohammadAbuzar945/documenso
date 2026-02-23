@@ -15,6 +15,7 @@ export const ZGetUserResponseSchema = UserSchema.pick({
   disabled: true,
   twoFactorEnabled: true,
   signature: true,
+  maxOrganisationCount: true,
 });
 
 export type TGetUserRequest = z.infer<typeof ZGetUserRequestSchema>;

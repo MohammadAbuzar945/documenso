@@ -37,20 +37,21 @@ enum Role {
 }
 
 model User {
-  id               Int              @id @default(autoincrement())
-  name             String?
-  email            String           @unique
-  emailVerified    DateTime?
-  password         String? // Todo: (RR7) Remove after RR7 migration.
-  source           String?
-  signature        String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @default(now()) @updatedAt
-  lastSignedIn     DateTime         @default(now())
-  roles            Role[]           @default([USER])
-  identityProvider IdentityProvider @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
-  avatarImageId    String?
-  disabled         Boolean          @default(false)
+  id                   Int              @id @default(autoincrement())
+  name                 String?
+  email                String           @unique
+  emailVerified        DateTime?
+  password             String? // Todo: (RR7) Remove after RR7 migration.
+  source               String?
+  signature            String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @default(now()) @updatedAt
+  lastSignedIn         DateTime         @default(now())
+  roles                Role[]           @default([USER])
+  identityProvider     IdentityProvider @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
+  avatarImageId        String?
+  disabled             Boolean          @default(false)
+  maxOrganisationCount Int              @default(1)
 
   accounts            Account[]
   sessions            Session[]
@@ -677,7 +678,7 @@ model Organisation {
   url           String           @unique
   avatarImageId String?
 
-  customerId   String?       @unique
+  customerId String? @unique
 
   organisationClaimId String            @unique
   organisationClaim   OrganisationClaim @relation(fields: [organisationClaimId], references: [id])
@@ -695,6 +696,8 @@ model Organisation {
 
   ownerUserId Int
   owner       User @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+
+  userCredits UserCredits[]
 
   organisationGlobalSettingsId String                     @unique
   organisationGlobalSettings   OrganisationGlobalSettings @relation(fields: [organisationGlobalSettingsId], references: [id])
@@ -884,11 +887,11 @@ model TeamGlobalSettings {
 }
 
 model Team {
-  id            Int      @id @default(autoincrement())
-  name          String
-  url           String   @unique
-  createdAt     DateTime @default(now())
-  avatarImageId String?
+  id             Int      @id @default(autoincrement())
+  name           String
+  url            String   @unique
+  createdAt      DateTime @default(now())
+  avatarImageId  String?
   creditConsumed Int      @default(0)
 
   teamEmail         TeamEmail?
@@ -1081,15 +1084,19 @@ model Counter {
 }
 
 model UserCredits {
-  id            Int       @id @default(autoincrement())
-  userId        Int
-  credits       Int       @default(0)
-  lastUpdatedAt DateTime  @default(now())
-  expiresAt     DateTime?
-  isActive      Boolean   @default(true)
+  id             Int       @id @default(autoincrement())
+  userId         Int
+  organisationId String
+  credits        Int       @default(0)
+  lastUpdatedAt  DateTime  @default(now())
+  expiresAt      DateTime?
+  isActive       Boolean   @default(true)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([organisationId])
+  @@index([organisationId, isActive])
   @@index([isActive])
 }

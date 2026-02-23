@@ -66,7 +66,11 @@ export const EnvelopeDropZoneWrapper = ({
 
   const onFileDrop = async (files: File[]) => {
     if (isUploadDisabled && IS_BILLING_ENABLED()) {
-      await navigate(`/price-plans`);
+      if (organisation) {
+        await navigate(`/o/${organisation.url}/price-plan`);
+      } else {
+        await navigate(`/price-plans`);
+      }
       return;
     }
 
@@ -242,7 +246,7 @@ export const EnvelopeDropZoneWrapper = ({
 
             {isUploadDisabled && IS_BILLING_ENABLED() && (
               <Link
-                to={`/price-plans`}
+                to={organisation ? `/o/${organisation.url}/price-plan` : `/price-plans`}
                 className="mt-4 text-sm text-amber-500 hover:underline dark:text-amber-400"
               >
                 <Trans>Upgrade your plan to upload more documents</Trans>

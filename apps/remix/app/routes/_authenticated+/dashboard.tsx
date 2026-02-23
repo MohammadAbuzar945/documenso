@@ -75,23 +75,6 @@ export default function DashboardPage() {
                 <Trans>Create an organisation to get started.</Trans>
               </p>
             </div>
-
-            {(() => {
-              const isUserAdmin = isAdmin(user);
-              const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
-              const hasPersonalOrganisation = organisations.some(
-                (org) => org.ownerUserId === user.id && org.type === OrganisationType.PERSONAL,
-              );
-              const canCreateOrganisation = isUserAdmin && (!hasPersonalOrganisation || ownedOrganisationsCount < 2);
-              
-              return canCreateOrganisation && (
-                <Button asChild className="mt-4" variant="outline">
-                  <Link to="/settings/organisations?action=add-organisation">
-                    <Trans>Create organisation</Trans>
-                  </Link>
-                </Button>
-              );
-            })()}
           </div>
         )}
 

@@ -1,6 +1,6 @@
 import { prisma } from '@documenso/prisma';
 import { PLAN_DOCUMENT_QUOTAS } from '@documenso/ee/server-only/limits/constants';
-import { ensureUserCredits } from '@documenso/ee/server-only/limits/user-credits';
+import { ensureOrganisationCredits } from '@documenso/ee/server-only/limits/user-credits';
 
 export async function action({ request }: { request: Request }){
   try {
@@ -65,8 +65,8 @@ export async function action({ request }: { request: Request }){
              
             });
 
-            // Ensure user has a credits record
-            const userCreditsRecord = await ensureUserCredits(user.id);
+            // Ensure organisation has a credits record
+            const userCreditsRecord = await ensureOrganisationCredits(organisation.id, user.id);
             
             // Get new plan credits based on plan code
             const newPlanCredits = PLAN_DOCUMENT_QUOTAS[plan.plan_code] ?? 0;
@@ -144,7 +144,8 @@ export async function action({ request }: { request: Request }){
       const customerEmail = customer.email;
       
       // Extract referral code from referrer URL
-      const refferCredits = metadata.value as number;
+      const refferCredits = metadata?.value as number | undefined;
+      const organisationIdFromMetadata = metadata?.organisationId as string | undefined;
 
       const planCode = plan?.plan_code;
 
@@ -160,13 +161,28 @@ export async function action({ request }: { request: Request }){
           return;
         }
 
-        //update user credits 
-        const userCreditsRecord = await ensureUserCredits(user.id);
+        // Use organisationId from metadata when present, otherwise find by owner
+        const organisation = organisationIdFromMetadata
+          ? await prisma.organisation.findUnique({
+              where: { id: organisationIdFromMetadata },
+            })
+          : await prisma.organisation.findFirst({
+              where: { ownerUserId: user.id },
+            });
 
-        if (userCreditsRecord) {
+        if (!organisation) {
+          console.error('Organisation not found for user:', user.id);
+          return new Response(JSON.stringify({ success: false, error: 'Organisation not found' }), { status: 400 });
+        }
+
+        //update organisation credits when value is present in metadata
+        const userCreditsRecord = await ensureOrganisationCredits(organisation.id, user.id);
+        const creditsToAdd = Number(refferCredits);
+
+        if (userCreditsRecord && !Number.isNaN(creditsToAdd) && creditsToAdd > 0) {
           await prisma.userCredits.update({
             where: { id: userCreditsRecord.id },
-            data: { credits: Number(userCreditsRecord.credits) + Number(refferCredits) },
+            data: { credits: Number(userCreditsRecord.credits) + creditsToAdd },
           });
         }
 

@@ -12,7 +12,7 @@ import { nanoid } from 'nanoid';
 import path from 'node:path';
 import { groupBy } from 'remeda';
 
-import { deductUserCredits, getUserCredits } from '@documenso/ee/server-only/limits/user-credits';
+import { deductOrganisationCredits, getOrganisationCredits } from '@documenso/ee/server-only/limits/user-credits';
 import { addRejectionStampToPdf } from '@documenso/lib/server-only/pdf/add-rejection-stamp-to-pdf';
 import { generateAuditLogPdf } from '@documenso/lib/server-only/pdf/generate-audit-log-pdf';
 import { generateCertificatePdf } from '@documenso/lib/server-only/pdf/generate-certificate-pdf';
@@ -96,8 +96,8 @@ export const run = async ({
       teamId: envelope.teamId,
     });
 
-    // Get the organization owner ID to use their credits for deduction
-    // Organization members should use the owner's credits
+    // Get the organization ID to use its credits for deduction
+    // Each organization has its own credits pool
     const team = await prisma.team.findFirst({
       where: {
         id: envelope.teamId,
@@ -105,15 +105,33 @@ export const run = async ({
       include: {
         organisation: {
           select: {
-            ownerUserId: true,
+            id: true,
           },
         },
       },
     });
 
-    // Use organization owner's credits if team exists and belongs to an organization
-    // Otherwise, fall back to the envelope creator's credits
-    const creditOwnerId = team?.organisation?.ownerUserId ?? envelope.userId;
+    // Use organization's credits if team exists and belongs to an organization
+    // Otherwise, fall back to the envelope creator's personal organization
+    let organisationId: string;
+    if (team?.organisation?.id) {
+      organisationId = team.organisation.id;
+    } else {
+      // Find user's personal organisation
+      const personalOrg = await prisma.organisation.findFirst({
+        where: {
+          ownerUserId: envelope.userId,
+          type: 'PERSONAL',
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!personalOrg) {
+        throw new Error(`Personal organisation not found for user ${envelope.userId}`);
+      }
+      organisationId = personalOrg.id;
+    }
 
     // Ensure all CC recipients are marked as signed
     await prisma.recipient.updateMany({
@@ -163,9 +181,9 @@ export const run = async ({
 
     const creditsToConsume = envelopeItems.length;
 
-    // Check if user has enough credits before proceeding (only for completed documents, not rejected or resealing)
+    // Check if organisation has enough credits before proceeding (only for completed documents, not rejected or resealing)
     if (!isRejected && !isResealing) {
-      const userCredits = await getUserCredits(creditOwnerId);
+      const userCredits = await getOrganisationCredits(organisationId);
       if (userCredits < creditsToConsume) {
         throw new AppError(AppErrorCode.INVALID_REQUEST, {
           message: 'Insufficient credits to seal document',
@@ -342,9 +360,9 @@ export const run = async ({
     });
 
     // Deduct credits when document is completed (not rejected)
-    // Use organization owner's credits if document is in an organization
+    // Use organization's credits pool
     if (!isRejected && !isResealing) {
-      await deductUserCredits(creditOwnerId, creditsToConsume);
+      await deductOrganisationCredits(organisationId, creditsToConsume);
     }
 
     return {

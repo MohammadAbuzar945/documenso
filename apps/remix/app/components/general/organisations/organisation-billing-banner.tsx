@@ -166,7 +166,7 @@ export const OrganisationBillingBanner = () => {
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button asChild>
-                      <Link to={`/price-plans`}>
+                      <Link to={`/o/${organisation.url}/price-plan`}>
                         <Trans>Manage Billing</Trans>
                       </Link>
                     </Button>

@@ -6,6 +6,7 @@ export const ZUpdateUserRequestSchema = z.object({
   name: z.string().nullish(),
   email: z.string().email().optional(),
   roles: z.array(z.nativeEnum(Role)).optional(),
+  maxOrganisationCount: z.number().int().min(0).optional(),
 });
 
 export const ZUpdateUserResponseSchema = z.void();

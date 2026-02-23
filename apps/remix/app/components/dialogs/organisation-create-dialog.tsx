@@ -103,19 +103,24 @@ export const OrganisationCreateDialog = ({ trigger, ...props }: OrganisationCrea
     form.reset();
   }, [open, form]);
 
+  // If open prop is provided, the dialog is controlled and we shouldn't render the trigger
+  const isControlled = props.open !== undefined;
+
   return (
     <Dialog
       {...props}
       open={open}
       onOpenChange={(value) => !form.formState.isSubmitting && setOpen(value)}
     >
-      <DialogTrigger onClick={(e) => e.stopPropagation()} asChild={true}>
-        {trigger ?? (
-          <Button className="flex-shrink-0" variant="secondary">
-            <Trans>Create organisation</Trans>
-          </Button>
-        )}
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger onClick={(e) => e.stopPropagation()} asChild={true}>
+          {trigger ?? (
+            <Button className="flex-shrink-0" variant="secondary">
+              <Trans>Create organisation</Trans>
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
 
       <DialogContent position="center">
         <DialogHeader>

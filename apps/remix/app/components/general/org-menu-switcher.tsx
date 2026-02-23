@@ -31,6 +31,14 @@ import { cn } from '@documenso/ui/lib/utils';
 import { AvatarWithText } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@documenso/ui/primitives/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -38,6 +46,8 @@ import {
 } from '@documenso/ui/primitives/dropdown-menu';
 
 import { useOptionalCurrentTeam } from '~/providers/team';
+
+import { OrganisationCreateDialog } from '../dialogs/organisation-create-dialog';
 
 export const OrgMenuSwitcher = () => {
   const { _ } = useLingui();
@@ -49,10 +59,29 @@ export const OrgMenuSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [languageSwitcherOpen, setLanguageSwitcherOpen] = useState(false);
   const [hoveredOrgId, setHoveredOrgId] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   const isUserAdmin = isAdmin(user);
 
   const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
+
+  const ownedOrganisationsCount = organisations.filter((org) => org.ownerUserId === user.id).length;
+  const maxOrganisationCount = (user.maxOrganisationCount as number | undefined) ?? 1;
+
+  // Check if user can create more organisations
+  // If maxOrganisationCount is 0, it means unlimited (only for admins)
+  const canCreateOrganisation =
+    (maxOrganisationCount === 0 && isUserAdmin) ||
+    (maxOrganisationCount > 0 && ownedOrganisationsCount < maxOrganisationCount);
+
+  const handleCreateOrganisationClick = () => {
+    if (canCreateOrganisation) {
+      setCreateDialogOpen(true);
+    } else {
+      setContactModalOpen(true);
+    }
+  };
 
   const sortedOrganisations = useMemo(
     () => {
@@ -213,6 +242,15 @@ export const OrgMenuSwitcher = () => {
                   )}
                 </div>
               ))}
+
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={handleCreateOrganisationClick}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                <Trans>Create Organisation</Trans>
+              </Button>
             </div>
           </div>
 
@@ -322,14 +360,14 @@ export const OrgMenuSwitcher = () => {
                 </Link>
               </DropdownMenuItem>
 
-              {isOrganisationOwner && (
+              {/* {isOrganisationOwner && (
                 <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
                   <Link to="/price-plans" className="flex items-center">
                  
                     <Trans>Subscriptions</Trans>
                   </Link>
                 </DropdownMenuItem>
-              )}
+              )} */}
 
               <DropdownMenuItem
                 className="text-muted-foreground px-4 py-2"
@@ -350,6 +388,47 @@ export const OrgMenuSwitcher = () => {
       </DropdownMenuContent>
 
       <LanguageSwitcherDialog open={languageSwitcherOpen} setOpen={setLanguageSwitcherOpen} />
+
+      <OrganisationCreateDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+
+      <Dialog open={contactModalOpen} onOpenChange={setContactModalOpen}>
+        <DialogContent position="center">
+          <DialogHeader>
+            <DialogTitle>
+              <Trans>Create More Organisations</Trans>
+            </DialogTitle>
+            <DialogDescription>
+              <Trans>
+                Please contact us at{' '}
+                <a
+                  href="mailto:help@nomiadocs.com"
+                  className="text-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  help@nomiadocs.com
+                </a>{' '}
+                to create more than {String(maxOrganisationCount)} organisation{maxOrganisationCount !== 1 ? 's' : ''}.
+              </Trans>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="secondary" onClick={() => setContactModalOpen(false)}>
+              <Trans>Close</Trans>
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                window.location.href = 'mailto:help@nomiadocs.com';
+              }}
+            >
+              <Trans>Contact Us</Trans>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DropdownMenu>
   );
 };

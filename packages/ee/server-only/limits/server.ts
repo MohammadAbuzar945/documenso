@@ -14,7 +14,7 @@ import {
 } from './constants';
 import { ERROR_CODES } from './errors';
 import type { TLimitsResponseSchema } from './schema';
-import { ensureUserCredits, getUserCredits } from './user-credits';
+import { ensureOrganisationCredits, getOrganisationCredits } from './user-credits';
 
 export type GetServerLimitsOptions = {
   userId: number;
@@ -102,24 +102,13 @@ export const getServerLimits = async ({
     organisationId: organisation.id,
   });
   
-  // Use organization owner's credits for all members in the organization
-  // This allows organization members to share and use the owner's credits
-  const creditOwnerId = organisation.ownerUserId;
-
-  console.log('creditOwnerId', creditOwnerId);
-  
-  if (!creditOwnerId) {
-    console.error('Organisation ownerUserId is missing:', organisation.id);
-    throw new Error(ERROR_CODES.USER_FETCH_FAILED);
-  }
-  
-  // Query user credits from UserCredits table (credits column)
-  // Organization members use the owner's credits instead of their own
+  // Query organisation credits from UserCredits table (credits column)
+  // Each organisation has its own credits pool
   let userCredits: number;
   try {
-    userCredits = await getUserCredits(creditOwnerId);
+    userCredits = await getOrganisationCredits(organisation.id);
   } catch (err) {
-    console.error('Error fetching user credits:', err);
+    console.error('Error fetching organisation credits:', err);
     // Log the actual error for debugging
     if (err instanceof Error) {
       console.error('Error details:', err.message, err.stack);

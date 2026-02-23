@@ -6,7 +6,7 @@ import { prisma } from '@documenso/prisma';
 import { SALT_ROUNDS } from '../../constants/auth';
 import { AppError, AppErrorCode } from '../../errors/app-error';
 import { createPersonalOrganisation } from '../organisation/create-organisation';
-import { ensureUserCredits } from '@documenso/ee/server-only/limits/user-credits';
+import { INITIAL_USER_CREDITS } from '@documenso/ee/server-only/limits/user-credits';
 
 export interface CreateUserOptions {
   name: string;
@@ -67,31 +67,27 @@ export const createUser = async ({ name, email, password, signature }: CreateUse
  * @returns User
  */
 export const onCreateUserHook = async (user: User) => {
-  await createPersonalOrganisation({ userId: user.id });
+  const organisation = await createPersonalOrganisation({ userId: user.id });
 
-  // Initialize user credits with 10 initial credits
+  if (!organisation) {
+    console.error('Failed to create personal organisation for user:', user.id);
+    return user;
+  }
+
+  // Initialize organisation credits with 10 initial credits during signup
   const existingCredits = await prisma.userCredits.findFirst({
     where: {
-      userId: user.id,
+      organisationId: organisation.id,
       isActive: true,
     },
   });
 
-  if (existingCredits) {
-    await prisma.userCredits.update({
-      where: {
-        id: existingCredits.id,
-      },
-      data: {
-        // If record already exists, just ensure it's active (don't overwrite existing credits)
-        isActive: true,
-      },
-    });
-  } else {
+  if (!existingCredits) {
     await prisma.userCredits.create({
       data: {
+        organisationId: organisation.id,
         userId: user.id,
-        credits: 10,
+        credits: INITIAL_USER_CREDITS,
         isActive: true,
       },
     });

@@ -91,16 +91,18 @@ const AdminUserPage = ({ user }: { user: TGetUserResponse }) => {
       name: user?.name ?? '',
       email: user?.email ?? '',
       roles: user?.roles ?? [],
+      maxOrganisationCount: user?.maxOrganisationCount ?? 1,
     },
   });
 
-  const onSubmit = async ({ name, email, roles }: TUserFormSchema) => {
+  const onSubmit = async ({ name, email, roles, maxOrganisationCount }: TUserFormSchema) => {
     try {
       await updateUserMutation({
         id: Number(user?.id),
         name,
         email,
         roles,
+        maxOrganisationCount,
       });
 
       await revalidate();
@@ -175,6 +177,34 @@ const AdminUserPage = ({ user }: { user: TGetUserResponse }) => {
                     </FormControl>
                     <FormMessage />
                   </fieldset>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="maxOrganisationCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-muted-foreground">
+                    <Trans>Max Organisation Count</Trans>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      {...field}
+                      value={field.value ?? 1}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 1 : Number.parseInt(e.target.value) || 0;
+                        field.onChange(value < 0 ? 0 : value);
+                      }}
+                    />
+                  </FormControl>
+                  <p className="text-muted-foreground text-sm">
+                    <Trans>Set to 0 for unlimited (admin only). Default is 1.</Trans>
+                  </p>
+                  <FormMessage />
                 </FormItem>
               )}
             />

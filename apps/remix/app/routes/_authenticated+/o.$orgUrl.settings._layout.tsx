@@ -79,7 +79,7 @@ export default function SettingsLayout() {
       icon: ShieldCheckIcon,
     },
     {
-      path: `/price-plans`,
+      path: `/o/${organisation.url}/price-plan`,
       label: t`Billing`,
       icon: CreditCardIcon,
     },
@@ -145,11 +145,11 @@ export default function SettingsLayout() {
             'col-span-12 mb-8 flex flex-wrap items-center justify-start gap-x-2 gap-y-4 md:col-span-3 md:w-full md:flex-col md:items-start md:gap-y-2',
           )}
         >
-          {organisationSettingRoutes.map((route) => (
+          {organisationSettingRoutes.map((route, index) => (
             <NavLink
               to={route.path}
               className={cn('group w-full justify-start', route.isSubNav && 'pl-8')}
-              key={route.path}
+              key={`${route.path}-${String(route.label)}-${index}`}
             >
               <Button
                 variant="ghost"

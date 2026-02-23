@@ -32,6 +32,7 @@ export const MenuSwitcher = () => {
   const isUserAdmin = isAdmin(user);
 
   const isOrganisationOwner = organisations.some((org) => org.ownerUserId === user.id);
+  const firstOwnedOrganisation = organisations.find((org) => org.ownerUserId === user.id);
 
   const formatAvatarFallback = (name?: string) => {
     if (name !== undefined) {
@@ -86,15 +87,15 @@ export const MenuSwitcher = () => {
             <Trans>User settings</Trans>
           </Link>
         </DropdownMenuItem>
-
-        {isOrganisationOwner && (
+{/* 
+        {isOrganisationOwner && firstOwnedOrganisation && (
           <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
-            <Link to="/price-plans" className="flex items-center">
+            <Link to={`/o/${firstOwnedOrganisation.url}/price-plan`} className="flex items-center">
               <CreditCardIcon className="mr-2 h-4 w-4" />
               <Trans>Subscriptions</Trans>
             </Link>
           </DropdownMenuItem>
-        )}
+        )} */}
 
         <DropdownMenuItem
           className="text-muted-foreground px-4 py-2"

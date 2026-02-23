@@ -17,10 +17,13 @@ export async function action({ request }: { request: Request }) {
 
     const transaction = await initializeTransaction(validatedData);
 
-    if (!transaction.data) {
-      return new Response(JSON.stringify({ error: 'Failed to initialize transaction' }), {
-        status: 500,
-      });
+    if (!transaction.status || !transaction.data) {
+      return new Response(
+        JSON.stringify({
+          error: transaction.message || 'Failed to initialize transaction',
+        }),
+        { status: 500 },
+      );
     }
 
     return new Response(
@@ -41,11 +44,33 @@ export async function action({ request }: { request: Request }) {
     }
 
     console.error('Paystack initialize error:', error);
+
+    // Extract Paystack error message from AxiosError
+    let errorMessage = 'Internal server error';
+    let statusCode = 500;
+
+    if (
+      error &&
+      typeof error === 'object' &&
+      'response' in error &&
+      error.response &&
+      typeof error.response === 'object' &&
+      'data' in error.response &&
+      error.response.data &&
+      typeof error.response.data === 'object' &&
+      'message' in error.response.data
+    ) {
+      errorMessage = String(error.response.data.message);
+      statusCode = 'status' in error.response && typeof error.response.status === 'number' 
+        ? error.response.status 
+        : 500;
+    }
+
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
+        error: errorMessage,
       }),
-      { status: 500 },
+      { status: statusCode },
     );
   }
 }

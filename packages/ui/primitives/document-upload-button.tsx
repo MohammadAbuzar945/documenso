@@ -83,9 +83,9 @@ export const DocumentUploadButton = ({
             <Button className="hover:bg-warning/80 bg-warning" asChild>
               <Link
                 to={
-                  isPersonalLayoutMode
-                    ? `/price-plans`
-                    : `/price-plans` 
+                  organisation
+                    ? `/o/${organisation.url}/price-plan`
+                    : `/price-plans`
                 }
               >
                 <Trans>Upgrade</Trans>

@@ -45,9 +45,17 @@ export const getLimits = async ({ headers, teamId }: GetLimitsOptions) => {
     .catch((_err) => {
       console.error('Error fetching limits, using defaults:', _err);
       return {
-        quota: FREE_PLAN_LIMITS,
-        remaining: FREE_PLAN_LIMITS,
-        maximumEnvelopeItemCount: DEFAULT_MINIMUM_ENVELOPE_ITEM_COUNT,
+        quota: {
+          documents: 0,
+          recipients: 0,
+          directTemplates: 0,
+        },
+        remaining: {
+          documents: 0,
+          recipients: 0,
+          directTemplates: 0,
+        },
+        maximumEnvelopeItemCount: 0,
       } satisfies TLimitsResponseSchema;
     });
 };

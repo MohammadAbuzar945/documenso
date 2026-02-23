@@ -26,26 +26,49 @@ export const createOrganisationRoute = authenticatedProcedure
       },
     });
 
-    // Prevent non-admin users from creating additional organisations (only allow personal).
+    // Get user's maxOrganisationCount limit
+    const user = await prisma.user.findUnique({
+      where: {
+        id: ctx.user.id,
+      },
+      select: {
+        maxOrganisationCount: true,
+        roles: true,
+      } as {
+        maxOrganisationCount: boolean;
+        roles: boolean;
+      },
+    });
+
+    if (!user) {
+      throw new AppError(AppErrorCode.NOT_FOUND, {
+        message: 'User not found',
+      });
+    }
+
     // Only session users have roles, API token users don't have roles so they can't be admins
     const roles = ctx.session && 'roles' in ctx.user ? (ctx.user.roles as Role[]) : null;
     const isUserAdmin = roles ? isAdmin({ roles }) : false;
-    
-    if (!isUserAdmin) {
+
+    // Check organisation count limit
+    // If maxOrganisationCount is 0, it means unlimited (only for admins)
+    // For non-admins, treat 0 as 1 (default limit)
+    const maxOrganisationCount = (user as { maxOrganisationCount?: number }).maxOrganisationCount ?? 1;
+    const effectiveLimit = !isUserAdmin && maxOrganisationCount === 0 
+      ? 1 
+      : maxOrganisationCount;
+
+    // Skip limit check only if user is admin and maxOrganisationCount is 0 (unlimited)
+    if (!(isUserAdmin && effectiveLimit === 0)) {
       const userOrganisations = await prisma.organisation.findMany({
         where: {
           ownerUserId: ctx.user.id,
         },
       });
 
-      // Check if user already has a personal organisation
-      const hasPersonalOrganisation = userOrganisations.some(
-        (org) => org.type === OrganisationType.PERSONAL,
-      );
-
-      if (hasPersonalOrganisation || userOrganisations.length >= 1) {
+      if (userOrganisations.length >= effectiveLimit) {
         throw new AppError(AppErrorCode.LIMIT_EXCEEDED, {
-          message: 'You can only have one personal organisation. Only administrators can create additional organisations.',
+          message: `You have reached the maximum number of organisations (${effectiveLimit}).${!isUserAdmin ? ' Only administrators can create additional organisations.' : ''}`,
         });
       }
     }

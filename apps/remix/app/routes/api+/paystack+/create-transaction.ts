@@ -9,7 +9,8 @@ const createTransactionSchema = z.object({
   callback_url: z.string().url().optional(),
   metadata: z
     .object({
-      value: z.number(),
+      value: z.number().optional(),
+      organisationId: z.string().optional(),
     })
     .optional(),
 });
@@ -35,11 +36,11 @@ export async function action({ request }: { request: Request }) {
 
     const transaction = await createTransaction(transactionData);
 
-    if (!transaction.data) {
+    if (!transaction.status || !transaction.data) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: "Failed to initialize transaction",
+          error: transaction.message || "Failed to initialize transaction",
         } satisfies CreateTransactionResponse),
         { status: 500 }
       );
@@ -67,12 +68,34 @@ export async function action({ request }: { request: Request }) {
     }
 
     console.error("Paystack transaction error:", error);
+
+    // Extract Paystack error message from AxiosError
+    let errorMessage = "Internal server error";
+    let statusCode = 500;
+
+    if (
+      error &&
+      typeof error === 'object' &&
+      'response' in error &&
+      error.response &&
+      typeof error.response === 'object' &&
+      'data' in error.response &&
+      error.response.data &&
+      typeof error.response.data === 'object' &&
+      'message' in error.response.data
+    ) {
+      errorMessage = String(error.response.data.message);
+      statusCode = 'status' in error.response && typeof error.response.status === 'number' 
+        ? error.response.status 
+        : 500;
+    }
+
     return new Response(
       JSON.stringify({
         success: false,
-        error: "Internal server error",
+        error: errorMessage,
       } satisfies CreateTransactionResponse),
-      { status: 500 }
+      { status: statusCode }
     );
   }
 }

@@ -1,14 +1,14 @@
 import { prisma } from '@documenso/prisma';
 import type { UserCredits } from '@prisma/client';
-const INITIAL_USER_CREDITS = 10;
+export const INITIAL_USER_CREDITS = 10;
 
 /**
- * Ensures a user has a UserCredits record, creating one if it doesn't exist.
- * Returns the user's credits record.
+ * Ensures an organisation has a UserCredits record, creating one if it doesn't exist.
+ * Returns the organisation's credits record.
  */
-export const ensureUserCredits = async (userId: number) => {
+export const ensureOrganisationCredits = async (organisationId: string, userId: number) => {
   if (!prisma) {
-    console.error('Prisma client is undefined in ensureUserCredits. Check if @documenso/prisma is properly imported.');
+    console.error('Prisma client is undefined in ensureOrganisationCredits. Check if @documenso/prisma is properly imported.');
     throw new Error('Database connection failed');
   }
 
@@ -17,24 +17,16 @@ export const ensureUserCredits = async (userId: number) => {
     throw new Error('Database connection failed - userCredits model not available');
   }
 
-  // Find the active user credits record for this user
-  // Note: Using findFirst because userId is not unique (though typically there should be only one active record)
+  // Find the active credits record for this organisation
   let userCredits = await prisma.userCredits.findFirst({
     where: {
-      userId,
+      organisationId,
       isActive: true,
     },
   });
 
   if (!userCredits) {
-    // Initialize with initial credits (10)
-    userCredits = await prisma.userCredits.create({
-      data: {
-        userId,
-        credits: INITIAL_USER_CREDITS,
-        isActive: true,
-      },
-    });
+    throw new Error(`UserCredits record not found for organisation ${organisationId}. Credits should be initialized during user signup.`);
   }
 
   // Check if credits have expired
@@ -56,11 +48,21 @@ export const ensureUserCredits = async (userId: number) => {
 };
 
 /**
- * Deducts credits from a user's account.
+ * Deducts credits from an organisation's account.
  * Returns the updated credits record.
  */
-export const deductUserCredits = async (userId: number, amount: number = 1) => {
-  const userCredits = await ensureUserCredits(userId);
+export const deductOrganisationCredits = async (organisationId: string, amount: number = 1) => {
+  // Get organisation to find the owner userId
+  const organisation = await prisma.organisation.findUnique({
+    where: { id: organisationId },
+    select: { ownerUserId: true },
+  });
+
+  if (!organisation) {
+    throw new Error(`Organisation with id ${organisationId} not found`);
+  }
+
+  const userCredits = await ensureOrganisationCredits(organisationId, organisation.ownerUserId);
 
   const updatedCredits = await prisma.userCredits.update({
     where: {
@@ -75,25 +77,95 @@ export const deductUserCredits = async (userId: number, amount: number = 1) => {
 };
 
 /**
- * Gets the current credits for a user.
- * IMPORTANT: For organization members, pass the organization owner's userId
- * so that all members share and consume the owner's credits.
+ * Gets the current credits for an organisation.
  */
-export const getUserCredits = async (userId: number) => {
+export const getOrganisationCredits = async (organisationId: string) => {
   if (!prisma) {
-    console.error('Prisma client is undefined in getUserCredits. Check if @documenso/prisma is properly imported.');
+    console.error('Prisma client is undefined in getOrganisationCredits. Check if @documenso/prisma is properly imported.');
     throw new Error('Database connection failed');
   }
 
   try {
-    const userCredits = await ensureUserCredits(userId);
+    // Get organisation to find the owner userId
+    const organisation = await prisma.organisation.findUnique({
+      where: { id: organisationId },
+      select: { ownerUserId: true },
+    });
+
+    if (!organisation) {
+      throw new Error(`Organisation with id ${organisationId} not found`);
+    }
+
+    const userCredits = await ensureOrganisationCredits(organisationId, organisation.ownerUserId);
     return userCredits.credits;
   } catch (err) {
-    console.error('Error in getUserCredits for userId:', userId, 'error:', err);
+    console.error('Error in getOrganisationCredits for organisationId:', organisationId, 'error:', err);
     // If table doesn't exist or other Prisma error, return default
     if (err instanceof Error && err.message.includes('does not exist')) {
       throw new Error('UserCredits table does not exist. Please run migrations.');
     }
     throw err;
   }
+};
+
+/**
+ * @deprecated Use ensureOrganisationCredits instead. This function is kept for backwards compatibility.
+ * Ensures a user has a UserCredits record, creating one if it doesn't exist.
+ * Returns the user's credits record.
+ */
+export const ensureUserCredits = async (userId: number) => {
+  // Find user's personal organisation
+  const organisation = await prisma.organisation.findFirst({
+    where: {
+      ownerUserId: userId,
+      type: 'PERSONAL',
+    },
+  });
+
+  if (!organisation) {
+    throw new Error(`Personal organisation not found for user ${userId}`);
+  }
+
+  return ensureOrganisationCredits(organisation.id, userId);
+};
+
+/**
+ * @deprecated Use deductOrganisationCredits instead. This function is kept for backwards compatibility.
+ * Deducts credits from a user's account.
+ * Returns the updated credits record.
+ */
+export const deductUserCredits = async (userId: number, amount: number = 1) => {
+  // Find user's personal organisation
+  const organisation = await prisma.organisation.findFirst({
+    where: {
+      ownerUserId: userId,
+      type: 'PERSONAL',
+    },
+  });
+
+  if (!organisation) {
+    throw new Error(`Personal organisation not found for user ${userId}`);
+  }
+
+  return deductOrganisationCredits(organisation.id, amount);
+};
+
+/**
+ * @deprecated Use getOrganisationCredits instead. This function is kept for backwards compatibility.
+ * Gets the current credits for a user.
+ */
+export const getUserCredits = async (userId: number) => {
+  // Find user's personal organisation
+  const organisation = await prisma.organisation.findFirst({
+    where: {
+      ownerUserId: userId,
+      type: 'PERSONAL',
+    },
+  });
+
+  if (!organisation) {
+    throw new Error(`Personal organisation not found for user ${userId}`);
+  }
+
+  return getOrganisationCredits(organisation.id);
 };

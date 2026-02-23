@@ -259,7 +259,7 @@ export const TemplateDirectLinkDialog = ({
                           templates.{' '}
                           <Link
                             className="mt-1 block underline underline-offset-4"
-                            to={`/price-plans`}
+                            to={organisation ? `/o/${organisation.url}/price-plan` : `/price-plans`}
                           >
                             Upgrade your account to continue!
                           </Link>
