@@ -307,18 +307,27 @@ export const sendDocument = async ({
     teamId,
   });
 
-  //call external webhook if envelope.fromNomia is true with exact above payload
+  // Call external webhook if envelope.fromNomia is true with the same payload
   if (envelope.fromNomia) {
-    const payload = ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(updatedEnvelope));
+    console.log('Calling external webhook in sent');
+    const payload = ZWebhookDocumentSchema.parse(
+      mapEnvelopeToWebhookDocumentPayload(updatedEnvelope),
+    );
 
     if (NEXT_PUBLIC_WEBAPP_URL() === 'https://sign.nomiadocs.com') {
       await fetch('https://tapi.nomiadocs.com/esignature/documentSendv1', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload),
       });
     } else {
       await fetch('https://api.nomiadocs.com/esignature/documentSendv1', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload),
       });
     }
