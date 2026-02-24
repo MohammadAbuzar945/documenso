@@ -124,12 +124,12 @@ export const deleteDocument = async ({
     const payload = ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(envelope));
 
     if (NEXT_PUBLIC_WEBAPP_URL() === 'https://sign.nomiadocs.com') {
-      await fetch('https://tapi.nomiadocs.com/esignature/documentSend', {
+      await fetch('https://tapi.nomiadocs.com/esignature/documentSendv1', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
     } else {
-      await fetch('https://api.nomiadocs.com/esignature/documentSend', {
+      await fetch('https://api.nomiadocs.com/esignature/documentSendv1', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
