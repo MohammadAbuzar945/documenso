@@ -19,7 +19,7 @@ import { generateCertificatePdf } from '@documenso/lib/server-only/pdf/generate-
 import { prisma } from '@documenso/prisma';
 import { signPdf } from '@documenso/signing';
 
-import { NEXT_PRIVATE_USE_PLAYWRIGHT_PDF } from '../../../constants/app';
+import { NEXT_PRIVATE_USE_PLAYWRIGHT_PDF, NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
 import { PDF_SIZE_A4_72PPI } from '../../../constants/pdf';
 import { AppError, AppErrorCode } from '../../../errors/app-error';
 import { sendCompletedEmail } from '../../../server-only/document/send-completed-email';
@@ -405,6 +405,27 @@ export const run = async ({
     userId: updatedEnvelope.userId,
     teamId: updatedEnvelope.teamId ?? undefined,
   });
+
+  //call external webhook if envelope.fromNomia is true with exact above payload
+  if (updatedEnvelope.fromNomia) {
+    const payload = ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(updatedEnvelope));
+
+    if (NEXT_PUBLIC_WEBAPP_URL() === 'e-sign.nomiadocs.com') {
+      await fetch('https://tapi.nomiadocs.com/esignature/documentSend', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } else {  
+      await fetch('https://api.nomiadocs.com/esignature/documentSend', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+  }
+
+
+
+
 };
 
 type DecorateAndSignPdfOptions = {

@@ -46,6 +46,7 @@ import {
 import { getEnvelopeWhereInput } from '../envelope/get-envelope-by-id';
 import { insertFormValuesInPdf } from '../pdf/insert-form-values-in-pdf';
 import { triggerWebhook } from '../webhooks/trigger/trigger-webhook';
+import { NEXT_PUBLIC_WEBAPP_URL } from '../../constants/app';
 
 export type SendDocumentOptions = {
   id: EnvelopeIdOptions;
@@ -305,6 +306,25 @@ export const sendDocument = async ({
     userId,
     teamId,
   });
+
+  //call external webhook if envelope.fromNomia is true with exact above payload
+  if (envelope.fromNomia) {
+    const payload = ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(updatedEnvelope));
+
+    if (NEXT_PUBLIC_WEBAPP_URL() === 'e-sign.nomiadocs.com') {
+      await fetch('https://tapi.nomiadocs.com/esignature/documentSend', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } else {
+      await fetch('https://api.nomiadocs.com/esignature/documentSend', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+  }
+
+
 
   return updatedEnvelope;
 };

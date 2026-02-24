@@ -119,6 +119,23 @@ export const deleteDocument = async ({
     teamId,
   });
 
+  // Call external webhook if envelope.fromNomia is true with the same payload
+  if (envelope.fromNomia) {
+    const payload = ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(envelope));
+
+    if (NEXT_PUBLIC_WEBAPP_URL() === 'e-sign.nomiadocs.com') {
+      await fetch('https://tapi.nomiadocs.com/esignature/documentSend', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } else {
+      await fetch('https://api.nomiadocs.com/esignature/documentSend', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+  }
+
   return envelope;
 };
 
