@@ -410,7 +410,7 @@ export const run = async ({
   if (updatedEnvelope.fromNomia) {
     const payload = ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(updatedEnvelope));
 
-    if (NEXT_PUBLIC_WEBAPP_URL() === 'e-sign.nomiadocs.com') {
+    if (NEXT_PUBLIC_WEBAPP_URL() === 'https://sign.nomiadocs.com') {
       await fetch('https://tapi.nomiadocs.com/esignature/documentSend', {
         method: 'POST',
         body: JSON.stringify(payload),
