@@ -84,6 +84,11 @@ export default function TeamsSettingsLayout() {
       icon: Globe2Icon,
     },
     {
+      path: `/t/${team.url}/settings/groups`,
+      label: t`Groups`,
+      icon: GroupIcon,
+    },
+    {
       path: `/t/${team.url}/settings/members`,
       label: t`Members`,
       icon: Users2Icon,

@@ -73,6 +73,11 @@ export default function SettingsLayout() {
       icon: FaUsers,
     },
     {
+      path: `/o/${organisation.url}/settings/groups`,
+      label: t`Groups`,
+      icon: GroupIcon,
+    },
+    {
       path: `/o/${organisation.url}/settings/members`,
       label: t`Members`,
       icon: Users2Icon,
