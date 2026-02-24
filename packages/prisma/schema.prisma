@@ -893,6 +893,7 @@ model Team {
   createdAt      DateTime @default(now())
   avatarImageId  String?
   creditConsumed Int      @default(0)
+  isPrivate      Boolean  @default(false)
 
   teamEmail         TeamEmail?
   emailVerification TeamEmailVerification?

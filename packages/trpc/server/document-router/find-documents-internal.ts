@@ -3,12 +3,14 @@ import type { GetStatsInput } from '@documenso/lib/server-only/document/get-stat
 import { getStats } from '@documenso/lib/server-only/document/get-stats';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 import { mapEnvelopesToDocumentMany } from '@documenso/lib/utils/document';
+import { ExtendedDocumentStatus } from '@documenso/prisma/types/extended-document-status';
 
 import { authenticatedProcedure } from '../trpc';
 import {
   ZFindDocumentsInternalRequestSchema,
   ZFindDocumentsInternalResponseSchema,
 } from './find-documents-internal.types';
+import type { TFindDocumentsInternalResponse } from './find-documents-internal.types';
 
 export const findDocumentsInternalRoute = authenticatedProcedure
   .input(ZFindDocumentsInternalRequestSchema)
@@ -39,6 +41,29 @@ export const findDocumentsInternalRoute = authenticatedProcedure
 
     if (teamId) {
       const team = await getTeamById({ userId: user.id, teamId });
+
+      if (team.isPrivate && team.organisation.ownerUserId === user.id) {
+        const emptyStats: TFindDocumentsInternalResponse['stats'] = {
+          [ExtendedDocumentStatus.DRAFT]: 0,
+          [ExtendedDocumentStatus.PENDING]: 0,
+          [ExtendedDocumentStatus.COMPLETED]: 0,
+          [ExtendedDocumentStatus.REJECTED]: 0,
+          [ExtendedDocumentStatus.INBOX]: 0,
+          [ExtendedDocumentStatus.ALL]: 0,
+        };
+
+        const currentPage = input.page ?? 1;
+        const perPage = input.perPage ?? 10;
+
+        return {
+          data: [],
+          count: 0,
+          currentPage,
+          perPage,
+          totalPages: 0,
+          stats: emptyStats,
+        };
+      }
 
       getStatOptions.team = {
         teamId: team.id,
