@@ -52,6 +52,7 @@ const ZCreateTeamFormSchema = ZCreateTeamRequestSchema.pick({
   teamName: true,
   teamUrl: true,
   inheritMembers: true,
+  isPrivate: true,
 });
 
 type TCreateTeamFormSchema = z.infer<typeof ZCreateTeamFormSchema>;
@@ -79,18 +80,25 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
       teamName: '',
       teamUrl: '',
       inheritMembers: true,
+      isPrivate: false,
     },
   });
 
   const { mutateAsync: createTeam } = trpc.team.create.useMutation();
 
-  const onFormSubmit = async ({ teamName, teamUrl, inheritMembers }: TCreateTeamFormSchema) => {
+  const onFormSubmit = async ({
+    teamName,
+    teamUrl,
+    inheritMembers,
+    isPrivate,
+  }: TCreateTeamFormSchema) => {
     try {
       await createTeam({
         organisationId: organisation.id,
         teamName,
         teamUrl,
         inheritMembers,
+        isPrivate,
       });
 
       setOpen(false);
@@ -296,6 +304,31 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                             htmlFor="inherit-members"
                           >
                             <Trans>Allow all organisation members to access this team</Trans>
+                          </label>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isPrivate"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <div className="flex items-center">
+                          <Checkbox
+                            id="is-private"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+
+                          <label
+                            className="text-muted-foreground ml-2 text-sm"
+                            htmlFor="is-private"
+                          >
+                            <Trans>Private Team - only members can see documents</Trans>
                           </label>
                         </div>
                       </FormControl>

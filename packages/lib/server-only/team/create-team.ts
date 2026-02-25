@@ -47,6 +47,11 @@ export type CreateTeamOptions = {
   inheritMembers: boolean;
 
   /**
+   * Whether only members of the team can see documents belonging to this team.
+   */
+  isPrivate: boolean;
+
+  /**
    * List of additional groups to attach to the team.
    */
   groups?: {
@@ -61,6 +66,7 @@ export const createTeam = async ({
   teamUrl,
   organisationId,
   inheritMembers,
+  isPrivate,
 }: CreateTeamOptions) => {
   const organisationSuffix = organisationId.slice(-5);
   const organisationScopedTeamUrl = `${organisationSuffix}-${teamUrl}`;
@@ -166,6 +172,7 @@ export const createTeam = async ({
             name: teamName,
             url: organisationScopedTeamUrl,
             organisationId,
+            isPrivate,
             teamGlobalSettingsId: teamSettings.id,
             teamGroups: {
               createMany: {

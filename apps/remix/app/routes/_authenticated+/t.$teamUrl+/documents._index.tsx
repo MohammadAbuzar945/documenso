@@ -32,6 +32,7 @@ import { DocumentsTableEmptyState } from '~/components/tables/documents-table-em
 import { DocumentsTableSenderFilter } from '~/components/tables/documents-table-sender-filter';
 import { EnvelopesTableBulkActionBar } from '~/components/tables/envelopes-table-bulk-action-bar';
 import { useCurrentTeam } from '~/providers/team';
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { appMetaTags } from '~/utils/meta';
 
 export function meta() {
@@ -51,9 +52,13 @@ const ZSearchParamsSchema = ZFindDocumentsInternalRequestSchema.pick({
 export default function DocumentsPage() {
   const organisation = useCurrentOrganisation();
   const team = useCurrentTeam();
+  const { user } = useSession();
 
   const { folderId } = useParams();
   const [searchParams] = useSearchParams();
+
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
 
   const [isMovingDocument, setIsMovingDocument] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<number | null>(null);
@@ -129,7 +134,9 @@ export default function DocumentsPage() {
   return (
     <EnvelopeDropZoneWrapper type={EnvelopeType.DOCUMENT}>
       <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
-        <FolderGrid type={FolderType.DOCUMENT} parentId={folderId ?? null} />
+        {!isOwnerOfPrivateTeam && (
+          <FolderGrid type={FolderType.DOCUMENT} parentId={folderId ?? null} />
+        )}
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
           <div className="flex flex-row items-center">

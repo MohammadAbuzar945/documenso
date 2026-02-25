@@ -58,6 +58,9 @@ export const DocumentUploadButtonLegacy = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
+
   const { mutateAsync: createDocument } = trpc.document.create.useMutation();
   const { mutateAsync: createTemplate } = trpc.template.createTemplate.useMutation();
 
@@ -178,7 +181,7 @@ export const DocumentUploadButtonLegacy = ({
     });
   };
 
-  const isDisabled = disabledMessage !== undefined;
+  const isDisabled = disabledMessage !== undefined || isOwnerOfPrivateTeam;
   const hasNoCredits = type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null);
   const showCreditsInfo = type === EnvelopeType.DOCUMENT && typeof remaining.documents === 'number';
 

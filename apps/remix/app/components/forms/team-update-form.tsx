@@ -22,17 +22,21 @@ import {
 } from '@documenso/ui/primitives/form/form';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 
 export type UpdateTeamDialogProps = {
   teamId: number;
   teamName: string;
   teamUrl: string;
   organisationId: string;
+  isPrivate: boolean;
+  isOrganisationOwner: boolean;
 };
 
 const ZTeamUpdateFormSchema = ZUpdateTeamRequestSchema.shape.data.pick({
   name: true,
   url: true,
+  isPrivate: true,
 });
 
 type TTeamUpdateFormSchema = z.infer<typeof ZTeamUpdateFormSchema>;
@@ -42,6 +46,8 @@ export const TeamUpdateForm = ({
   teamName,
   teamUrl,
   organisationId,
+  isPrivate,
+  isOrganisationOwner,
 }: UpdateTeamDialogProps) => {
   const navigate = useNavigate();
   const { _ } = useLingui();
@@ -54,17 +60,19 @@ export const TeamUpdateForm = ({
       url: teamUrl.startsWith(`${organisationId.slice(-5)}-`)
         ? teamUrl.slice(organisationId.slice(-5).length + 1)
         : teamUrl,
+      isPrivate,
     },
   });
 
   const { mutateAsync: updateTeam } = trpc.team.update.useMutation();
 
-  const onFormSubmit = async ({ name, url }: TTeamUpdateFormSchema) => {
+  const onFormSubmit = async ({ name, url, isPrivate: isPrivateValue }: TTeamUpdateFormSchema) => {
     try {
       await updateTeam({
         data: {
           name,
           url,
+          isPrivate: isPrivateValue,
         },
         teamId,
       });
@@ -78,6 +86,7 @@ export const TeamUpdateForm = ({
       form.reset({
         name,
         url,
+        isPrivate: isPrivateValue,
       });
 
       if (url !== teamUrl) {
@@ -157,6 +166,33 @@ export const TeamUpdateForm = ({
                   </span>
                 )}
 
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="isPrivate"
+            render={({ field }) => (
+              <FormItem className="mt-4 flex items-center space-x-2">
+                <FormControl>
+                  <div className="flex items-center">
+                    <Checkbox
+                      id="team-is-private"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isOrganisationOwner && Boolean(field.value)}
+                    />
+
+                    <label
+                      className="text-muted-foreground ml-2 text-sm"
+                      htmlFor="team-is-private"
+                    >
+                      <Trans>Private Team - only members can see documents</Trans>
+                    </label>
+                  </div>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

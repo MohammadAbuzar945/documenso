@@ -22,6 +22,11 @@ export const ZCreateTeamRequestSchema = z.object({
     .describe(
       'Whether to automatically assign all current and future organisation members to the new team. Defaults to true.',
     ),
+  isPrivate: z
+    .boolean()
+    .describe(
+      'Whether only members of the team can see documents belonging to this team. Defaults to false.',
+    ),
 });
 
 export const ZCreateTeamResponseSchema = z.void();

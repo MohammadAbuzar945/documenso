@@ -13,6 +13,7 @@ export type UpdateTeamOptions = {
   data: {
     name?: string;
     url?: string;
+    isPrivate?: boolean;
   };
 };
 
@@ -29,12 +30,26 @@ export const updateTeam = async ({ userId, teamId, data }: UpdateTeamOptions): P
       select: {
         id: true,
         organisationId: true,
+        isPrivate: true,
+        organisation: {
+          select: {
+            ownerUserId: true,
+          },
+        },
       },
     });
 
     if (!existingTeam) {
       throw new AppError(AppErrorCode.NOT_FOUND, {
         message: 'Team not found.',
+      });
+    }
+
+    const isOrganisationOwner = existingTeam.organisation.ownerUserId === userId;
+
+    if (isOrganisationOwner && existingTeam.isPrivate && data.isPrivate === false) {
+      throw new AppError(AppErrorCode.UNAUTHORIZED, {
+        message: 'Organisation owners cannot disable the private flag for teams.',
       });
     }
 
@@ -88,6 +103,7 @@ export const updateTeam = async ({ userId, teamId, data }: UpdateTeamOptions): P
       data: {
         url: organisationScopedTeamUrl,
         name: data.name,
+        isPrivate: data.isPrivate,
       },
     });
   } catch (err) {

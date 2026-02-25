@@ -56,6 +56,9 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
+
   const { mutateAsync: createEnvelope } = trpc.envelope.create.useMutation();
 
   const disabledMessage = useMemo(() => {
@@ -181,7 +184,7 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
     });
   };
 
-  const isDisabled = !user.emailVerified;
+  const isDisabled = !user.emailVerified || isOwnerOfPrivateTeam;
   const hasNoCredits = type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null);
   const showCreditsInfo = type === EnvelopeType.DOCUMENT && typeof remaining.documents === 'number';
 

@@ -19,6 +19,7 @@ import { TeamUpdateForm } from '~/components/forms/team-update-form';
 import { SettingsHeader } from '~/components/general/settings-header';
 import { TeamEmailDropdown } from '~/components/general/teams/team-email-dropdown';
 import { useCurrentTeam } from '~/providers/team';
+import { useSession } from '@documenso/lib/client-only/providers/session';
 
 import type { Route } from './+types/settings._index';
 
@@ -40,6 +41,9 @@ export default function TeamsSettingsPage({ loaderData }: Route.ComponentProps) 
 
   const currentTeam = useCurrentTeam();
   const organisation = useCurrentOrganisation();
+  const { user } = useSession();
+
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
 
   return (
     <div className="max-w-2xl">
@@ -52,6 +56,8 @@ export default function TeamsSettingsPage({ loaderData }: Route.ComponentProps) 
         teamName={team.name}
         teamUrl={team.url}
         organisationId={organisation.id}
+        isPrivate={team.isPrivate}
+        isOrganisationOwner={isOrganisationOwner}
       />
 
       <section className="mt-6 space-y-6">
