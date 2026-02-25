@@ -198,6 +198,7 @@ export const createPersonalOrganisation = async ({
       teamUrl: prefixedId('personal'),
       organisationId: organisation.id,
       inheritMembers,
+      isPrivate: false,
     }).catch((err) => {
       console.error(err);
 
