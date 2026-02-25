@@ -15,6 +15,10 @@ export const TeamInheritMemberAlert = ({
   memberAccessTeamGroup,
   isPrivate,
 }: TeamInheritMemberAlertProps) => {
+  if (isPrivate) {
+    return null;
+  }
+
   return (
     <Alert
       className="flex flex-col justify-between p-6 sm:flex-row sm:items-center"
