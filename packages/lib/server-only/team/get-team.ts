@@ -1,3 +1,5 @@
+import { TeamMemberRole } from '@prisma/client';
+
 import { prisma } from '@documenso/prisma';
 
 import { AppError, AppErrorCode } from '../../errors/app-error';
@@ -85,9 +87,14 @@ export const getTeam = async ({
   const organisationSettings = team.organisation.organisationGlobalSettings;
   const teamSettings = team.teamGlobalSettings;
 
+  const isOrganisationOwner = team.organisation.ownerUserId === userId;
+  const currentTeamRole = isOrganisationOwner
+    ? TeamMemberRole.ADMIN
+    : getHighestTeamRoleInGroup(team.teamGroups);
+
   return {
     ...team,
-    currentTeamRole: getHighestTeamRoleInGroup(team.teamGroups),
+    currentTeamRole,
     teamSettings,
     derivedSettings: extractDerivedTeamSettings(organisationSettings, teamSettings),
   };

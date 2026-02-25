@@ -3,11 +3,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { EnvelopeType } from '@prisma/client';
 import { FolderType, OrganisationType } from '@prisma/client';
+import { Bird } from 'lucide-react';
 import { useParams, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
 import { z } from 'zod';
 
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formatDocumentsPath } from '@documenso/lib/utils/teams';
@@ -32,7 +34,6 @@ import { DocumentsTableEmptyState } from '~/components/tables/documents-table-em
 import { DocumentsTableSenderFilter } from '~/components/tables/documents-table-sender-filter';
 import { EnvelopesTableBulkActionBar } from '~/components/tables/envelopes-table-bulk-action-bar';
 import { useCurrentTeam } from '~/providers/team';
-import { useSession } from '@documenso/lib/client-only/providers/session';
 import { appMetaTags } from '~/utils/meta';
 
 export function meta() {
@@ -56,9 +57,6 @@ export default function DocumentsPage() {
 
   const { folderId } = useParams();
   const [searchParams] = useSearchParams();
-
-  const isOrganisationOwner = organisation.ownerUserId === user.id;
-  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
 
   const [isMovingDocument, setIsMovingDocument] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<number | null>(null);
@@ -89,6 +87,9 @@ export default function DocumentsPage() {
     ...findDocumentSearchParams,
     folderId,
   });
+
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
 
   const getTabHref = (value: keyof typeof ExtendedDocumentStatus) => {
     const params = new URLSearchParams(searchParams);
@@ -131,12 +132,34 @@ export default function DocumentsPage() {
     setRowSelection({});
   }, [folderId, findDocumentSearchParams]);
 
+  if (isOwnerNonMember) {
+    return (
+      <EnvelopeDropZoneWrapper type={EnvelopeType.DOCUMENT}>
+        <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
+          <div className="mt-8 flex flex-col items-center justify-center gap-y-4 text-muted-foreground/60">
+            <Bird className="h-12 w-12" strokeWidth={1.5} />
+
+            <div className="text-center">
+              <h3 className="text-lg font-semibold">
+                <Trans>Documents are not available</Trans>
+              </h3>
+
+              <p className="mt-2 max-w-[50ch]">
+                <Trans>
+                  You must be a member of this team to view or manage its documents and folders.
+                </Trans>
+              </p>
+            </div>
+          </div>
+        </div>
+      </EnvelopeDropZoneWrapper>
+    );
+  }
+
   return (
     <EnvelopeDropZoneWrapper type={EnvelopeType.DOCUMENT}>
       <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
-        {!isOwnerOfPrivateTeam && (
-          <FolderGrid type={FolderType.DOCUMENT} parentId={folderId ?? null} />
-        )}
+        <FolderGrid type={FolderType.DOCUMENT} parentId={folderId ?? null} />
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
           <div className="flex flex-row items-center">

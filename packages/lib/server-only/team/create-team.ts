@@ -52,6 +52,12 @@ export type CreateTeamOptions = {
   isPrivate: boolean;
 
   /**
+   * ID of the organisation member who should be added as the initial team admin
+   * when creating a private team.
+   */
+  organisationMemberId?: string;
+
+  /**
    * List of additional groups to attach to the team.
    */
   groups?: {
@@ -67,6 +73,7 @@ export const createTeam = async ({
   organisationId,
   inheritMembers,
   isPrivate,
+  organisationMemberId,
 }: CreateTeamOptions) => {
   const organisationSuffix = organisationId.slice(-5);
   const organisationScopedTeamUrl = `${organisationSuffix}-${teamUrl}`;
@@ -124,37 +131,42 @@ export const createTeam = async ({
     }
   }
 
-  // Inherit internal organisation groups to the team.
+  // Inherit internal organisation groups to the team for non-private teams.
   // Organisation Admins/Mangers get assigned as team admins, members get assigned as team members.
-  const internalOrganisationGroups = organisation.groups
-    .filter((group) => {
-      if (group.type !== OrganisationGroupType.INTERNAL_ORGANISATION) {
-        return false;
-      }
+  // For private teams we do not attach any organisation groups so that only explicitly added members
+  // have access to the team.
+  const internalOrganisationGroups =
+    isPrivate
+      ? []
+      : organisation.groups
+          .filter((group) => {
+            if (group.type !== OrganisationGroupType.INTERNAL_ORGANISATION) {
+              return false;
+            }
 
-      // If we're inheriting members, allow all internal organisation groups.
-      if (inheritMembers) {
-        return true;
-      }
+            // If we're inheriting members, allow all internal organisation groups.
+            if (inheritMembers) {
+              return true;
+            }
 
-      // Otherwise, only inherit organisation admins/managers.
-      return (
-        group.organisationRole === OrganisationMemberRole.ADMIN ||
-        group.organisationRole === OrganisationMemberRole.MANAGER
-      );
-    })
-    .map((group) =>
-      match(group.organisationRole)
-        .with(OrganisationMemberRole.ADMIN, OrganisationMemberRole.MANAGER, () => ({
-          organisationGroupId: group.id,
-          teamRole: TeamMemberRole.ADMIN,
-        }))
-        .with(OrganisationMemberRole.MEMBER, () => ({
-          organisationGroupId: group.id,
-          teamRole: TeamMemberRole.MEMBER,
-        }))
-        .exhaustive(),
-    );
+            // Otherwise, only inherit organisation admins/managers.
+            return (
+              group.organisationRole === OrganisationMemberRole.ADMIN ||
+              group.organisationRole === OrganisationMemberRole.MANAGER
+            );
+          })
+          .map((group) =>
+            match(group.organisationRole)
+              .with(OrganisationMemberRole.ADMIN, OrganisationMemberRole.MANAGER, () => ({
+                organisationGroupId: group.id,
+                teamRole: TeamMemberRole.ADMIN,
+              }))
+              .with(OrganisationMemberRole.MEMBER, () => ({
+                organisationGroupId: group.id,
+                teamRole: TeamMemberRole.MEMBER,
+              }))
+              .exhaustive(),
+          );
 
   await prisma
     .$transaction(
@@ -190,7 +202,7 @@ export const createTeam = async ({
         });
 
         // Create the internal team groups.
-        await Promise.all(
+        const internalTeamGroups = await Promise.all(
           TEAM_INTERNAL_GROUPS.map(async (teamGroup) =>
             tx.organisationGroup.create({
               data: {
@@ -206,9 +218,66 @@ export const createTeam = async ({
                   },
                 },
               },
+              include: {
+                teamGroups: true,
+              },
             }),
           ),
         );
+
+        // For private teams, add only the specified admin as a member and do not
+        // automatically attach any organisation groups or additional members.
+        if (isPrivate) {
+          if (!organisationMemberId) {
+            throw new AppError(AppErrorCode.INVALID_BODY, {
+              message: 'Organisation member is required when creating a private team.',
+            });
+          }
+
+          const organisationMember = await tx.organisationMember.findFirst({
+            where: {
+              organisationId,
+              id: organisationMemberId,
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+
+          if (!organisationMember) {
+            throw new AppError(AppErrorCode.INVALID_BODY, {
+              message: 'Organisation member must belong to the current organisation.',
+            });
+          }
+
+          if (organisationMember.user.id === organisation.owner.id) {
+            throw new AppError(AppErrorCode.INVALID_BODY, {
+              message: 'Organisation owner cannot be added as a member of a private team.',
+            });
+          }
+
+          const adminTeamGroup = internalTeamGroups
+            .flatMap((group) => group.teamGroups)
+            .find((group) => group.teamId === team.id && group.teamRole === TeamMemberRole.ADMIN);
+
+          if (!adminTeamGroup) {
+            throw new AppError(AppErrorCode.UNKNOWN_ERROR, {
+              message: 'Internal admin team group not found when creating private team.',
+            });
+          }
+
+          await tx.organisationGroupMember.create({
+            data: {
+              id: generateDatabaseId('group_member'),
+              organisationMemberId: organisationMember.id,
+              groupId: adminTeamGroup.organisationGroupId,
+            },
+          });
+        }
       },
       {
         timeout: 7500,

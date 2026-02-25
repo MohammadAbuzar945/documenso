@@ -1,3 +1,5 @@
+import { TeamMemberRole } from '@prisma/client';
+
 import { getHighestOrganisationRoleInGroup } from '@documenso/lib/utils/organisations';
 import { getCurrentSubscriptionsByOrganisationIds } from '@documenso/lib/server-only/subscription/get-current-subscriptions-by-organisation-ids';
 import {
@@ -88,9 +90,15 @@ export const getOrganisationSession = async ({
           team.teamGlobalSettings,
         );
 
+        const isOrganisationOwner = organisation.ownerUserId === userId;
+            const isTeamMember = team.teamGroups.length > 0;
+
         return {
           ...team,
-          currentTeamRole: getHighestTeamRoleInGroup(team.teamGroups),
+          currentTeamRole: isOrganisationOwner
+            ? TeamMemberRole.ADMIN
+            : getHighestTeamRoleInGroup(team.teamGroups),
+              isTeamMember,
           preferences: {
             aiFeaturesEnabled: derivedSettings.aiFeaturesEnabled,
           },

@@ -18,7 +18,7 @@ import {
 } from '@documenso/lib/constants/app';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { trpc } from '@documenso/trpc/react';
-import { ZCreateTeamRequestSchema } from '@documenso/trpc/server/team-router/create-team.types';
+import { ZCreateTeamRequestBaseSchema } from '@documenso/trpc/server/team-router/create-team.types';
 import { Alert, AlertDescription } from '@documenso/ui/primitives/alert';
 import { Button } from '@documenso/ui/primitives/button';
 import { Checkbox } from '@documenso/ui/primitives/checkbox';
@@ -40,6 +40,13 @@ import {
   FormMessage,
 } from '@documenso/ui/primitives/form/form';
 import { Input } from '@documenso/ui/primitives/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@documenso/ui/primitives/select';
 import { SpinnerBox } from '@documenso/ui/primitives/spinner';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
@@ -48,11 +55,12 @@ export type TeamCreateDialogProps = {
   onCreated?: () => Promise<void>;
 } & Omit<DialogPrimitive.DialogProps, 'children'>;
 
-const ZCreateTeamFormSchema = ZCreateTeamRequestSchema.pick({
+const ZCreateTeamFormSchema = ZCreateTeamRequestBaseSchema.pick({
   teamName: true,
   teamUrl: true,
   inheritMembers: true,
   isPrivate: true,
+  organisationMemberId: true,
 });
 
 type TCreateTeamFormSchema = z.infer<typeof ZCreateTeamFormSchema>;
@@ -72,6 +80,12 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
     organisationReference: organisation.id,
   });
 
+  const { data: organisationMembers } = trpc.organisation.member.find.useQuery({
+    organisationId: organisation.id,
+    page: 1,
+    perPage: 100,
+  });
+
   const actionSearchParam = searchParams?.get('action');
 
   const form = useForm({
@@ -81,6 +95,7 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
       teamUrl: '',
       inheritMembers: true,
       isPrivate: false,
+      organisationMemberId: '',
     },
   });
 
@@ -91,6 +106,7 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
     teamUrl,
     inheritMembers,
     isPrivate,
+    organisationMemberId,
   }: TCreateTeamFormSchema) => {
     try {
       await createTeam({
@@ -99,6 +115,7 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
         teamUrl,
         inheritMembers,
         isPrivate,
+        organisationMemberId: isPrivate ? organisationMemberId : undefined,
       });
 
       setOpen(false);
@@ -130,6 +147,17 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
         }
 
         return;
+      }
+
+      if (error.code === AppErrorCode.INVALID_BODY && error.message) {
+        if (error.message.toLowerCase().includes('organisation member')) {
+          form.setError('organisationMemberId', {
+            type: 'manual',
+            message: error.message,
+          });
+
+          return;
+        }
       }
 
       toast({
@@ -296,7 +324,14 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                           <Checkbox
                             id="inherit-members"
                             checked={field.value}
-                            onCheckedChange={field.onChange}
+                            onCheckedChange={(checked) => {
+                              // Private teams should not automatically inherit all organisation members.
+                              if (form.getValues('isPrivate') && checked) {
+                                return;
+                              }
+
+                              field.onChange(checked);
+                            }}
                           />
 
                           <label
@@ -321,7 +356,14 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                           <Checkbox
                             id="is-private"
                             checked={field.value}
-                            onCheckedChange={field.onChange}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+
+                              // When making the team private, ensure we do not inherit all organisation members.
+                              if (checked) {
+                                form.setValue('inheritMembers', false);
+                              }
+                            }}
                           />
 
                           <label
@@ -335,6 +377,48 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                     </FormItem>
                   )}
                 />
+
+                {form.watch('isPrivate') && (
+                  <FormField
+                    control={form.control}
+                    name="organisationMemberId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>
+                          <Trans>Team admin</Trans>
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="bg-background">
+                              <SelectValue
+                                placeholder={_(msg`Select an organisation member`)}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {organisationMembers?.data
+                                .filter((member) => member.userId !== organisation.ownerUserId)
+                                .map((member) => (
+                                  <SelectItem key={member.id} value={member.id}>
+                                    {member.name || member.email}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <span className="text-foreground/50 text-xs font-normal">
+                          <Trans>
+                            Only this member will be added to the private team as an admin. No
+                            organisation groups will be added automatically.
+                          </Trans>
+                        </span>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <DialogFooter>
                   <Button type="button" variant="secondary" onClick={() => setOpen(false)}>

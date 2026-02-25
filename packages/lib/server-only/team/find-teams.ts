@@ -33,19 +33,30 @@ export const findTeams = async ({
     organisation: {
       id: organisationId,
     },
-    teamGroups: {
-      some: {
-        organisationGroup: {
-          organisationGroupMembers: {
-            some: {
-              organisationMember: {
-                userId,
+    OR: [
+      // Teams where the current user is a member via organisation groups.
+      {
+        teamGroups: {
+          some: {
+            organisationGroup: {
+              organisationGroupMembers: {
+                some: {
+                  organisationMember: {
+                    userId,
+                  },
+                },
               },
             },
           },
         },
       },
-    },
+      // All teams in the organisation when the current user is the organisation owner.
+      {
+        organisation: {
+          ownerUserId: userId,
+        },
+      },
+    ],
   };
 
   if (query && query.length > 0) {

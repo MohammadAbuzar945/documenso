@@ -4,6 +4,8 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { HomeIcon, Loader2, SearchIcon } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
+import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatDocumentsPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
@@ -28,6 +30,8 @@ export default function DocumentsFoldersPage() {
 
   const navigate = useNavigate();
   const team = useCurrentTeam();
+  const organisation = useCurrentOrganisation();
+  const { user } = useSession();
 
   const [isMovingFolder, setIsMovingFolder] = useState(false);
   const [folderToMove, setFolderToMove] = useState<TFolderWithSubfolders | null>(null);
@@ -54,6 +58,27 @@ export default function DocumentsFoldersPage() {
 
   const isFolderMatchingSearch = (folder: TFolderWithSubfolders) =>
     folder.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
+
+  if (isOwnerNonMember) {
+    return (
+      <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
+        <div className="mt-8 text-center text-muted-foreground">
+          <h2 className="text-xl font-semibold">
+            <Trans>Folders are not available</Trans>
+          </h2>
+
+          <p className="mt-2 max-w-[50ch] mx-auto text-sm">
+            <Trans>
+              You must be a member of this team to view, create, or manage its document folders.
+            </Trans>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">

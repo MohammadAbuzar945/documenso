@@ -42,7 +42,11 @@ export const findDocumentsInternalRoute = authenticatedProcedure
     if (teamId) {
       const team = await getTeamById({ userId: user.id, teamId });
 
-      if (team.isPrivate && team.organisation.ownerUserId === user.id) {
+      const isOrganisationOwner = team.organisation.ownerUserId === user.id;
+      const isTeamMember = team.teamGroups.length > 0;
+
+      // Organisation owners who are not members of the team should not see team documents.
+      if (isOrganisationOwner && !isTeamMember) {
         const emptyStats: TFindDocumentsInternalResponse['stats'] = {
           [ExtendedDocumentStatus.DRAFT]: 0,
           [ExtendedDocumentStatus.PENDING]: 0,
@@ -53,13 +57,13 @@ export const findDocumentsInternalRoute = authenticatedProcedure
         };
 
         const currentPage = input.page ?? 1;
-        const perPage = input.perPage ?? 10;
+        const perPageValue = input.perPage ?? 10;
 
         return {
           data: [],
           count: 0,
           currentPage,
-          perPage,
+          perPage: perPageValue,
           totalPages: 0,
           stats: emptyStats,
         };

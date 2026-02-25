@@ -1,4 +1,4 @@
-import { OrganisationGroupType } from '@prisma/client';
+import { OrganisationGroupType, TeamMemberRole } from '@prisma/client';
 
 import { TEAM_MEMBER_ROLE_PERMISSIONS_MAP } from '@documenso/lib/constants/teams';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
@@ -34,6 +34,11 @@ export const deleteTeamMemberRoute = authenticatedProcedure
         roles: TEAM_MEMBER_ROLE_PERMISSIONS_MAP['MANAGE_TEAM'],
       }),
       include: {
+        organisation: {
+          select: {
+            ownerUserId: true,
+          },
+        },
         teamGroups: {
           where: {
             organisationGroup: {
@@ -81,6 +86,27 @@ export const deleteTeamMemberRoute = authenticatedProcedure
         id: memberId,
       },
     });
+
+    const isOrganisationOwner = team.organisation.ownerUserId === user.id;
+
+    const organisationMemberToDelete = team.teamGroups
+      .flatMap((group) => group.organisationGroup.organisationGroupMembers)
+      .find((groupMember) => groupMember.organisationMember.id === memberId)?.organisationMember;
+
+    const isOrganisationOwnerRemovingSelfAsAdmin =
+      organisationMemberToDelete?.userId === user.id;
+
+    // Owners should not be able to remove team admins (e.g. the admin who created the team),
+    // but they should be able to remove themselves from the team.
+    if (
+      isOrganisationOwner &&
+      currentMemberToDeleteTeamRole === TeamMemberRole.ADMIN &&
+      !isOrganisationOwnerRemovingSelfAsAdmin
+    ) {
+      throw new AppError(AppErrorCode.UNAUTHORIZED, {
+        message: 'Organisation owner cannot remove team admins.',
+      });
+    }
 
     // Check role permissions.
     if (!isTeamRoleWithinUserHierarchy(currentUserTeamRole, currentMemberToDeleteTeamRole)) {

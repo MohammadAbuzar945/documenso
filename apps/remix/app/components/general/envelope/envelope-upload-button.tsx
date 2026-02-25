@@ -56,12 +56,16 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const isOrganisationOwner = organisation.ownerUserId === user.id;
-  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
-
   const { mutateAsync: createEnvelope } = trpc.envelope.create.useMutation();
 
   const disabledMessage = useMemo(() => {
+    const isOrganisationOwner = organisation.ownerUserId === user.id;
+    const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
+
+    if (isOwnerNonMember) {
+      return msg`You must be a member of this team to upload documents.`;
+    }
+
     if (organisation.subscription && remaining.documents === 0) {
       return msg`Document upload disabled due to unpaid invoices`;
     }
@@ -71,7 +75,7 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remaining.documents, user.emailVerified, team]);
+  }, [organisation.subscription, remaining.documents, user.emailVerified, team]);
 
   const onFileDrop = async (files: File[]) => {
     // Check if user has no credits remaining
@@ -184,7 +188,10 @@ export const EnvelopeUploadButton = ({ className, type, folderId }: EnvelopeUplo
     });
   };
 
-  const isDisabled = !user.emailVerified || isOwnerOfPrivateTeam;
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
+
+  const isDisabled = !user.emailVerified || isOwnerNonMember;
   const hasNoCredits = type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null);
   const showCreditsInfo = type === EnvelopeType.DOCUMENT && typeof remaining.documents === 'number';
 

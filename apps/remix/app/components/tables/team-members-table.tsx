@@ -147,7 +147,6 @@ export const TeamMembersTable = () => {
                 trigger={
                   <DropdownMenuItem
                     disabled={
-                      organisation.ownerUserId === row.original.userId ||
                       !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
                     }
                     onSelect={(e) => e.preventDefault()}
@@ -170,7 +169,6 @@ export const TeamMembersTable = () => {
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
                     disabled={
-                      organisation.ownerUserId === row.original.userId ||
                       !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
                     }
                     title={_(msg`Remove team member`)}
@@ -232,7 +230,10 @@ export const TeamMembersTable = () => {
 
       <AnimateGenericFadeInOut key={groupQuery.isPending ? 'pending' : 'fetched'}>
         {!groupQuery.isPending && (
-          <TeamInheritMemberAlert memberAccessTeamGroup={memberAccessTeamGroup || null} />
+          <TeamInheritMemberAlert
+            memberAccessTeamGroup={memberAccessTeamGroup || null}
+            isPrivate={team.isPrivate}
+          />
         )}
       </AnimateGenericFadeInOut>
     </div>

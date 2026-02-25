@@ -22,6 +22,14 @@ export const getFolderBreadcrumbs = async ({
 }: GetFolderBreadcrumbsOptions) => {
   const team = await getTeamById({ userId, teamId });
 
+  const isOrganisationOwner = team.organisation.ownerUserId === userId;
+  const isTeamMember = team.teamGroups.length > 0;
+
+  // Organisation owners who are not members of the team should not see team folders.
+  if (isOrganisationOwner && !isTeamMember) {
+    return [];
+  }
+
   const visibilityFilters = match(team.currentTeamRole)
     .with(TeamMemberRole.ADMIN, () => ({
       visibility: {

@@ -58,13 +58,17 @@ export const DocumentUploadButtonLegacy = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const isOrganisationOwner = organisation.ownerUserId === user.id;
-  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
-
   const { mutateAsync: createDocument } = trpc.document.create.useMutation();
   const { mutateAsync: createTemplate } = trpc.template.createTemplate.useMutation();
 
   const disabledMessage = useMemo(() => {
+    const isOrganisationOwner = organisation.ownerUserId === user.id;
+    const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
+
+    if (isOwnerNonMember) {
+      return msg`You must be a member of this team to upload documents.`;
+    }
+
     if (!user.emailVerified) {
       return msg`Verify your email to upload documents.`;
     }
@@ -79,7 +83,7 @@ export const DocumentUploadButtonLegacy = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remaining.documents, user.emailVerified, team, type]);
+  }, [organisation.subscription, remaining.documents, user.emailVerified, team, type]);
 
   const onFileDrop = async (file: File) => {
     // Check if user has no credits remaining
@@ -181,7 +185,10 @@ export const DocumentUploadButtonLegacy = ({
     });
   };
 
-  const isDisabled = disabledMessage !== undefined || isOwnerOfPrivateTeam;
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
+
+  const isDisabled = disabledMessage !== undefined || isOwnerNonMember;
   const hasNoCredits = type === EnvelopeType.DOCUMENT && (remaining.documents === 0 || remaining.documents === null);
   const showCreditsInfo = type === EnvelopeType.DOCUMENT && typeof remaining.documents === 'number';
 

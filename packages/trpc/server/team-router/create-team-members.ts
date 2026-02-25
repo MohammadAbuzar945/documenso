@@ -61,6 +61,7 @@ export const createTeamMembers = async ({
           members: {
             select: {
               id: true,
+              userId: true,
             },
           },
         },

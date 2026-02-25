@@ -129,11 +129,11 @@ export const updateTeamSettingsRoute = authenticatedProcedure
     const isChangingIncludeSenderDetails =
       includeSenderDetails !== undefined && includeSenderDetails !== currentIncludeSenderDetails;
 
-    if (isPersonalOrganisation && isChangingIncludeSenderDetails) {
-      throw new AppError(AppErrorCode.INVALID_BODY, {
-        message: 'Personal teams cannot update the sender details',
-      });
-    }
+    // if (isPersonalOrganisation && isChangingIncludeSenderDetails) {
+    //   throw new AppError(AppErrorCode.INVALID_BODY, {
+    //     message: 'Personal teams cannot update the sender details',
+    //   });
+    // }
 
     await prisma.team.update({
       where: {

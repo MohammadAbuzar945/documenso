@@ -38,9 +38,6 @@ export default function TemplatesPage() {
   const page = Number(searchParams.get('page')) || 1;
   const perPage = Number(searchParams.get('perPage')) || 10;
 
-  const isOrganisationOwner = organisation.ownerUserId === user.id;
-  const isOwnerOfPrivateTeam = team.isPrivate && isOrganisationOwner;
-
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isBulkMoveDialogOpen, setIsBulkMoveDialogOpen] = useState(false);
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
@@ -63,23 +60,30 @@ export default function TemplatesPage() {
     setRowSelection({});
   }, [folderId, page, perPage]);
 
-  if (isOwnerOfPrivateTeam) {
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
+
+  if (isOwnerNonMember) {
     return (
-      <div className="mx-auto max-w-screen-xl px-4 md:px-8">
-        <div className="mt-8 flex flex-col items-center justify-center gap-y-4 text-muted-foreground/60">
-          <Bird className="h-12 w-12" strokeWidth={1.5} />
+      <EnvelopeDropZoneWrapper type={EnvelopeType.TEMPLATE}>
+        <div className="mx-auto max-w-screen-xl px-4 md:px-8">
+          <div className="mt-8 flex flex-col items-center justify-center gap-y-4 text-muted-foreground/60">
+            <Bird className="h-12 w-12" strokeWidth={1.5} />
 
-          <div className="text-center">
-            <h3 className="text-lg font-semibold">
-              <Trans>Templates are not available</Trans>
-            </h3>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold">
+                <Trans>Templates are not available</Trans>
+              </h3>
 
-            <p className="mt-2 max-w-[50ch]">
-              <Trans>Templates for private teams are not visible to the organisation owner.</Trans>
-            </p>
+              <p className="mt-2 max-w-[50ch]">
+                <Trans>
+                  You must be a member of this team to view or manage its templates and folders.
+                </Trans>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </EnvelopeDropZoneWrapper>
     );
   }
 

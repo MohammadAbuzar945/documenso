@@ -6,6 +6,7 @@ import { prisma } from '@documenso/prisma';
 import { TEAM_DOCUMENT_VISIBILITY_MAP } from '../../constants/teams';
 import { type FindResultResponse } from '../../types/search-params';
 import { getMemberRoles } from '../team/get-member-roles';
+import { getTeamById } from '../team/get-team';
 
 export type FindTemplatesOptions = {
   userId: number;
@@ -25,6 +26,22 @@ export const findTemplates = async ({
   folderId,
 }: FindTemplatesOptions) => {
   const whereFilter: Prisma.EnvelopeWhereInput[] = [];
+
+  const team = await getTeamById({ userId, teamId });
+
+  const isOrganisationOwner = team.organisation.ownerUserId === userId;
+  const isTeamMember = team.teamGroups.length > 0;
+
+  // Organisation owners who are not members of the team should not see team templates.
+  if (isOrganisationOwner && !isTeamMember) {
+    return {
+      data: [],
+      count: 0,
+      currentPage: Math.max(page, 1),
+      perPage,
+      totalPages: 0,
+    } satisfies FindResultResponse<unknown[]>;
+  }
 
   const { teamRole } = await getMemberRoles({
     teamId,

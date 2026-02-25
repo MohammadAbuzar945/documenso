@@ -134,44 +134,54 @@ export const buildTeamWhereQuery = ({
   userId,
   roles,
 }: BuildTeamWhereQueryOptions): Prisma.TeamWhereUniqueInput => {
-  // Note: Not using inline ternary since typesafety breaks for some reason.
-  if (!roles) {
-    return {
-      id: teamId,
-      teamGroups: {
-        some: {
-          organisationGroup: {
-            organisationGroupMembers: {
-              some: {
-                organisationMember: {
-                  userId,
+  const baseTeamGroupCondition: Prisma.TeamWhereInput =
+    !roles
+      ? {
+          teamGroups: {
+            some: {
+              organisationGroup: {
+                organisationGroupMembers: {
+                  some: {
+                    organisationMember: {
+                      userId,
+                    },
+                  },
                 },
               },
             },
           },
-        },
-      },
-    };
-  }
-
-  return {
-    id: teamId,
-    teamGroups: {
-      some: {
-        organisationGroup: {
-          organisationGroupMembers: {
+        }
+      : {
+          teamGroups: {
             some: {
-              organisationMember: {
-                userId,
+              organisationGroup: {
+                organisationGroupMembers: {
+                  some: {
+                    organisationMember: {
+                      userId,
+                    },
+                  },
+                },
+              },
+              teamRole: {
+                in: roles,
               },
             },
           },
-        },
-        teamRole: {
-          in: roles,
+        };
+
+  return {
+    id: teamId,
+    OR: [
+      // User is a member of the team (with optional role filter).
+      baseTeamGroupCondition,
+      // Or the user is the owner of the organisation the team belongs to.
+      {
+        organisation: {
+          ownerUserId: userId,
         },
       },
-    },
+    ],
   };
 };
 
