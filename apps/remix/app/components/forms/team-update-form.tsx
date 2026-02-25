@@ -22,7 +22,6 @@ import {
 } from '@documenso/ui/primitives/form/form';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
-import { Checkbox } from '@documenso/ui/primitives/checkbox';
 
 export type UpdateTeamDialogProps = {
   teamId: number;
@@ -166,33 +165,6 @@ export const TeamUpdateForm = ({
                   </span>
                 )}
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="isPrivate"
-            render={({ field }) => (
-              <FormItem className="mt-4 flex items-center space-x-2">
-                <FormControl>
-                  <div className="flex items-center">
-                    <Checkbox
-                      id="team-is-private"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      disabled={isOrganisationOwner && Boolean(field.value)}
-                    />
-
-                    <label
-                      className="text-muted-foreground ml-2 text-sm"
-                      htmlFor="team-is-private"
-                    >
-                      <Trans>Private Team - only members can see documents</Trans>
-                    </label>
-                  </div>
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
