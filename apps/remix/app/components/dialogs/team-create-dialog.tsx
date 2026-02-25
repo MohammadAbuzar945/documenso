@@ -402,7 +402,7 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                                 .filter((member) => member.userId !== organisation.ownerUserId)
                                 .map((member) => (
                                   <SelectItem key={member.id} value={member.id}>
-                                    {member.name || member.email}
+                                    {member.email}
                                   </SelectItem>
                                 ))}
                             </SelectContent>
