@@ -164,8 +164,19 @@ export const createPersonalOrganisation = async ({
   inheritMembers = true,
   type = OrganisationType.PERSONAL,
 }: CreatePersonalOrganisationOptions) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  const trimmedUserName = user?.name?.trim() ?? '';
+  const firstName = trimmedUserName.split(' ')[0] || undefined;
+
+  const organisationName = firstName ? `${firstName} Organisation` : 'Personal Organisation';
+
   const organisation = await createOrganisation({
-    name: 'Personal Organisation',
+    name: organisationName,
     userId,
     url: orgUrl,
     type,
