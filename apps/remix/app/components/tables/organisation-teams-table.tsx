@@ -78,9 +78,14 @@ export const OrganisationTeamsTable = () => {
         cell: ({ row }) => i18n.date(row.original.createdAt),
       },
       {
+        header: _(msg`Type`),
+        accessorKey: 'isPrivate',
+        cell: ({ row }) => (row.original.isPrivate ? _(msg`Private`) : _(msg`Public`)),
+      },
+      {
         header: _(msg`Credits Used`),
-        accessorKey: 'completedDocumentCount',
-        cell: ({ row }) => row.original.completedDocumentCount ?? 0,
+        accessorKey: 'creditConsumed',
+        cell: ({ row }) => row.original.creditConsumed ?? 0,
       },
       {
         id: 'actions',
@@ -105,7 +110,7 @@ export const OrganisationTeamsTable = () => {
         ),
       },
     ] satisfies DataTableColumnDef<(typeof results)['data'][number]>[];
-  }, []);
+  }, [_, i18n]);
 
   return (
     <DataTable

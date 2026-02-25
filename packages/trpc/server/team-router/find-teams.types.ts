@@ -26,6 +26,8 @@ export const ZFindTeamsResponseSchema = ZFindResultResponse.extend({
     createdAt: true,
     avatarImageId: true,
     organisationId: true,
+    creditConsumed: true,
+    isPrivate: true,
   })
     .extend({
       currentTeamRole: z.nativeEnum(TeamMemberRole),
