@@ -67,7 +67,7 @@ export const GenericErrorLayout = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.8, transition: { duration: 0.5, delay: 0.5 } }}
         >
-          <img
+          {/* <img
             src={backgroundPattern}
             alt="background pattern"
             className="-ml-[50vw] -mt-[15vh] h-full scale-100 object-cover md:scale-100 lg:scale-[100%] dark:contrast-[70%] dark:invert dark:sepia"
@@ -75,7 +75,7 @@ export const GenericErrorLayout = ({
               mask: 'radial-gradient(rgba(255, 255, 255, 1) 0%, transparent 80%)',
               WebkitMask: 'radial-gradient(rgba(255, 255, 255, 1) 0%, transparent 80%)',
             }}
-          />
+          /> */}
         </motion.div>
       </div>
 
