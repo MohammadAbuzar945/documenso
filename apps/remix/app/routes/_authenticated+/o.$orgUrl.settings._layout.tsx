@@ -116,10 +116,6 @@ export default function SettingsLayout() {
       return false;
     }
 
-    if (!organisation.organisationClaim.flags.allowCustomBranding && route.path.includes('/branding')) {
-      return false;
-    }
-
     return true;
   });
 

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { msg } from '@lingui/core/macro';
@@ -7,7 +7,7 @@ import { Trans } from '@lingui/react/macro';
 import { ExternalLinkIcon, InfoIcon, Loader } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
-import type { z } from 'zod';
+import { z } from 'zod';
 
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { SUBSCRIPTION_STATUS_MAP } from '@documenso/lib/constants/billing';
@@ -63,6 +63,7 @@ export default function OrganisationGroupSettingsPage({
 
   const organisationId = params.id;
 
+  const utils = trpc.useUtils();
   const { data: organisation, isLoading: isLoadingOrganisation } =
     trpc.admin.organisation.get.useQuery({
       organisationId,
@@ -187,6 +188,12 @@ export default function OrganisationGroupSettingsPage({
 
       <GenericOrganisationAdminForm organisation={organisation} />
 
+      <AdminOrganisationCreditsForm
+        organisationId={organisation.id}
+        credits={organisation.credits}
+        onSuccess={() => utils.admin.organisation.get.invalidate({ organisationId })}
+      />
+
       {/* <SettingsHeader
         title={t`Manage subscription`}
         subtitle={t`Manage the ${organisation.name} organisation subscription`}
@@ -294,6 +301,100 @@ type TUpdateGenericOrganisationDataFormSchema = z.infer<
 type OrganisationAdminFormOptions = {
   organisation: TGetAdminOrganisationResponse;
   licenseFlags?: TLicenseClaim;
+};
+
+const ZAdminOrganisationCreditsFormSchema = z.object({
+  credits: z.coerce.number().int().min(0),
+});
+
+type TAdminOrganisationCreditsFormSchema = z.infer<typeof ZAdminOrganisationCreditsFormSchema>;
+
+const AdminOrganisationCreditsForm = ({
+  organisationId,
+  credits,
+  onSuccess,
+}: {
+  organisationId: string;
+  credits: number;
+  onSuccess: () => void;
+}) => {
+  const { toast } = useToast();
+  const { t } = useLingui();
+
+  const { mutateAsync: updateCredits, isPending: isUpdatingCredits } =
+    trpc.admin.organisation.updateCredits.useMutation({
+      onSuccess: () => {
+        onSuccess();
+        toast({
+          title: t`Success`,
+          description: t`Organisation credits have been updated`,
+          duration: 5000,
+        });
+      },
+      onError: () => {
+        toast({
+          title: t`Error`,
+          description: t`We couldn't update organisation credits. Please try again.`,
+          variant: 'destructive',
+        });
+      },
+    });
+
+  const form = useForm<TAdminOrganisationCreditsFormSchema>({
+    resolver: zodResolver(ZAdminOrganisationCreditsFormSchema),
+    defaultValues: {
+      credits,
+    },
+  });
+
+  useEffect(() => {
+    form.reset({ credits });
+  }, [credits]);
+
+  const onSubmit = async (data: TAdminOrganisationCreditsFormSchema) => {
+    await updateCredits({
+      organisationId,
+      credits: data.credits,
+    });
+  };
+
+  return (
+    <div className="mt-16">
+      <label className="text-sm font-medium leading-none">
+        <Trans>User Credits</Trans>
+      </label>
+      <p className="mt-1 text-sm text-muted-foreground">
+        <Trans>Current balance: {credits} credits</Trans>
+      </p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 flex flex-wrap items-end gap-4">
+          <FormField
+            control={form.control}
+            name="credits"
+            render={({ field }) => (
+              <FormItem className="w-full min-w-[120px] max-w-[200px]">
+                <FormLabel>
+                  <Trans>Set credits</Trans>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min={0}
+                    {...field}
+                    onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" loading={isUpdatingCredits}>
+            <Trans>Update</Trans>
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
 };
 
 const GenericOrganisationAdminForm = ({ organisation }: OrganisationAdminFormOptions) => {

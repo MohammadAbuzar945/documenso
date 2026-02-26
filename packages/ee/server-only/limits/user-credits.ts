@@ -85,6 +85,33 @@ export const deductOrganisationCredits = async (organisationId: string, amount: 
 };
 
 /**
+ * Updates the credits balance for an organisation (admin use).
+ * Ensures a UserCredits record exists, then sets credits to the given value.
+ */
+export const updateOrganisationCredits = async (organisationId: string, credits: number) => {
+  const organisation = await prisma.organisation.findUnique({
+    where: { id: organisationId },
+    select: { ownerUserId: true },
+  });
+
+  if (!organisation) {
+    throw new Error(`Organisation with id ${organisationId} not found`);
+  }
+
+  const userCredits = await ensureOrganisationCredits(organisationId, organisation.ownerUserId);
+
+  const updated = await prisma.userCredits.update({
+    where: { id: userCredits.id },
+    data: {
+      credits: Math.max(0, Math.floor(credits)),
+      lastUpdatedAt: new Date(),
+    },
+  });
+
+  return updated;
+};
+
+/**
  * Gets the current credits for an organisation.
  */
 export const getOrganisationCredits = async (organisationId: string) => {

@@ -8,15 +8,15 @@ import { isDocumentCompleted } from '@documenso/lib/utils/document';
 
 import { authenticatedProcedure } from '../trpc';
 import {
-  ZDownloadDocumentRequestSchema,
-  ZDownloadDocumentResponseSchema,
-  downloadDocumentMeta,
-} from './download-document-beta.types';
+  ZDownloadDocumentUrlRequestSchema,
+  ZDownloadDocumentUrlResponseSchema,
+  downloadDocumentUrlMeta,
+} from './download-document-url.types';
 
-export const downloadDocumentBetaRoute = authenticatedProcedure
-  .meta(downloadDocumentMeta)
-  .input(ZDownloadDocumentRequestSchema)
-  .output(ZDownloadDocumentResponseSchema)
+export const downloadDocumentUrlRoute = authenticatedProcedure
+  .meta(downloadDocumentUrlMeta)
+  .input(ZDownloadDocumentUrlRequestSchema)
+  .output(ZDownloadDocumentUrlResponseSchema)
   .query(async ({ input, ctx }) => {
     const { teamId, user } = ctx;
     const { documentId, version } = input;
@@ -37,13 +37,6 @@ export const downloadDocumentBetaRoute = authenticatedProcedure
       userId: user.id,
       teamId,
     });
-
-    // This error is done AFTER the get envelope so we can test access controls without S3.
-    // if (process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT !== 's3') {
-    //   throw new AppError(AppErrorCode.INVALID_REQUEST, {
-    //     message: 'Document downloads are only available when S3 storage is configured.',
-    //   });
-    // }
 
     const documentData: DocumentData | undefined = envelope.envelopeItems[0]?.documentData;
 
@@ -94,3 +87,4 @@ export const downloadDocumentBetaRoute = authenticatedProcedure
       });
     }
   });
+

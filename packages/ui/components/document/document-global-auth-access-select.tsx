@@ -39,17 +39,22 @@ export const DocumentGlobalAuthAccessSelect = ({
     })),
   ];
 
-  // Convert string array to Option array for MultiSelect
-  const selectedOptions =
-    (value
-      ?.map((val) => authOptions.find((option) => option.value === val))
-      .filter(Boolean) as Option[]) || [];
+  // Empty array means "No restrictions" - show it as selected by default
+  const displayValue = value?.length ? value : ['-1'];
 
-  // Convert default value to Option array
-  const defaultOptions =
-    (defaultValue
-      ?.map((val) => authOptions.find((option) => option.value === val))
-      .filter(Boolean) as Option[]) || [];
+  // Convert string array to Option array for MultiSelect
+  const selectedOptions = (
+    displayValue
+      .map((val) => authOptions.find((option) => option.value === val))
+      .filter(Boolean) as Option[]
+  );
+
+  // Convert default value to Option array (empty = No restrictions)
+  const defaultOptions = (
+    (defaultValue?.length ? defaultValue : ['-1'])
+      .map((val) => authOptions.find((option) => option.value === val))
+      .filter(Boolean) as Option[]
+  );
 
   const handleChange = (options: Option[]) => {
     const values = options.map((option) => option.value);

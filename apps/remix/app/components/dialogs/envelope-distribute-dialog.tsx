@@ -220,6 +220,23 @@ export const EnvelopeDistributeDialog = ({
     }
   }, [isOpen]);
 
+  // Reset form with current envelope document meta when dialog opens so that
+  // subject/message/reply-to set in document settings are shown in the send dialog.
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        meta: {
+          emailId: envelope.documentMeta?.emailId ?? null,
+          emailReplyTo: envelope.documentMeta?.emailReplyTo || undefined,
+          subject: envelope.documentMeta?.subject ?? '',
+          message: envelope.documentMeta?.message ?? '',
+          distributionMethod:
+            envelope.documentMeta?.distributionMethod || DocumentDistributionMethod.EMAIL,
+        },
+      });
+    }
+  }, [isOpen]);
+
   if (envelope.status !== DocumentStatus.DRAFT || envelope.type !== EnvelopeType.DOCUMENT) {
     return null;
   }
