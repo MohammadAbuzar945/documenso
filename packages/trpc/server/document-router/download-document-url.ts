@@ -2,23 +2,23 @@ import type { DocumentData } from '@prisma/client';
 import { DocumentDataType, EnvelopeType } from '@prisma/client';
 
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
-import { getEnvelopeById } from '@documenso/lib/server-only/envelope/get-envelope-by-id';
 import { getPresignGetUrl } from '@documenso/lib/universal/upload/server-actions';
+import { unsafeBuildEnvelopeIdQuery } from '@documenso/lib/utils/envelope';
 import { isDocumentCompleted } from '@documenso/lib/utils/document';
+import { prisma } from '@documenso/prisma';
 
-import { authenticatedProcedure } from '../trpc';
+import { procedure } from '../trpc';
 import {
   ZDownloadDocumentUrlRequestSchema,
   ZDownloadDocumentUrlResponseSchema,
   downloadDocumentUrlMeta,
 } from './download-document-url.types';
 
-export const downloadDocumentUrlRoute = authenticatedProcedure
+export const downloadDocumentUrlRoute = procedure
   .meta(downloadDocumentUrlMeta)
   .input(ZDownloadDocumentUrlRequestSchema)
   .output(ZDownloadDocumentUrlResponseSchema)
   .query(async ({ input, ctx }) => {
-    const { teamId, user } = ctx;
     const { documentId, version } = input;
 
     ctx.logger.info({
@@ -28,15 +28,31 @@ export const downloadDocumentUrlRoute = authenticatedProcedure
       },
     });
 
-    const envelope = await getEnvelopeById({
-      id: {
-        type: 'documentId',
-        id: documentId,
+    const envelope = await prisma.envelope.findFirst({
+      where: unsafeBuildEnvelopeIdQuery(
+        {
+          type: 'documentId',
+          id: documentId,
+        },
+        EnvelopeType.DOCUMENT,
+      ),
+      include: {
+        envelopeItems: {
+          include: {
+            documentData: true,
+          },
+          orderBy: {
+            order: 'asc',
+          },
+        },
       },
-      type: EnvelopeType.DOCUMENT,
-      userId: user.id,
-      teamId,
     });
+
+    if (!envelope) {
+      throw new AppError(AppErrorCode.NOT_FOUND, {
+        message: 'Document could not be found',
+      });
+    }
 
     const documentData: DocumentData | undefined = envelope.envelopeItems[0]?.documentData;
 
