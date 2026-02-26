@@ -80,6 +80,11 @@ export const AddSubjectFormPartial = ({
 
   const organisation = useCurrentOrganisation();
 
+  const initialDistributionMethod =
+    document.documentMeta?.distributionMethod === DocumentDistributionMethod.NONE
+      ? DocumentDistributionMethod.EMAIL
+      : document.documentMeta?.distributionMethod || DocumentDistributionMethod.EMAIL;
+
   const form = useForm<TAddSubjectFormSchema>({
     defaultValues: {
       meta: {
@@ -88,8 +93,7 @@ export const AddSubjectFormPartial = ({
         // emailReplyName: document.documentMeta?.emailReplyName || undefined,
         subject: document.documentMeta?.subject ?? '',
         message: document.documentMeta?.message ?? '',
-        distributionMethod:
-          document.documentMeta?.distributionMethod || DocumentDistributionMethod.EMAIL,
+        distributionMethod: initialDistributionMethod,
         emailSettings: ZDocumentEmailSettingsSchema.parse(document?.documentMeta?.emailSettings),
       },
     },
@@ -192,9 +196,6 @@ export const AddSubjectFormPartial = ({
             <TabsList className="w-full">
               <TabsTrigger className="w-full" value={DocumentDistributionMethod.EMAIL}>
                 Email
-              </TabsTrigger>
-              <TabsTrigger className="w-full" value={DocumentDistributionMethod.NONE}>
-                None
               </TabsTrigger>
             </TabsList>
           </Tabs>

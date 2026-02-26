@@ -181,6 +181,7 @@ export const DocumentPageViewRecipients = ({
                   </PopoverHover>
                 )}
 
+              {/*
               {envelope.status === DocumentStatus.PENDING &&
                 recipient.signingStatus === SigningStatus.NOT_SIGNED &&
                 recipient.role !== RecipientRole.CC && (
@@ -212,6 +213,7 @@ export const DocumentPageViewRecipients = ({
                     </Tooltip>
                   </TooltipProvider>
                 )}
+              */}
             </div>
           </li>
         ))}

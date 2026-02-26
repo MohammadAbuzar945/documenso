@@ -97,6 +97,10 @@ import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { useCurrentTeam } from '~/providers/team';
 
+const DOCUMENT_DISTRIBUTION_METHOD_SETTINGS_OPTIONS = Object.values(
+  DOCUMENT_DISTRIBUTION_METHODS,
+).filter(({ value }) => value !== DocumentDistributionMethod.NONE);
+
 export const ZAddSettingsFormSchema = z.object({
   externalId: z.string().optional(),
   visibility: z.nativeEnum(DocumentVisibility).optional(),
@@ -187,6 +191,11 @@ export const EnvelopeEditorSettingsDialog = ({
   });
 
   const createDefaultValues = () => {
+    const resolvedDistributionMethod =
+      envelope.documentMeta.distributionMethod === DocumentDistributionMethod.NONE
+        ? DocumentDistributionMethod.EMAIL
+        : envelope.documentMeta.distributionMethod || DocumentDistributionMethod.EMAIL;
+
     return {
       externalId: envelope.externalId || '',
       visibility: envelope.visibility || '',
@@ -199,8 +208,7 @@ export const EnvelopeEditorSettingsDialog = ({
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         dateFormat: (envelope.documentMeta.dateFormat ??
           DEFAULT_DOCUMENT_DATE_FORMAT) as TDocumentMetaDateFormat,
-        distributionMethod:
-          envelope.documentMeta.distributionMethod || DocumentDistributionMethod.EMAIL,
+        distributionMethod: resolvedDistributionMethod,
         redirectUrl: envelope.documentMeta.redirectUrl ?? '',
         language: envelope.documentMeta.language ?? 'en',
         emailId: envelope.documentMeta.emailId ?? null,
@@ -599,19 +607,7 @@ export const EnvelopeEditorSettingsDialog = ({
                                         document to sign, approve, etc.
                                       </Trans>
                                     </li>
-                                    <li>
-                                      <Trans>
-                                        <strong>None</strong> - We will generate links which you can
-                                        send to the recipients manually.
-                                      </Trans>
-                                    </li>
                                   </ul>
-
-                                  <Trans>
-                                    <strong>Note</strong> - If you use Links in combination with
-                                    direct templates, you will need to manually send the links to
-                                    the remaining recipients.
-                                  </Trans>
                                 </TooltipContent>
                               </Tooltip>
                             </FormLabel>
@@ -623,7 +619,7 @@ export const EnvelopeEditorSettingsDialog = ({
                                 </SelectTrigger>
 
                                 <SelectContent position="popper">
-                                  {Object.values(DOCUMENT_DISTRIBUTION_METHODS).map(
+                                  {DOCUMENT_DISTRIBUTION_METHOD_SETTINGS_OPTIONS.map(
                                     ({ value, description }) => (
                                       <SelectItem key={value} value={value}>
                                         {i18n._(description)}
