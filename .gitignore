@@ -69,3 +69,5 @@ scripts/output*
 .documenso-license-backup.json
 
 certs
+
+.cursor/

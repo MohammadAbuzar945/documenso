@@ -5,7 +5,9 @@ import { prisma } from '@documenso/prisma';
 
 import { AppError, AppErrorCode } from '../../errors/app-error';
 import { jobs } from '../../jobs/client';
+import { TEAM_AUDIT_LOG_TYPE } from '../../types/team-audit-logs';
 import { generateDatabaseId } from '../../universal/id';
+import { createTeamAuditLogData } from '../../utils/team-audit-logs';
 
 export type AcceptOrganisationInvitationOptions = {
   token: string;
@@ -47,6 +49,8 @@ export const acceptOrganisationInvitation = async ({
     },
     select: {
       id: true,
+      email: true,
+      name: true,
     },
   });
 
@@ -84,6 +88,54 @@ export const acceptOrganisationInvitation = async ({
       status: OrganisationMemberInviteStatus.ACCEPTED,
     },
   });
+
+  const teams = await prisma.team.findMany({
+    where: {
+      organisationId: organisation.id,
+      teamGroups: {
+        some: {
+          organisationGroup: {
+            type: OrganisationGroupType.INTERNAL_ORGANISATION,
+            organisationRole: organisationMemberInvite.organisationRole,
+          },
+        },
+      },
+    },
+  });
+
+  if (teams.length > 0) {
+    await (prisma as any).teamAuditLog.createMany({
+      data: teams.flatMap((team) => [
+        createTeamAuditLogData({
+          teamId: team.id,
+          type: TEAM_AUDIT_LOG_TYPE.ORGANISATION_MEMBER_INVITE_ACCEPTED,
+          data: {
+            email: organisationMemberInvite.email,
+            organisationId: organisation.id,
+          },
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          },
+        }),
+        createTeamAuditLogData({
+          teamId: team.id,
+          type: TEAM_AUDIT_LOG_TYPE.TEAM_MEMBER_JOINED_VIA_ORG_INVITE,
+          data: {
+            memberUserId: user.id,
+            memberEmail: user.email,
+            organisationId: organisation.id,
+          },
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          },
+        }),
+      ]),
+    });
+  }
 };
 
 export const addUserToOrganisation = async ({

@@ -478,6 +478,25 @@ model DocumentAuditLog {
   @@index([envelopeId])
 }
 
+model TeamAuditLog {
+  id        String   @id @default(cuid())
+  teamId    Int
+  createdAt DateTime @default(now())
+  type      String
+  data      Json
+
+  // Details of the person who performed the action which caused the audit log.
+  name      String?
+  email     String?
+  userId    Int?
+  userAgent String?
+  ipAddress String?
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId, createdAt])
+}
+
 enum DocumentDataType {
   S3_PATH
   BYTES
@@ -906,6 +925,7 @@ model Team {
   apiTokens  ApiToken[]
   webhooks   Webhook[]
   teamGroups TeamGroup[]
+  auditLogs  TeamAuditLog[]
 
   organisationId String
   organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)

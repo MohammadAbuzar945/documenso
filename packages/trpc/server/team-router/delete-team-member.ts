@@ -3,8 +3,11 @@ import { OrganisationGroupType, TeamMemberRole } from '@prisma/client';
 import { TEAM_MEMBER_ROLE_PERMISSIONS_MAP } from '@documenso/lib/constants/teams';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { getMemberRoles } from '@documenso/lib/server-only/team/get-member-roles';
+import { TEAM_AUDIT_LOG_TYPE } from '@documenso/lib/types/team-audit-logs';
 import { buildTeamWhereQuery, isTeamRoleWithinUserHierarchy } from '@documenso/lib/utils/teams';
 import { prisma } from '@documenso/prisma';
+
+import { createTeamAuditLogData } from '@documenso/lib/utils/team-audit-logs';
 
 import { authenticatedProcedure } from '../trpc';
 import {
@@ -140,4 +143,37 @@ export const deleteTeamMemberRoute = authenticatedProcedure
         },
       },
     });
+
+    if (organisationMemberToDelete) {
+      const memberUser = await prisma.user.findUnique({
+        where: {
+          id: organisationMemberToDelete.userId,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+        },
+      });
+
+      if (memberUser) {
+        await prisma.teamAuditLog.create({
+          data: createTeamAuditLogData({
+            teamId,
+            type: TEAM_AUDIT_LOG_TYPE.TEAM_MEMBER_REMOVED,
+            data: {
+              memberUserId: memberUser.id,
+              memberEmail: memberUser.email,
+              previousRole: currentMemberToDeleteTeamRole,
+            },
+            user: {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+            },
+            metadata: ctx.metadata,
+          }),
+        });
+      }
+    }
   });

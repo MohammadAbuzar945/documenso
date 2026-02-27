@@ -3,10 +3,13 @@ import { match } from 'ts-pattern';
 import { TEAM_MEMBER_ROLE_PERMISSIONS_MAP } from '@documenso/lib/constants/teams';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { getMemberRoles } from '@documenso/lib/server-only/team/get-member-roles';
+import { TEAM_AUDIT_LOG_TYPE } from '@documenso/lib/types/team-audit-logs';
 import { generateDatabaseId } from '@documenso/lib/universal/id';
 import { buildTeamWhereQuery, isTeamRoleWithinUserHierarchy } from '@documenso/lib/utils/teams';
 import { prisma } from '@documenso/prisma';
 import { OrganisationGroupType, TeamMemberRole } from '@documenso/prisma/generated/types';
+
+import { createTeamAuditLogData } from '@documenso/lib/utils/team-audit-logs';
 
 import { authenticatedProcedure } from '../trpc';
 import {
@@ -171,4 +174,40 @@ export const updateTeamMemberRoute = authenticatedProcedure
         },
       });
     });
+
+    const organisationMember = await prisma.organisationMember.findUnique({
+      where: {
+        id: memberId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (organisationMember?.user) {
+      await prisma.teamAuditLog.create({
+        data: createTeamAuditLogData({
+          teamId,
+          type: TEAM_AUDIT_LOG_TYPE.TEAM_MEMBER_ROLE_UPDATED,
+          data: {
+            memberUserId: organisationMember.user.id,
+            memberEmail: organisationMember.user.email,
+            previousRole: currentMemberToUpdateTeamRole,
+            newRole: data.role,
+          },
+          user: {
+            id: ctx.user.id,
+            email: ctx.user.email,
+            name: ctx.user.name,
+          },
+          metadata: ctx.metadata,
+        }),
+      });
+    }
   });

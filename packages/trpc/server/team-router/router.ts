@@ -12,6 +12,8 @@ import { createTeamMembersRoute } from './create-team-members';
 import { deleteTeamRoute } from './delete-team';
 import { deleteTeamGroupRoute } from './delete-team-group';
 import { deleteTeamMemberRoute } from './delete-team-member';
+import { findTeamAuditLogsRoute } from './find-team-audit-logs';
+import { downloadTeamAuditLogsRoute } from './download-team-audit-logs';
 import { findTeamGroupsRoute } from './find-team-groups';
 import { findTeamMembersRoute } from './find-team-members';
 import { findTeamsRoute } from './find-teams';
@@ -50,6 +52,11 @@ export const teamRouter = router({
   },
   settings: {
     update: updateTeamSettingsRoute,
+  },
+
+  auditLog: {
+    find: findTeamAuditLogsRoute,
+    download: downloadTeamAuditLogsRoute,
   },
 
   // Old routes (to be migrated)

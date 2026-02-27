@@ -14,7 +14,10 @@ import {
   ORGANISATION_MEMBER_ROLE_PERMISSIONS_MAP,
 } from '../../constants/organisations';
 import { TEAM_INTERNAL_GROUPS } from '../../constants/teams';
+import { TEAM_AUDIT_LOG_TYPE } from '../../types/team-audit-logs';
 import { generateDatabaseId } from '../../universal/id';
+import type { ApiRequestMetadata } from '../../universal/extract-request-metadata';
+import { createTeamAuditLogData } from '../../utils/team-audit-logs';
 import { buildOrganisationWhereQuery } from '../../utils/organisations';
 import { generateDefaultTeamSettings } from '../../utils/teams';
 
@@ -64,6 +67,11 @@ export type CreateTeamOptions = {
     id: string;
     role: TeamMemberRole;
   }[];
+
+  /**
+   * Request metadata for audit logging.
+   */
+  metadata?: ApiRequestMetadata;
 };
 
 export const createTeam = async ({
@@ -74,6 +82,7 @@ export const createTeam = async ({
   inheritMembers,
   isPrivate,
   organisationMemberId,
+  metadata,
 }: CreateTeamOptions) => {
   const organisationSuffix = organisationId.slice(-5);
   const organisationScopedTeamUrl = `${organisationSuffix}-${teamUrl}`;
@@ -278,6 +287,24 @@ export const createTeam = async ({
             },
           });
         }
+
+        await (tx as any).teamAuditLog.create({
+          data: createTeamAuditLogData({
+            teamId: team.id,
+            type: TEAM_AUDIT_LOG_TYPE.TEAM_CREATED,
+            data: {
+              teamId: team.id,
+              teamName: team.name,
+              organisationId,
+              isPrivate,
+              createdByUserId: userId,
+            },
+            user: {
+              id: userId,
+            },
+            metadata,
+          }),
+        });
       },
       {
         timeout: 7500,

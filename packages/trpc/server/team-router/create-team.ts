@@ -26,5 +26,6 @@ export const createTeamRoute = authenticatedProcedure
       inheritMembers,
       isPrivate,
       organisationMemberId,
+      metadata: ctx.metadata,
     });
   });

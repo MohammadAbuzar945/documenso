@@ -2,7 +2,7 @@ import { createElement } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import type { Organisation, Prisma } from '@prisma/client';
-import { OrganisationMemberInviteStatus } from '@prisma/client';
+import { OrganisationGroupType, OrganisationMemberInviteStatus } from '@prisma/client';
 import { nanoid } from 'nanoid';
 
 import { syncMemberCountWithStripeSeatPlan } from '@documenso/ee/server-only/stripe/update-subscription-item-quantity';
@@ -11,6 +11,7 @@ import { OrganisationInviteEmailTemplate } from '@documenso/email/templates/orga
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { ORGANISATION_MEMBER_ROLE_PERMISSIONS_MAP } from '@documenso/lib/constants/organisations';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
+import { TEAM_AUDIT_LOG_TYPE } from '@documenso/lib/types/team-audit-logs';
 import { isOrganisationRoleWithinUserHierarchy } from '@documenso/lib/utils/organisations';
 import { prisma } from '@documenso/prisma';
 import type { TCreateOrganisationMemberInvitesRequestSchema } from '@documenso/trpc/server/organisation-router/create-organisation-member-invites.types';
@@ -23,6 +24,7 @@ import { renderEmailWithI18N } from '../../utils/render-email-with-i18n';
 import { getEmailContext } from '../email/get-email-context';
 import { getCurrentSubscriptionByOrganisationId } from '../subscription/get-current-subscription-by-organisation-id';
 import { getMemberOrganisationRole } from '../team/get-member-roles';
+import { createTeamAuditLogData } from '../../utils/team-audit-logs';
 
 export type CreateOrganisationMemberInvitesOptions = {
   userId: number;
@@ -143,6 +145,61 @@ export const createOrganisationMemberInvites = async ({
   await prisma.organisationMemberInvite.createMany({
     data: organisationMemberInvites,
   });
+
+  const teams = await prisma.team.findMany({
+    where: {
+      organisationId: organisation.id,
+      teamGroups: {
+        some: {
+          organisationGroup: {
+            type: OrganisationGroupType.INTERNAL_ORGANISATION,
+            organisationRole: {
+              in: organisationMemberInvites.map((invite) => invite.organisationRole),
+            },
+          },
+        },
+      },
+    },
+    include: {
+      teamGroups: {
+        include: {
+          organisationGroup: true,
+        },
+      },
+    },
+  });
+
+  const auditLogs = organisationMemberInvites.flatMap((invite) => {
+    const teamsForRole = teams.filter((team) =>
+      team.teamGroups.some(
+        (group) =>
+          group.organisationGroup.type === OrganisationGroupType.INTERNAL_ORGANISATION &&
+          group.organisationGroup.organisationRole === invite.organisationRole,
+      ),
+    );
+
+    return teamsForRole.map((team) =>
+      createTeamAuditLogData({
+        teamId: team.id,
+        type: TEAM_AUDIT_LOG_TYPE.ORGANISATION_MEMBER_INVITED,
+        data: {
+          email: invite.email,
+          organisationId: organisation.id,
+          inviterUserId: userId,
+        },
+        user: {
+          id: userId,
+          name: userName,
+        },
+      }),
+    );
+  });
+
+  if (auditLogs.length > 0) {
+    await (prisma as any).teamAuditLog.createMany({
+      data: auditLogs,
+    });
+  }
 
   const sendEmailResult = await Promise.allSettled(
     organisationMemberInvites.map(async ({ email, token }) =>
