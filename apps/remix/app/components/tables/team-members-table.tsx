@@ -127,60 +127,73 @@ export const TeamMembersTable = () => {
       },
       {
         header: _(msg`Actions`),
-        cell: ({ row }) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreHorizontal className="text-muted-foreground h-5 w-5" />
-            </DropdownMenuTrigger>
+        cell: ({ row }) => {
+          const isDirectTeamMember = groups.some(
+            (group) =>
+              group.organisationGroupType === OrganisationGroupType.INTERNAL_TEAM &&
+              group.members.some((member) => member.id === row.original.id),
+          );
 
-            <DropdownMenuContent className="w-52" align="start" forceMount>
-              <DropdownMenuLabel>
-                <Trans>Actions</Trans>
-              </DropdownMenuLabel>
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <MoreHorizontal className="text-muted-foreground h-5 w-5" />
+              </DropdownMenuTrigger>
 
-              <TeamMemberUpdateDialog
-                currentUserTeamRole={team.currentTeamRole}
-                teamId={team.id}
-                memberId={row.original.id}
-                memberName={row.original.name ?? ''}
-                memberTeamRole={row.original.teamRole}
-                trigger={
-                  <DropdownMenuItem
-                    disabled={
-                      !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
-                    }
-                    onSelect={(e) => e.preventDefault()}
-                    title="Update team member role"
-                  >
-                    <EditIcon className="mr-2 h-4 w-4" />
-                    <Trans>Update role</Trans>
-                  </DropdownMenuItem>
-                }
-              />
+              <DropdownMenuContent className="w-52" align="start" forceMount>
+                <DropdownMenuLabel>
+                  <Trans>Actions</Trans>
+                </DropdownMenuLabel>
 
-              <TeamMemberDeleteDialog
-                teamId={team.id}
-                teamName={team.name}
-                memberId={row.original.id}
-                memberName={row.original.name ?? ''}
-                memberEmail={row.original.email}
-                isInheritMemberEnabled={memberAccessTeamGroup !== undefined}
-                trigger={
-                  <DropdownMenuItem
-                    onSelect={(e) => e.preventDefault()}
-                    disabled={
-                      !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
-                    }
-                    title={_(msg`Remove team member`)}
-                  >
-                    <Trash2Icon className="mr-2 h-4 w-4" />
-                    <Trans>Remove</Trans>
-                  </DropdownMenuItem>
-                }
-              />
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ),
+                <TeamMemberUpdateDialog
+                  currentUserTeamRole={team.currentTeamRole}
+                  teamId={team.id}
+                  memberId={row.original.id}
+                  memberName={row.original.name ?? ''}
+                  memberTeamRole={row.original.teamRole}
+                  trigger={
+                    <DropdownMenuItem
+                      disabled={
+                        !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
+                      }
+                      onSelect={(e) => e.preventDefault()}
+                      title="Update team member role"
+                    >
+                      <EditIcon className="mr-2 h-4 w-4" />
+                      <Trans>Update role</Trans>
+                    </DropdownMenuItem>
+                  }
+                />
+
+                <TeamMemberDeleteDialog
+                  teamId={team.id}
+                  teamName={team.name}
+                  memberId={row.original.id}
+                  memberName={row.original.name ?? ''}
+                  memberEmail={row.original.email}
+                  isInheritMemberEnabled={memberAccessTeamGroup !== undefined}
+                  trigger={
+                    <DropdownMenuItem
+                      onSelect={(e) => e.preventDefault()}
+                      disabled={
+                        !isDirectTeamMember ||
+                        !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
+                      }
+                      title={
+                        !isDirectTeamMember
+                          ? _(msg`This member is added via a group. Remove them from the group instead.`)
+                          : _(msg`Remove team member`)
+                      }
+                    >
+                      <Trash2Icon className="mr-2 h-4 w-4" />
+                      <Trans>Remove</Trans>
+                    </DropdownMenuItem>
+                  }
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
     ] satisfies DataTableColumnDef<(typeof results)['data'][number]>[];
   }, [groups]);

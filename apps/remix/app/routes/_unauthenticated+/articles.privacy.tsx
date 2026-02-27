@@ -100,16 +100,7 @@ export default function Privacy() {
             3.1.4 We may need to disclose your Personal Information to applicable industry regulators and/or other statutory bodies in terms of prevailing legislation.
           </Trans>
         </p>
-        <p>
-          <Trans>
-            Nomia Africa (Pty) LTD, Directors: Jonathan du Preez (CEO), Malcolm MacDonald (CTO)
-          </Trans>
-        </p>
-        <p>
-          <Trans>
-            VAT no: 4070274966 Company registration no: 2016/132572/07
-          </Trans>
-        </p>
+       
 
         <h2>
           <Trans>NOMIA</Trans>
@@ -199,19 +190,10 @@ export default function Privacy() {
         </ul>
         <p>
           <Trans>
-            6.4 In addition to any Personal Information you may submit to us *via *the website, when visiting our website, we may collect usage information which may include your geographical location and information about the timing, frequency and pattern of your service use. This information may be processed by us for purposes of analysing the use of our website and improving its usability.
+            6.4 In addition to any Personal Information you may submit to us *via* the website, when visiting our website, we may collect usage information which may include your geographical location and information about the timing, frequency and pattern of your service use. This information may be processed by us for purposes of analysing the use of our website and improving its usability.
           </Trans>
         </p>
-        <p>
-          <Trans>
-            Nomia Africa (Pty) LTD, Directors: Jonathan du Preez (CEO), Malcolm MacDonald (CTO)
-          </Trans>
-        </p>
-        <p>
-          <Trans>
-            VAT no: 4070274966 Company registration no: 2016/132572/07
-          </Trans>
-        </p>
+    
 
         <h2>
           <Trans>7 Changes to this Policy</Trans>
@@ -226,16 +208,7 @@ export default function Privacy() {
             7.2 We will notify you of any changes by placing a notice in a prominent place on the website. If you do not agree with the changes, then you must stop using the website and any of our products or services. If you continue to use the website or any of our products or services following notification of a change to the terms, the changed terms of this Policy will apply to you, and you will be deemed to have accepted those updated terms.
           </Trans>
         </p>
-        <p>
-          <Trans>
-            Nomia Africa (Pty) LTD, Directors: Jonathan du Preez (CEO), Malcolm MacDonald (CTO)
-          </Trans>
-        </p>
-        <p>
-          <Trans>
-            VAT no: 4070274966 Company registration no: 2016/132572/07
-          </Trans>
-        </p>
+   
 
         <p className="mt-8">
           <Trans>Last updated: 01/02/2026</Trans>

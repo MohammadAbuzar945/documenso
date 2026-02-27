@@ -45,12 +45,16 @@ export class LocalJobProvider extends BaseJobProvider {
       (job) => job.trigger.name === options.name,
     );
 
+    const requestedJobId =
+      typeof options.id === 'string' && eligibleJobs.length === 1 ? options.id : undefined;
+
     await Promise.all(
       eligibleJobs.map(async (job) => {
         // Ideally we will change this to a createMany with returning later once we upgrade Prisma
         // @see: https://github.com/prisma/prisma/releases/tag/5.14.0
         const pendingJob = await prisma.backgroundJob.create({
           data: {
+            id: requestedJobId,
             jobId: job.id,
             name: job.name,
             version: job.version,

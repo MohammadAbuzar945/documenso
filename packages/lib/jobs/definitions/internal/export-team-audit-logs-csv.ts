@@ -1,0 +1,43 @@
+import { z } from 'zod';
+
+import { ZRequestMetadataSchema } from '../../../universal/extract-request-metadata';
+import { SUPPORTED_LANGUAGE_CODES } from '../../../constants/i18n';
+import type { JobDefinition } from '../../client/_internal/job';
+
+export const EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION_ID = 'internal.export-team-audit-logs.csv';
+
+export const ZExportTeamAuditLogsCsvJobDefinitionSchema = z.object({
+  jobId: z.string().min(1),
+  teamId: z.number().min(1),
+  requestedByUserId: z.number().min(1),
+  requestedByUserEmail: z.string().email(),
+  requestedByUserName: z.string().nullable().optional(),
+  language: z.enum(SUPPORTED_LANGUAGE_CODES).optional(),
+  requestMetadata: ZRequestMetadataSchema.optional(),
+});
+
+export type TExportTeamAuditLogsCsvJobDefinition = z.infer<
+  typeof ZExportTeamAuditLogsCsvJobDefinitionSchema
+>;
+
+export const EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION = {
+  id: EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION_ID,
+  name: 'Export Team Audit Logs (CSV)',
+  version: '1.0.0',
+  optimizeParallelism: false,
+  trigger: {
+    name: EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION_ID,
+    schema: ZExportTeamAuditLogsCsvJobDefinitionSchema,
+  },
+  handler: async ({ payload, io }) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error Dynamic import resolved at runtime
+    const handler = await import('./export-team-audit-logs-csv.handler');
+
+    await handler.run({ payload, io });
+  },
+} as const satisfies JobDefinition<
+  typeof EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION_ID,
+  TExportTeamAuditLogsCsvJobDefinition
+>;
+

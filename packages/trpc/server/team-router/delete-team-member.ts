@@ -31,28 +31,29 @@ export const deleteTeamMemberRoute = authenticatedProcedure
     });
 
     const team = await prisma.team.findFirst({
-      where: buildTeamWhereQuery({
-        teamId,
-        userId: user.id,
-        roles: TEAM_MEMBER_ROLE_PERMISSIONS_MAP['MANAGE_TEAM'],
-      }),
-      include: {
-        organisation: {
-          select: {
-            ownerUserId: true,
+      where: {
+        AND: [
+          buildTeamWhereQuery({
+            teamId,
+            userId: user.id,
+            roles: TEAM_MEMBER_ROLE_PERMISSIONS_MAP['MANAGE_TEAM'],
+          }),
+          {
+            organisation: {
+              members: {
+                some: {
+                  id: memberId,
+                },
+              },
+            },
           },
-        },
+        ],
+      },
+      include: {
         teamGroups: {
           where: {
             organisationGroup: {
               type: OrganisationGroupType.INTERNAL_TEAM,
-              organisationGroupMembers: {
-                some: {
-                  organisationMember: {
-                    id: memberId,
-                  },
-                },
-              },
             },
           },
           include: {
@@ -74,6 +75,12 @@ export const deleteTeamMemberRoute = authenticatedProcedure
       throw new AppError(AppErrorCode.UNAUTHORIZED);
     }
 
+    if (team.teamGroups.length === 0) {
+      throw new AppError(AppErrorCode.UNKNOWN_ERROR, {
+        message: 'Team has no internal team groups',
+      });
+    }
+
     const { teamRole: currentUserTeamRole } = await getMemberRoles({
       teamId,
       reference: {
@@ -90,26 +97,23 @@ export const deleteTeamMemberRoute = authenticatedProcedure
       },
     });
 
-    const isOrganisationOwner = team.organisation.ownerUserId === user.id;
+    const internalTeamGroupToRemoveMemberFrom = team.teamGroups.find((group) =>
+      group.organisationGroup.organisationGroupMembers.some(
+        (groupMember) => groupMember.organisationMember.id === memberId,
+      ),
+    );
 
-    const organisationMemberToDelete = team.teamGroups
-      .flatMap((group) => group.organisationGroup.organisationGroupMembers)
-      .find((groupMember) => groupMember.organisationMember.id === memberId)?.organisationMember;
-
-    const isOrganisationOwnerRemovingSelfAsAdmin =
-      organisationMemberToDelete?.userId === user.id;
-
-    // Owners should not be able to remove team admins (e.g. the admin who created the team),
-    // but they should be able to remove themselves from the team.
-    if (
-      isOrganisationOwner &&
-      currentMemberToDeleteTeamRole === TeamMemberRole.ADMIN &&
-      !isOrganisationOwnerRemovingSelfAsAdmin
-    ) {
+    if (!internalTeamGroupToRemoveMemberFrom) {
       throw new AppError(AppErrorCode.UNAUTHORIZED, {
-        message: 'Organisation owner cannot remove team admins.',
+        message:
+          'This member cannot be removed directly because their access is granted via an organisation group. Remove them from the group (or detach the group from the team) instead.',
       });
     }
+
+    const organisationMemberToDelete =
+      internalTeamGroupToRemoveMemberFrom.organisationGroup.organisationGroupMembers.find(
+        (groupMember) => groupMember.organisationMember.id === memberId,
+      )?.organisationMember;
 
     // Check role permissions.
     if (!isTeamRoleWithinUserHierarchy(currentUserTeamRole, currentMemberToDeleteTeamRole)) {
@@ -118,28 +122,11 @@ export const deleteTeamMemberRoute = authenticatedProcedure
       });
     }
 
-    const teamGroupToRemoveMemberFrom = team.teamGroups[0];
-
-    // Sanity check.
-    // This means that the member was inherited (which means they should not be deleted directly)
-    // or it means that they are not part of any team groups relating to this?
-    if (team.teamGroups.length !== 1) {
-      console.error('Member must have 1 one internal team group. This should not happen.');
-
-      // Todo: Logging.
-    }
-
-    if (team.teamGroups.length === 0) {
-      throw new AppError(AppErrorCode.UNKNOWN_ERROR, {
-        message: 'Team has no internal team groups',
-      });
-    }
-
     await prisma.organisationGroupMember.delete({
       where: {
         organisationMemberId_groupId: {
           organisationMemberId: memberId,
-          groupId: teamGroupToRemoveMemberFrom.organisationGroupId,
+          groupId: internalTeamGroupToRemoveMemberFrom.organisationGroupId,
         },
       },
     });
