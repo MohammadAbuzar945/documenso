@@ -30,8 +30,6 @@ export const EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION = {
     schema: ZExportTeamAuditLogsCsvJobDefinitionSchema,
   },
   handler: async ({ payload, io }) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error Dynamic import resolved at runtime
     const handler = await import('./export-team-audit-logs-csv.handler');
 
     await handler.run({ payload, io });
