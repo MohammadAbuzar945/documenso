@@ -4,6 +4,7 @@ import { PDF_SIZE_A4_72PPI } from '@documenso/lib/constants/pdf';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { getEnvelopeById } from '@documenso/lib/server-only/envelope/get-envelope-by-id';
 import { generateAuditLogPdf } from '@documenso/lib/server-only/pdf/generate-audit-log-pdf';
+import { getTeamSettings } from '@documenso/lib/server-only/team/get-team-settings';
 
 import { authenticatedProcedure } from '../trpc';
 import {
@@ -40,6 +41,11 @@ export const downloadDocumentAuditLogsRoute = authenticatedProcedure
       });
     }
 
+    const teamSettings = await getTeamSettings({
+      userId: ctx.user.id,
+      teamId: envelope.teamId,
+    });
+
     const certificatePdf = await generateAuditLogPdf({
       envelope,
       recipients: envelope.recipients,
@@ -50,6 +56,8 @@ export const downloadDocumentAuditLogsRoute = authenticatedProcedure
         name: envelope.user.name || '',
       },
       envelopeItems: envelope.envelopeItems.map((item) => item.title),
+      includeQrCodeInCertificate:
+        envelope.includeQrCodeInCertificate ?? teamSettings.includeQrCodeInCertificate ?? true,
       pageWidth: PDF_SIZE_A4_72PPI.width,
       pageHeight: PDF_SIZE_A4_72PPI.height,
     });

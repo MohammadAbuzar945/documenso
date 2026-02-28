@@ -52,6 +52,11 @@ export const updateTeamMemberRoute = authenticatedProcedure
         ],
       },
       include: {
+        organisation: {
+          include: {
+            members: true,
+          },
+        },
         teamGroups: {
           where: {
             organisationGroup: {

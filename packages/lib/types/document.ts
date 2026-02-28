@@ -158,6 +158,7 @@ export const ZDocumentManySchema = LegacyDocumentSchema.pick({
   useLegacyFieldInsertion: true,
 }).extend({
   envelopeId: z.string(),
+  includeQrCodeInCertificate: z.boolean().nullable().optional(),
   internalVersion: z.number(),
 
   // Backwards compatibility.

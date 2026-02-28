@@ -104,6 +104,7 @@ const DOCUMENT_DISTRIBUTION_METHOD_SETTINGS_OPTIONS = Object.values(
 export const ZAddSettingsFormSchema = z.object({
   externalId: z.string().optional(),
   visibility: z.nativeEnum(DocumentVisibility).optional(),
+  includeQrCodeInCertificate: z.boolean().nullish(),
   globalAccessAuth: z
     .array(z.union([ZDocumentAccessAuthTypesSchema, z.literal('-1')]))
     .transform((val) => (val.length === 1 && val[0] === '-1' ? [] : val))
@@ -813,7 +814,7 @@ export const EnvelopeEditorSettingsDialog = ({
 
                             <FormControl>
                               <Select
-                                value={field.value === null ? '-1' : field.value.toString()}
+                                value={field.value == null ? '-1' : String(field.value)}
                                 onValueChange={(value) =>
                                   field.onChange(value === '-1' ? null : value === 'true')
                                 }

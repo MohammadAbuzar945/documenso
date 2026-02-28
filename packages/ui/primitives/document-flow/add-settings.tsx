@@ -317,7 +317,7 @@ export const AddSettingsFormPartial = ({
 
                   <FormControl>
                     <Select
-                      value={field.value === null ? '-1' : field.value.toString()}
+                      value={field.value == null ? '-1' : String(field.value)}
                       onValueChange={(value) => {
                         field.onChange(
                           value === '-1' ? null : value === 'true',
