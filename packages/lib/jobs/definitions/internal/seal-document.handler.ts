@@ -225,11 +225,15 @@ export const run = async ({
 
     // Only generate certificate/audit log if not rejected and not resealing (credits already checked above)
     if ((settings.includeSigningCertificate || settings.includeAuditLog) && !isRejected && !isResealing) {
+      const includeQrCodeInCertificate =
+        envelope.includeQrCodeInCertificate ?? settings.includeQrCodeInCertificate;
+
       const certificatePayload = {
         envelope,
         recipients: envelope.recipients, // Need to use the recipients from envelope which contains ALL recipients.
         fields,
         language: envelope.documentMeta.language,
+        includeQrCodeInCertificate,
         envelopeOwner: {
           email: envelope.user.email,
           name: envelope.user.name || '',

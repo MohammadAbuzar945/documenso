@@ -3,12 +3,13 @@ import { useMemo } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { OrganisationGroupType, OrganisationMemberRole } from '@prisma/client';
+import { OrganisationGroupType, OrganisationMemberRole, TeamMemberRole } from '@prisma/client';
 import { EditIcon, MoreHorizontal, Trash2Icon } from 'lucide-react';
 import { useSearchParams } from 'react-router';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { EXTENDED_TEAM_MEMBER_ROLE_MAP } from '@documenso/lib/constants/teams-translations';
 import { ZUrlSearchParamsSchema } from '@documenso/lib/types/search-params';
 import { extractInitials } from '@documenso/lib/utils/recipient-formatter';
@@ -43,6 +44,7 @@ export const TeamMembersTable = () => {
 
   const organisation = useCurrentOrganisation();
   const team = useCurrentTeam();
+  const { user } = useSession();
 
   const parsedSearchParams = ZUrlSearchParamsSchema.parse(Object.fromEntries(searchParams ?? []));
 
@@ -134,6 +136,9 @@ export const TeamMembersTable = () => {
               group.members.some((member) => member.id === row.original.id),
           );
 
+          const isSelfAdmin =
+            row.original.userId === user.id && row.original.teamRole === TeamMemberRole.ADMIN;
+
           return (
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -154,6 +159,7 @@ export const TeamMembersTable = () => {
                   trigger={
                     <DropdownMenuItem
                       disabled={
+                        isSelfAdmin ||
                         !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
                       }
                       onSelect={(e) => e.preventDefault()}
@@ -176,6 +182,7 @@ export const TeamMembersTable = () => {
                     <DropdownMenuItem
                       onSelect={(e) => e.preventDefault()}
                       disabled={
+                        isSelfAdmin ||
                         !isDirectTeamMember ||
                         !isTeamRoleWithinUserHierarchy(team.currentTeamRole, row.original.teamRole)
                       }

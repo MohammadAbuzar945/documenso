@@ -16,7 +16,7 @@ export const exportTeamAuditLogsCsvRoute = authenticatedProcedure
   .input(ZExportTeamAuditLogsCsvRequestSchema)
   .output(ZExportTeamAuditLogsCsvResponseSchema)
   .mutation(async ({ input, ctx }) => {
-    const { teamId } = input;
+    const { teamId, dateRange } = input;
 
     ctx.logger.info({
       input: {
@@ -50,6 +50,7 @@ export const exportTeamAuditLogsCsvRoute = authenticatedProcedure
       payload: {
         jobId,
         teamId,
+        dateRange,
         requestedByUserId: ctx.user.id,
         requestedByUserEmail: ctx.user.email,
         requestedByUserName: ctx.user.name,

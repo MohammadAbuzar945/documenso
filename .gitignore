@@ -71,3 +71,4 @@ scripts/output*
 certs
 
 .cursor/
+analysis

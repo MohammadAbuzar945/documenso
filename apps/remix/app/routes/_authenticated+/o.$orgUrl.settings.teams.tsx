@@ -54,6 +54,10 @@ export default function OrganisationSettingsTeamsPage() {
         {canCreateTeam && <TeamCreateDialog />}
       </SettingsHeader>
 
+      <p className="mb-2 text-sm text-muted-foreground">
+        {t`Total credits remaining for this organisation: ${organisation.credits ?? 0}`}
+      </p>
+
       <Input
         defaultValue={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}

@@ -136,6 +136,24 @@ export const updateTeamMemberRoute = authenticatedProcedure
       },
     });
 
+    // Prevent admins from changing their own role.
+    const isUpdatingSelfAsAdmin =
+      currentMemberToUpdateTeamRole === TeamMemberRole.ADMIN &&
+      team.organisation.members.some((organisationMember) => organisationMember.id === memberId) &&
+      team.organisation.members.some(
+        (organisationMember) => organisationMember.userId === userId,
+      ) &&
+      memberId ===
+        team.organisation.members.find(
+          (organisationMember) => organisationMember.userId === userId,
+        )?.id;
+
+    if (isUpdatingSelfAsAdmin) {
+      throw new AppError(AppErrorCode.UNAUTHORIZED, {
+        message: 'Admins cannot change their own role.',
+      });
+    }
+
     // Check role permissions.
     if (!isTeamRoleWithinUserHierarchy(currentUserTeamRole, currentMemberToUpdateTeamRole)) {
       throw new AppError(AppErrorCode.UNAUTHORIZED, {

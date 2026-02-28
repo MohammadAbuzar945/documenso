@@ -150,7 +150,7 @@ export default function TeamsSettingsLayout() {
             <NavLink
               to={route.path}
               className={cn('group w-full justify-start', route.isSubNav && 'pl-8')}
-              key={route.path}
+              key={`${route.path}-${route.label}`}
             >
               <Button
                 variant="ghost"

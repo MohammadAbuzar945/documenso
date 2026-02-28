@@ -34,6 +34,7 @@ export const ZDocumentSchema = LegacyDocumentSchema.pick({
   folderId: true,
 }).extend({
   envelopeId: z.string(),
+  includeQrCodeInCertificate: z.boolean().nullable().optional(),
   internalVersion: z.number(),
 
   // Which "Template" the document was created from.
@@ -120,6 +121,7 @@ export const ZDocumentLiteSchema = LegacyDocumentSchema.pick({
   useLegacyFieldInsertion: true,
 }).extend({
   envelopeId: z.string(),
+  includeQrCodeInCertificate: z.boolean().nullable().optional(),
   internalVersion: z.number(),
 
   // Backwards compatibility.

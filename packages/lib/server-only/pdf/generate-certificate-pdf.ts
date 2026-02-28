@@ -28,12 +28,22 @@ export type GenerateCertificatePdfOptions = {
     signature?: Pick<Signature, 'signatureImageAsBase64' | 'typedSignature'> | null;
   })[];
   language?: string;
+  includeQrCodeInCertificate: boolean;
   pageWidth: number;
   pageHeight: number;
 };
 
 export const generateCertificatePdf = async (options: GenerateCertificatePdfOptions) => {
-  const { envelope, envelopeOwner, recipients, fields, language, pageWidth, pageHeight } = options;
+  const {
+    envelope,
+    envelopeOwner,
+    recipients,
+    fields,
+    language,
+    includeQrCodeInCertificate,
+    pageWidth,
+    pageHeight,
+  } = options;
 
   const documentLanguage = ZSupportedLanguageCodeSchema.parse(language);
 
@@ -136,6 +146,7 @@ export const generateCertificatePdf = async (options: GenerateCertificatePdfOpti
     }),
     envelopeOwner,
     qrToken: envelope.qrToken,
+    includeQrCodeInCertificate,
     hidePoweredBy: organisationClaim.flags.hidePoweredBy ?? false,
     pageWidth,
     pageHeight,

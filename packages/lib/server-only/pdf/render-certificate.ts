@@ -50,6 +50,7 @@ export type CertificateRecipient = {
 type GenerateCertificateOptions = {
   recipients: CertificateRecipient[];
   qrToken: string | null;
+  includeQrCodeInCertificate: boolean;
   hidePoweredBy: boolean;
   i18n: I18n;
   envelopeOwner: {
@@ -543,20 +544,22 @@ const renderRow = (options: RenderRowOptions) => {
 
 const renderBranding = async ({
   qrToken,
+  includeQrCodeInCertificate,
   i18n,
   availableWidth,
 }: {
   qrToken: string | null;
+  includeQrCodeInCertificate: boolean;
   i18n: I18n;
   availableWidth: number;
 }) => {
   const branding = new Konva.Group();
 
-  const qrSize = qrToken ? 72 : 0;
+  const qrSize = includeQrCodeInCertificate && qrToken ? 72 : 0;
   const textGap = 8;
 
-  // QR code at top-right
-  if (qrToken) {
+  // QR code at top-right (only when setting is enabled)
+  if (includeQrCodeInCertificate && qrToken) {
     const qrSvg = renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${qrToken}`, {
       ecc: 'Q',
     });
@@ -713,6 +716,7 @@ const renderTables = (options: RenderTablesOptions) => {
 export async function renderCertificate({
   recipients,
   qrToken,
+  includeQrCodeInCertificate,
   hidePoweredBy,
   i18n,
   envelopeOwner,
@@ -754,7 +758,12 @@ export async function renderCertificate({
 
   const tables = renderTables({ groupedRows, columnWidths, i18n });
 
-  const brandingGroup = await renderBranding({ qrToken, i18n, availableWidth: tableWidth });
+  const brandingGroup = await renderBranding({
+    qrToken,
+    includeQrCodeInCertificate,
+    i18n,
+    availableWidth: tableWidth,
+  });
   const brandingRect = brandingGroup.getClientRect();
   const brandingTopPadding = 24;
 

@@ -172,6 +172,7 @@ export const DocumentEditForm = ({
         title: data.title,
         externalId: data.externalId || null,
         visibility: data.visibility,
+        includeQrCodeInCertificate: data.includeQrCodeInCertificate,
         globalAccessAuth: parsedGlobalAccessAuth.success ? parsedGlobalAccessAuth.data : [],
         globalActionAuth: data.globalActionAuth ?? [],
       },

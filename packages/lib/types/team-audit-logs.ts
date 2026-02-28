@@ -13,6 +13,7 @@ export const ZTeamAuditLogTypeSchema = z.enum([
   'ORGANISATION_MEMBER_INVITED',
   'ORGANISATION_MEMBER_INVITE_ACCEPTED',
   'ORGANISATION_MEMBER_INVITE_DECLINED',
+  'TEAM_VISIBILITY_UPDATED',
 ]);
 
 export const TEAM_AUDIT_LOG_TYPE = ZTeamAuditLogTypeSchema.Enum;
@@ -30,6 +31,14 @@ export const ZTeamAuditLogEventTeamCreatedSchema = z.object({
     organisationId: z.string(),
     isPrivate: z.boolean(),
     createdByUserId: z.number().nullable().optional(),
+  }),
+});
+
+export const ZTeamAuditLogEventTeamVisibilityUpdatedSchema = z.object({
+  type: z.literal(TEAM_AUDIT_LOG_TYPE.TEAM_VISIBILITY_UPDATED),
+  data: z.object({
+    previousIsPrivate: z.boolean(),
+    newIsPrivate: z.boolean(),
   }),
 });
 
@@ -140,6 +149,7 @@ export const ZTeamAuditLogSchema = ZTeamAuditLogBaseSchema.and(
     ZTeamAuditLogEventOrganisationMemberInvitedSchema,
     ZTeamAuditLogEventOrganisationMemberInviteAcceptedSchema,
     ZTeamAuditLogEventOrganisationMemberInviteDeclinedSchema,
+    ZTeamAuditLogEventTeamVisibilityUpdatedSchema,
   ]),
 );
 

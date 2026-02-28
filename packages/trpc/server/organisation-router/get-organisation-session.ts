@@ -8,6 +8,7 @@ import {
   getHighestTeamRoleInGroup,
 } from '@documenso/lib/utils/teams';
 import { prisma } from '@documenso/prisma';
+import { getOrganisationCredits } from '@documenso/ee/server-only/limits/user-credits';
 
 import { authenticatedProcedure } from '../trpc';
 import type { TGetOrganisationSessionResponse } from './get-organisation-session.types';
@@ -74,9 +75,31 @@ export const getOrganisationSession = async ({
     },
   });
 
+  const organisationIds = organisations.map((organisation) => organisation.id);
+
   const subscriptionsByOrganisationId = await getCurrentSubscriptionsByOrganisationIds({
-    organisationIds: organisations.map((organisation) => organisation.id),
+    organisationIds,
   });
+
+  let creditsByOrganisationId: Record<string, number> = {};
+
+  try {
+    const creditsEntries = await Promise.all(
+      organisationIds.map(async (organisationId) => {
+        try {
+          const credits = await getOrganisationCredits(organisationId);
+
+          return [organisationId, credits] as const;
+        } catch {
+          return [organisationId, 0] as const;
+        }
+      }),
+    );
+
+    creditsByOrganisationId = Object.fromEntries(creditsEntries);
+  } catch {
+    creditsByOrganisationId = {};
+  }
 
   return organisations.map((organisation) => {
     const { organisationGlobalSettings } = organisation;
@@ -84,6 +107,7 @@ export const getOrganisationSession = async ({
     return {
       ...organisation,
       subscription: subscriptionsByOrganisationId[organisation.id] ?? null,
+      credits: creditsByOrganisationId[organisation.id] ?? 0,
       teams: organisation.teams.map((team) => {
         const derivedSettings = extractDerivedTeamSettings(
           organisationGlobalSettings,

@@ -23,6 +23,7 @@ export const ZUpdateTeamSettingsRequestSchema = z.object({
     documentDateFormat: ZDocumentMetaDateFormatSchema.nullish(),
     includeSenderDetails: z.boolean().nullish(),
     includeSigningCertificate: z.boolean().nullish(),
+    includeQrCodeInCertificate: z.boolean().nullish(),
     includeAuditLog: z.boolean().nullish(),
     typedSignatureEnabled: z.boolean().nullish(),
     uploadSignatureEnabled: z.boolean().nullish(),

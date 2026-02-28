@@ -5,11 +5,31 @@ import { DownloadIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { downloadFile } from '@documenso/lib/client-only/download-file';
+import { TEAM_AUDIT_LOG_EXPORT_DATE_RANGES } from '@documenso/lib/jobs/definitions/internal/export-team-audit-logs-csv';
+import type { TTeamAuditLogExportDateRange } from '@documenso/lib/jobs/definitions/internal/export-team-audit-logs-csv';
 import { base64 } from '@documenso/lib/universal/base64';
 import { trpc } from '@documenso/trpc/react';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@documenso/ui/primitives/dialog';
+import { Label } from '@documenso/ui/primitives/label';
+import { RadioGroup, RadioGroupItem } from '@documenso/ui/primitives/radio-group';
 import { useToast } from '@documenso/ui/primitives/use-toast';
+
+const DATE_RANGE_LABELS: Record<TTeamAuditLogExportDateRange, string> = {
+  '1_WEEK': '1 week',
+  '30_DAYS': '30 days',
+  '90_DAYS': '90 days',
+  ALL_TIME: 'All time (max 1 year)',
+};
 
 export type TeamAuditLogDownloadButtonProps = {
   className?: string;
@@ -23,6 +43,8 @@ export const TeamAuditLogDownloadButton = ({
   const { toast } = useToast();
   const { _ } = useLingui();
 
+  const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<TTeamAuditLogExportDateRange>('30_DAYS');
   const [jobId, setJobId] = useState<string | null>(null);
   const downloadTriggeredRef = useRef(false);
 
@@ -42,10 +64,11 @@ export const TeamAuditLogDownloadButton = ({
 
   const onExportAuditLogsClick = async () => {
     try {
-      const result = await exportTeamAuditLogsCsv({ teamId });
+      const result = await exportTeamAuditLogsCsv({ teamId, dateRange });
 
       downloadTriggeredRef.current = false;
       setJobId(result.jobId);
+      setOpen(false);
 
       toast({
         title: _(msg`Export started`),
@@ -135,14 +158,46 @@ export const TeamAuditLogDownloadButton = ({
   const isPending = isExportPending || Boolean(jobId);
 
   return (
-    <Button
-      className={cn('w-full sm:w-auto', className)}
-      loading={isPending}
-      onClick={() => void onExportAuditLogsClick()}
-    >
-      {!isPending && <DownloadIcon className="mr-1.5 h-4 w-4" />}
-      <Trans>Export Team Audit Logs (CSV)</Trans>
-    </Button>
+    <Dialog open={open} onOpenChange={(value) => !isPending && setOpen(value)}>
+      <DialogTrigger asChild>
+        <Button className={cn('w-full sm:w-auto', className)} loading={isPending} disabled={isPending}>
+          {!isPending && <DownloadIcon className="mr-1.5 h-4 w-4" />}
+          <Trans>Export Team Audit Logs (CSV)</Trans>
+        </Button>
+      </DialogTrigger>
+      <DialogContent position="center">
+        <DialogHeader>
+          <DialogTitle>
+            <Trans>Export audit logs</Trans>
+          </DialogTitle>
+          <DialogDescription>
+            <Trans>Choose the time range for the audit log export.</Trans>
+          </DialogDescription>
+        </DialogHeader>
+        <RadioGroup
+          value={dateRange}
+          onValueChange={(value) => setDateRange(value as TTeamAuditLogExportDateRange)}
+          className="grid gap-3 py-2"
+        >
+          {TEAM_AUDIT_LOG_EXPORT_DATE_RANGES.map((range) => (
+            <div key={range} className="flex items-center space-x-2">
+              <RadioGroupItem value={range} id={`date-range-${range}`} />
+              <Label htmlFor={`date-range-${range}`} className="cursor-pointer font-normal">
+                {DATE_RANGE_LABELS[range]}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+        <DialogFooter>
+          <Button variant="secondary" onClick={() => setOpen(false)}>
+            <Trans>Cancel</Trans>
+          </Button>
+          <Button onClick={() => void onExportAuditLogsClick()} loading={isExportPending}>
+            <Trans>Export</Trans>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

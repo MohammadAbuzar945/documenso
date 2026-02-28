@@ -234,6 +234,30 @@ export const createTeam = async ({
           ),
         );
 
+        // Prepare audit logs for team creation and initial members.
+        const auditLogs: ReturnType<typeof createTeamAuditLogData>[] = [];
+
+        const teamCreatedLog = createTeamAuditLogData({
+          teamId: team.id,
+          type: TEAM_AUDIT_LOG_TYPE.TEAM_CREATED,
+          data: {
+            teamId: team.id,
+            teamName: team.name,
+            organisationId,
+            isPrivate,
+            createdByUserId: userId,
+          },
+          user: {
+            id: userId,
+          },
+          metadata,
+        });
+
+        auditLogs.push({
+          ...teamCreatedLog,
+          createdAt: team.createdAt,
+        });
+
         // For private teams, add only the specified admin as a member and do not
         // automatically attach any organisation groups or additional members.
         if (isPrivate) {
@@ -252,6 +276,7 @@ export const createTeam = async ({
               user: {
                 select: {
                   id: true,
+                  email: true,
                 },
               },
             },
@@ -286,25 +311,37 @@ export const createTeam = async ({
               groupId: adminTeamGroup.organisationGroupId,
             },
           });
+
+          // Log that the initial admin was added to the private team.
+          if (organisationMember.user.email) {
+            const initialAdminLog = createTeamAuditLogData({
+              teamId: team.id,
+              type: TEAM_AUDIT_LOG_TYPE.TEAM_MEMBER_ADDED,
+              data: {
+                memberUserId: organisationMember.user.id,
+                memberEmail: organisationMember.user.email,
+                teamRole: TeamMemberRole.ADMIN,
+                source: 'MANUAL',
+              },
+              user: {
+                id: userId,
+              },
+              metadata,
+            });
+
+            auditLogs.push({
+              ...initialAdminLog,
+              // Ensure this appears after the TEAM_CREATED log when sorted by time.
+              createdAt: new Date(team.createdAt.getTime() + 1000),
+            });
+          }
         }
 
-        await (tx as any).teamAuditLog.create({
-          data: createTeamAuditLogData({
-            teamId: team.id,
-            type: TEAM_AUDIT_LOG_TYPE.TEAM_CREATED,
-            data: {
-              teamId: team.id,
-              teamName: team.name,
-              organisationId,
-              isPrivate,
-              createdByUserId: userId,
-            },
-            user: {
-              id: userId,
-            },
-            metadata,
-          }),
-        });
+        if (auditLogs.length > 0) {
+          await (tx as any).teamAuditLog.createMany({
+            data: auditLogs,
+          });
+        }
       },
       {
         timeout: 7500,

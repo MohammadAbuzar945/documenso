@@ -19,6 +19,7 @@ import { unsafeGetEntireEnvelope } from '@documenso/lib/server-only/admin/get-en
 import { decryptSecondaryData } from '@documenso/lib/server-only/crypto/decrypt';
 import { getDocumentCertificateAuditLogs } from '@documenso/lib/server-only/document/get-document-certificate-audit-logs';
 import { getOrganisationClaimByTeamId } from '@documenso/lib/server-only/organisation/get-organisation-claims';
+import { getTeamSettings } from '@documenso/lib/server-only/team/get-team-settings';
 import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import { extractDocumentAuthMethods } from '@documenso/lib/utils/document-auth';
 import { mapSecondaryIdToDocumentId } from '@documenso/lib/utils/envelope';
@@ -67,15 +68,18 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect('/');
   }
 
-  const organisationClaim = await getOrganisationClaimByTeamId({ teamId: envelope.teamId });
+  const [organisationClaim, teamSettings, auditLogs, messages] = await Promise.all([
+    getOrganisationClaimByTeamId({ teamId: envelope.teamId }),
+    getTeamSettings({ teamId: envelope.teamId }),
+    getDocumentCertificateAuditLogs({
+      envelopeId: envelope.id,
+    }),
+    getTranslations(ZSupportedLanguageCodeSchema.parse(envelope.documentMeta?.language)),
+  ]);
 
   const documentLanguage = ZSupportedLanguageCodeSchema.parse(envelope.documentMeta?.language);
-
-  const auditLogs = await getDocumentCertificateAuditLogs({
-    envelopeId: envelope.id,
-  });
-
-  const messages = await getTranslations(documentLanguage);
+  const includeQrCodeInCertificate =
+    envelope.includeQrCodeInCertificate ?? teamSettings.includeQrCodeInCertificate;
 
   return {
     document: {
@@ -95,6 +99,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       documentMeta: envelope.documentMeta,
     },
     hidePoweredBy: organisationClaim.flags.hidePoweredBy,
+    includeQrCodeInCertificate,
     documentLanguage,
     auditLogs,
     messages,
@@ -111,7 +116,14 @@ export async function loader({ request }: Route.LoaderArgs) {
  * Update: Maybe <Trans> tags work now after RR7 migration.
  */
 export default function SigningCertificate({ loaderData }: Route.ComponentProps) {
-  const { document, documentLanguage, hidePoweredBy, auditLogs, messages } = loaderData;
+  const {
+    document,
+    documentLanguage,
+    hidePoweredBy,
+    includeQrCodeInCertificate,
+    auditLogs,
+    messages,
+  } = loaderData;
 
   const { i18n, _ } = useLingui();
 
@@ -390,15 +402,17 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
           <div className="mb-4 border-t border-gray-200" />
 
           <div className="flex flex-col items-end gap-4">
-            <div
-              className="h-24 w-24"
-              dangerouslySetInnerHTML={{
-                __html: renderSVG(
-                  `${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`,
-                  { ecc: 'Q' },
-                ),
-              }}
-            />
+            {includeQrCodeInCertificate && document.qrToken && (
+              <div
+                className="h-24 w-24"
+                dangerouslySetInnerHTML={{
+                  __html: renderSVG(
+                    `${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`,
+                    { ecc: 'Q' },
+                  ),
+                }}
+              />
+            )}
 
             <div className="max-w-md space-y-2 text-right">
               <h3 className="text-sm font-medium text-[#444] print:text-xs">

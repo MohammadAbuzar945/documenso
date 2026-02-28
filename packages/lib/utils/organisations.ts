@@ -121,6 +121,7 @@ export const generateDefaultOrganisationSettings = (): Omit<
 
     includeSenderDetails: true,
     includeSigningCertificate: true,
+    includeQrCodeInCertificate: true,
     includeAuditLog: false,
 
     typedSignatureEnabled: true,

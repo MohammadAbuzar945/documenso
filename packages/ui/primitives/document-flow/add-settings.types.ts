@@ -23,6 +23,7 @@ export const ZAddSettingsFormSchema = z.object({
     .min(1, { message: msg`Title cannot be empty`.id }),
   externalId: z.string().optional(),
   visibility: z.nativeEnum(DocumentVisibility).optional(),
+  includeQrCodeInCertificate: z.boolean().nullish(),
   globalAccessAuth: z
     .array(z.union([ZDocumentAccessAuthTypesSchema, z.literal('-1')]))
     .transform((val) => (val.length === 1 && val[0] === '-1' ? [] : val))

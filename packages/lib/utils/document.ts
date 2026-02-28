@@ -76,6 +76,7 @@ export const mapEnvelopeToDocumentLite = (envelope: Envelope): TDocumentLite => 
   return {
     id: documentId, // Use legacy ID.
     envelopeId: envelope.id,
+    includeQrCodeInCertificate: envelope.includeQrCodeInCertificate ?? undefined,
     internalVersion: envelope.internalVersion,
     visibility: envelope.visibility,
     status: envelope.status,
@@ -116,6 +117,7 @@ export const mapEnvelopesToDocumentMany = (
   return {
     id: legacyDocumentId, // Use legacy ID.
     envelopeId: envelope.id,
+    includeQrCodeInCertificate: envelope.includeQrCodeInCertificate ?? undefined,
     internalVersion: envelope.internalVersion,
     visibility: envelope.visibility,
     status: envelope.status,

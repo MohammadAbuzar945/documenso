@@ -19,7 +19,7 @@ export const updateTeamRoute = authenticatedProcedure
       },
     });
 
-    if (name || url) {
+    if (name || url || isPrivate !== undefined) {
       await updateTeam({
         userId: ctx.user.id,
         teamId,
@@ -28,6 +28,7 @@ export const updateTeamRoute = authenticatedProcedure
           url,
           isPrivate,
         },
+        metadata: ctx.metadata,
       });
     }
 

@@ -22,6 +22,7 @@ import {
 } from '@documenso/ui/primitives/form/form';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 
 export type UpdateTeamDialogProps = {
   teamId: number;
@@ -114,6 +115,20 @@ export const TeamUpdateForm = ({
         return;
       }
 
+      if (error.code === AppErrorCode.INVALID_BODY) {
+        toast({
+          title: _(msg`Unable to update team`),
+          description:
+            error.message ??
+            _(
+              msg`We were unable to update your team with the requested changes. Please review your settings and try again.`,
+            ),
+          variant: 'destructive',
+        });
+
+        return;
+      }
+
       toast({
         title: _(msg`An unknown error occurred`),
         description: _(
@@ -123,6 +138,9 @@ export const TeamUpdateForm = ({
       });
     }
   };
+
+  const organisationSuffix = organisationId.slice(-5);
+  const hasOrganisationScopedUrl = teamUrl.startsWith(`${organisationSuffix}-`);
 
   return (
     <Form {...form}>
@@ -158,13 +176,41 @@ export const TeamUpdateForm = ({
                 {!form.formState.errors.url && (
                   <span className="text-foreground/50 text-xs font-normal">
                     {field.value ? (
-                      `${NEXT_PUBLIC_WEBAPP_URL()}/t/${field.value}`
+                      `${NEXT_PUBLIC_WEBAPP_URL()}/t/${
+                        hasOrganisationScopedUrl ? `${organisationSuffix}-${field.value}` : field.value
+                      }`
                     ) : (
                       <Trans>A unique URL to identify your team</Trans>
                     )}
                   </span>
                 )}
 
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="isPrivate"
+            render={({ field }) => (
+              <FormItem className="mt-4 flex items-center space-x-2">
+                <FormControl>
+                  <div className="flex items-center">
+                    <Checkbox
+                      id="is-private"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+
+                    <label
+                      className="text-muted-foreground ml-2 text-sm"
+                      htmlFor="is-private"
+                    >
+                      <Trans>Private Team - only members can see documents</Trans>
+                    </label>
+                  </div>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

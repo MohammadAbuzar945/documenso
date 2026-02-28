@@ -114,6 +114,7 @@ export type CreateEnvelopeOptions = {
     publicDescription?: string;
 
     visibility?: DocumentVisibility;
+    includeQrCodeInCertificate?: boolean | null;
     globalAccessAuth?: TDocumentAccessAuthTypes[];
     globalActionAuth?: TDocumentActionAuthTypes[];
     recipients?: CreateEnvelopeRecipientOptions[];
@@ -153,6 +154,7 @@ export const createEnvelope = async ({
     publicTitle,
     publicDescription,
     visibility: visibilityOverride,
+    includeQrCodeInCertificate,
     delegatedDocumentOwner,
   } = data;
 
@@ -372,6 +374,7 @@ export const createEnvelope = async ({
         userId: envelopeOwnerId,
         teamId,
         authOptions,
+        includeQrCodeInCertificate: includeQrCodeInCertificate ?? null,
         visibility,
         folderId,
         formValues,

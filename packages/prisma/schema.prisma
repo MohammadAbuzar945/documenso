@@ -406,9 +406,10 @@ model Envelope {
   auditLogs     DocumentAuditLog[]
 
   // Envelope settings
-  authOptions Json? /// [DocumentAuthOptions] @zod.custom.use(ZDocumentAuthOptionsSchema)
-  formValues  Json? /// [DocumentFormValues] @zod.custom.use(ZDocumentFormValuesSchema)
-  visibility  DocumentVisibility @default(EVERYONE)
+  authOptions               Json?   /// [DocumentAuthOptions] @zod.custom.use(ZDocumentAuthOptionsSchema)
+  includeQrCodeInCertificate Boolean? /// When null, inherit from team settings.
+  formValues                 Json?   /// [DocumentFormValues] @zod.custom.use(ZDocumentFormValuesSchema)
+  visibility                 DocumentVisibility @default(EVERYONE)
 
   // Template specific fields.
   templateType      TemplateType        @default(PRIVATE)
@@ -841,6 +842,7 @@ model OrganisationGlobalSettings {
   documentLanguage          String             @default("en")
   includeSenderDetails      Boolean            @default(true)
   includeSigningCertificate Boolean            @default(true)
+  includeQrCodeInCertificate Boolean           @default(true)
   includeAuditLog           Boolean            @default(false)
   documentTimezone          String? // Nullable to allow using local timezones if not set.
   documentDateFormat        String             @default("yyyy-MM-dd hh:mm a")
@@ -881,6 +883,7 @@ model TeamGlobalSettings {
 
   includeSenderDetails      Boolean?
   includeSigningCertificate Boolean?
+  includeQrCodeInCertificate Boolean?
   includeAuditLog           Boolean?
 
   typedSignatureEnabled  Boolean?

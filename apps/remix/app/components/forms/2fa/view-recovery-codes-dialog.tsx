@@ -74,7 +74,7 @@ export const ViewRecoveryCodesDialog = () => {
       });
 
       downloadFile({
-        filename: 'documenso-2FA-recovery-codes.txt',
+        filename: 'nomia-2FA-recovery-codes.txt',
         data: blob,
       });
     }

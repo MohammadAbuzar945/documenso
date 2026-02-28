@@ -115,6 +115,16 @@ export const deleteTeamMemberRoute = authenticatedProcedure
         (groupMember) => groupMember.organisationMember.id === memberId,
       )?.organisationMember;
 
+    // Prevent admins from removing themselves from the team.
+    if (
+      organisationMemberToDelete?.userId === user.id &&
+      currentMemberToDeleteTeamRole === TeamMemberRole.ADMIN
+    ) {
+      throw new AppError(AppErrorCode.UNAUTHORIZED, {
+        message: 'Admins cannot remove themselves from the team.',
+      });
+    }
+
     // Check role permissions.
     if (!isTeamRoleWithinUserHierarchy(currentUserTeamRole, currentMemberToDeleteTeamRole)) {
       throw new AppError(AppErrorCode.UNAUTHORIZED, {

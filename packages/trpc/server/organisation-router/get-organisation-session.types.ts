@@ -25,6 +25,7 @@ export const ZGetOrganisationSessionResponseSchema = ZOrganisationSchema.extend(
   ),
   subscription: SubscriptionSchema.nullable(),
   currentOrganisationRole: z.nativeEnum(OrganisationMemberRole),
+  credits: z.number().optional().default(0),
 }).array();
 
 export type TGetOrganisationSessionResponse = z.infer<typeof ZGetOrganisationSessionResponseSchema>;

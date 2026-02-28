@@ -199,6 +199,7 @@ export const EnvelopeEditorSettingsDialog = ({
     return {
       externalId: envelope.externalId || '',
       visibility: envelope.visibility || '',
+      includeQrCodeInCertificate: envelope.includeQrCodeInCertificate ?? null,
       globalAccessAuth: documentAuthOption?.globalAccessAuth || [],
       globalActionAuth: documentAuthOption?.globalActionAuth || [],
       meta: {
@@ -264,6 +265,7 @@ export const EnvelopeEditorSettingsDialog = ({
         data: {
           externalId: data.externalId || null,
           visibility: data.visibility,
+          includeQrCodeInCertificate: data.includeQrCodeInCertificate,
           globalAccessAuth: parsedGlobalAccessAuth.success ? parsedGlobalAccessAuth.data : [],
           globalActionAuth: data.globalActionAuth ?? [],
         },
@@ -795,6 +797,43 @@ export const EnvelopeEditorSettingsDialog = ({
                                 disabled={field.disabled}
                                 onValueChange={field.onChange}
                               />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="includeQrCodeInCertificate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              <Trans>Include QR code in certificate</Trans>
+                            </FormLabel>
+
+                            <FormControl>
+                              <Select
+                                value={field.value === null ? '-1' : field.value.toString()}
+                                onValueChange={(value) =>
+                                  field.onChange(value === '-1' ? null : value === 'true')
+                                }
+                              >
+                                <SelectTrigger className="bg-background text-muted-foreground">
+                                  <SelectValue placeholder={t`Inherit from team`} />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                  <SelectItem value="true">
+                                    <Trans>Yes</Trans>
+                                  </SelectItem>
+                                  <SelectItem value="false">
+                                    <Trans>No</Trans>
+                                  </SelectItem>
+                                  <SelectItem value="-1">
+                                    <Trans>Inherit from team</Trans>
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                           </FormItem>
                         )}

@@ -11,7 +11,28 @@ import { getPresignGetUrl } from '../../../universal/upload/server-actions';
 import { env } from '../../../utils/env';
 import { jobs } from '../../client';
 import type { JobRunIO } from '../../client/_internal/job';
-import type { TExportTeamAuditLogsCsvJobDefinition } from './export-team-audit-logs-csv';
+import type {
+  TExportTeamAuditLogsCsvJobDefinition,
+  TTeamAuditLogExportDateRange,
+} from './export-team-audit-logs-csv';
+
+const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+
+function getFromDateForDateRange(dateRange: TTeamAuditLogExportDateRange): Date {
+  const now = Date.now();
+  switch (dateRange) {
+    case '1_WEEK':
+      return new Date(now - 7 * 24 * 60 * 60 * 1000);
+    case '30_DAYS':
+      return new Date(now - 30 * 24 * 60 * 60 * 1000);
+    case '90_DAYS':
+      return new Date(now - 90 * 24 * 60 * 60 * 1000);
+    case 'ALL_TIME':
+      return new Date(now - ONE_YEAR_MS);
+    default:
+      return new Date(now - ONE_YEAR_MS);
+  }
+}
 
 type ExportResult = {
   filename: string;
@@ -53,7 +74,16 @@ export const run = async ({
   payload: TExportTeamAuditLogsCsvJobDefinition;
   io: JobRunIO;
 }) => {
-  const { jobId, teamId, requestedByUserId, requestedByUserEmail, requestedByUserName } = payload;
+  const {
+    jobId,
+    teamId,
+    dateRange,
+    requestedByUserId,
+    requestedByUserEmail,
+    requestedByUserName,
+  } = payload;
+
+  const fromDate = getFromDateForDateRange(dateRange);
 
   try {
     await prisma.backgroundJob
@@ -109,6 +139,7 @@ export const run = async ({
       const batch = (await (prisma as any).teamAuditLog.findMany({
         where: {
           teamId,
+          createdAt: { gte: fromDate },
         },
         orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
         take: 1000,

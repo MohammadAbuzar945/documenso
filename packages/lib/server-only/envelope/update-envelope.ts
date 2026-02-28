@@ -26,6 +26,7 @@ export type UpdateEnvelopeOptions = {
     folderId?: string | null;
     externalId?: string | null;
     visibility?: DocumentVisibility;
+    includeQrCodeInCertificate?: boolean | null;
     globalAccessAuth?: TDocumentAccessAuthTypes[];
     globalActionAuth?: TDocumentActionAuthTypes[];
     publicTitle?: string;
@@ -318,6 +319,7 @@ export const updateEnvelope = async ({
         title: data.title,
         externalId: data.externalId,
         visibility: data.visibility,
+        includeQrCodeInCertificate: data.includeQrCodeInCertificate,
         templateType: data.templateType,
         publicDescription: data.publicDescription,
         publicTitle: data.publicTitle,

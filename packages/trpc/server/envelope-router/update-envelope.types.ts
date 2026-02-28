@@ -30,6 +30,7 @@ export const ZUpdateEnvelopeRequestSchema = z.object({
       title: ZDocumentTitleSchema.optional(),
       externalId: ZDocumentExternalIdSchema.nullish(),
       visibility: ZDocumentVisibilitySchema.optional(),
+      includeQrCodeInCertificate: z.boolean().nullish(),
       globalAccessAuth: z.array(ZDocumentAccessAuthTypesSchema).optional(),
       globalActionAuth: z.array(ZDocumentActionAuthTypesSchema).optional(),
       folderId: z.string().nullish(),
