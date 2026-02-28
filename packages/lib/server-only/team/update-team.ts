@@ -7,6 +7,7 @@ import { prisma } from '@documenso/prisma';
 
 import { TEAM_AUDIT_LOG_TYPE } from '../../types/team-audit-logs';
 import type { ApiRequestMetadata } from '../../universal/extract-request-metadata';
+import { generateDatabaseId } from '../../universal/id';
 import { createTeamAuditLogData } from '../../utils/team-audit-logs';
 import { getMemberRoles } from './get-member-roles';
 import { buildTeamWhereQuery } from '../../utils/teams';
@@ -101,16 +102,65 @@ export const updateTeam = async ({
           });
         }
 
-        const memberAccessTeamGroup = existingTeam.teamGroups.find(
-          (group) =>
-            group.organisationGroup.type === OrganisationGroupType.INTERNAL_ORGANISATION &&
-            group.organisationGroup.organisationRole === OrganisationMemberRole.MEMBER,
+        // Migrate users from INTERNAL_ORGANISATION groups to INTERNAL_TEAM groups,
+        // then remove all org-based access so only explicit team members retain access.
+        const internalOrgTeamGroups = existingTeam.teamGroups.filter(
+          (tg) =>
+            tg.organisationGroup.type === OrganisationGroupType.INTERNAL_ORGANISATION,
         );
 
-        if (memberAccessTeamGroup) {
-          await prisma.teamGroup.delete({
+        if (internalOrgTeamGroups.length > 0) {
+          const internalTeamGroups = existingTeam.teamGroups.filter(
+            (tg) =>
+              tg.organisationGroup.type === OrganisationGroupType.INTERNAL_TEAM,
+          );
+
+          const adminInternalGroup = internalTeamGroups.find(
+            (g) => g.teamRole === TeamMemberRole.ADMIN,
+          );
+          const managerInternalGroup = internalTeamGroups.find(
+            (g) => g.teamRole === TeamMemberRole.MANAGER,
+          );
+          const memberInternalGroup = internalTeamGroups.find(
+            (g) => g.teamRole === TeamMemberRole.MEMBER,
+          );
+
+          if (adminInternalGroup && managerInternalGroup && memberInternalGroup) {
+            const membersToMigrate: { organisationMemberId: string; teamRole: TeamMemberRole }[] = [];
+
+            for (const tg of internalOrgTeamGroups) {
+              const teamRole = tg.teamRole;
+              for (const ogm of tg.organisationGroup.organisationGroupMembers) {
+                membersToMigrate.push({
+                  organisationMemberId: ogm.organisationMemberId,
+                  teamRole,
+                });
+              }
+            }
+
+            const targetGroupId = (role: TeamMemberRole) => {
+              if (role === TeamMemberRole.ADMIN) return adminInternalGroup.organisationGroupId;
+              if (role === TeamMemberRole.MANAGER) return managerInternalGroup.organisationGroupId;
+              return memberInternalGroup.organisationGroupId;
+            };
+
+            if (membersToMigrate.length > 0) {
+              await prisma.organisationGroupMember.createMany({
+                data: membersToMigrate.map((m) => ({
+                  id: generateDatabaseId('group_member'),
+                  organisationMemberId: m.organisationMemberId,
+                  groupId: targetGroupId(m.teamRole),
+                })),
+                skipDuplicates: true,
+              });
+            }
+          }
+
+          await prisma.teamGroup.deleteMany({
             where: {
-              id: memberAccessTeamGroup.id,
+              id: {
+                in: internalOrgTeamGroups.map((g) => g.id),
+              },
             },
           });
         }
