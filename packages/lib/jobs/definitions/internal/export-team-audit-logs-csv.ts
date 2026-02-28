@@ -1,21 +1,18 @@
 import { z } from 'zod';
 
-import { ZRequestMetadataSchema } from '../../../universal/extract-request-metadata';
+import {
+  TEAM_AUDIT_LOG_EXPORT_DATE_RANGES,
+  type TTeamAuditLogExportDateRange,
+} from '../../../constants/team-audit-logs';
 import { SUPPORTED_LANGUAGE_CODES } from '../../../constants/i18n';
+import { ZRequestMetadataSchema } from '../../../universal/extract-request-metadata';
 import type { JobDefinition } from '../../client/_internal/job';
 
 export const EXPORT_TEAM_AUDIT_LOGS_CSV_JOB_DEFINITION_ID = 'internal.export-team-audit-logs.csv';
 
-export const TEAM_AUDIT_LOG_EXPORT_DATE_RANGES = [
-  '1_WEEK',
-  '30_DAYS',
-  '90_DAYS',
-  'ALL_TIME',
-] as const;
+export { TEAM_AUDIT_LOG_EXPORT_DATE_RANGES, type TTeamAuditLogExportDateRange };
 
 export const ZTeamAuditLogExportDateRangeSchema = z.enum(TEAM_AUDIT_LOG_EXPORT_DATE_RANGES);
-
-export type TTeamAuditLogExportDateRange = z.infer<typeof ZTeamAuditLogExportDateRangeSchema>;
 
 export const ZExportTeamAuditLogsCsvJobDefinitionSchema = z.object({
   jobId: z.string().min(1),

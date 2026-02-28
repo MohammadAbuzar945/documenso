@@ -5,8 +5,10 @@ import { DownloadIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { downloadFile } from '@documenso/lib/client-only/download-file';
-import { TEAM_AUDIT_LOG_EXPORT_DATE_RANGES } from '@documenso/lib/jobs/definitions/internal/export-team-audit-logs-csv';
-import type { TTeamAuditLogExportDateRange } from '@documenso/lib/jobs/definitions/internal/export-team-audit-logs-csv';
+import {
+  TEAM_AUDIT_LOG_EXPORT_DATE_RANGES,
+  type TTeamAuditLogExportDateRange,
+} from '@documenso/lib/constants/team-audit-logs';
 import { base64 } from '@documenso/lib/universal/base64';
 import { trpc } from '@documenso/trpc/react';
 import { cn } from '@documenso/ui/lib/utils';
