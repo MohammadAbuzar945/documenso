@@ -258,9 +258,9 @@ export function AppCommandMenu({ open, onOpenChange }: AppCommandMenuProps) {
               <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('language')}>
                 Change language
               </CommandItem>
-              {/* <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('theme')}>
+              <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('theme')}>
                 Change theme
-              </CommandItem> */}
+              </CommandItem>
             </CommandGroup>
 
             {searchResults.length > 0 && (
@@ -271,7 +271,7 @@ export function AppCommandMenu({ open, onOpenChange }: AppCommandMenuProps) {
           </>
         )}
 
-        {/* {currentPage === 'theme' && <ThemeCommands />} */}
+        {currentPage === 'theme' && <ThemeCommands />}
         {currentPage === 'language' && <LanguageCommands />}
       </CommandList>
     </CommandDialog>

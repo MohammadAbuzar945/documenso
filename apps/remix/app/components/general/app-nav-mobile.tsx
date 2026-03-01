@@ -118,9 +118,9 @@ export const AppNavMobile = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileProps
         </div>
 
         <div className="mt-auto flex w-full flex-col space-y-4 self-end">
-          {/* <div className="w-fit">
+          <div className="w-fit">
             <ThemeSwitcher />
-          </div> */}
+          </div>
 
           <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} Nomia Pvt Ltd. <br /> All rights reserved.
