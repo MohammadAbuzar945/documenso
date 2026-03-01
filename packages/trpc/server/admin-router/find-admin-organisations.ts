@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 
 import type { FindResultResponse } from '@documenso/lib/types/search-params';
 import { getCurrentSubscriptionsByOrganisationIds } from '@documenso/lib/server-only/subscription/get-current-subscriptions-by-organisation-ids';
+import { ADMIN_HIDDEN_USER_EMAILS } from '@documenso/lib/server-only/user/service-accounts/deleted-account';
 import { prisma } from '@documenso/prisma';
 
 import { adminProcedure } from '../trpc';
@@ -120,6 +121,14 @@ export const findAdminOrganisations = async ({
       },
     };
   }
+
+  const excludeHiddenOwnerFilter: Prisma.OrganisationWhereInput = {
+    owner: { email: { notIn: [...ADMIN_HIDDEN_USER_EMAILS] } },
+  };
+  whereClause =
+    Object.keys(whereClause).length === 0
+      ? excludeHiddenOwnerFilter
+      : { AND: [excludeHiddenOwnerFilter, whereClause] };
 
   const [data, count] = await Promise.all([
     prisma.organisation.findMany({

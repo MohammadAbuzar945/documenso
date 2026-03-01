@@ -1,6 +1,7 @@
 import { EnvelopeType, Prisma } from '@prisma/client';
 
 import { prisma } from '@documenso/prisma';
+import { ADMIN_HIDDEN_USER_EMAILS } from './service-accounts/deleted-account';
 
 type GetAllUsersProps = {
   username: string;
@@ -16,18 +17,23 @@ export const findUsers = async ({
   perPage = 10,
 }: GetAllUsersProps) => {
   const whereClause = Prisma.validator<Prisma.UserWhereInput>()({
-    OR: [
+    AND: [
+      { email: { notIn: [...ADMIN_HIDDEN_USER_EMAILS] } },
       {
-        name: {
-          contains: username,
-          mode: 'insensitive',
-        },
-      },
-      {
-        email: {
-          contains: email,
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            name: {
+              contains: username,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: email,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
     ],
   });
