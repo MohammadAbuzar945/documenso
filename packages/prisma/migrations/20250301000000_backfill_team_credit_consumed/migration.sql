@@ -16,7 +16,6 @@ SET "creditConsumed" = COALESCE(
     WHERE e."teamId" = t.id
       AND e.type = 'DOCUMENT'
       AND e.status = 'COMPLETED'
-      AND e."deletedAt" IS NULL
   ),
   0
 );
