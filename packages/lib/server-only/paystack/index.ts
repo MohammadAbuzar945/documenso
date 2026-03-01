@@ -3,10 +3,20 @@ import { any } from 'zod';
 
 import { env } from '../../utils/env';
 
-const paystack = new Paystack(env('NEXT_PAYSTACK_TEST_KEY') ?? env('NEXT_PAYSTACK_TEST_KEY') ?? '');
-// const paystack = new Paystack(
-//   env('NEXT_PAYSTACK_TEST_KEY') ?? 'sk_test_be0b3cb028d5ea5cdf6aa15c2a60a9c9b453dba0',
-// );
+
+
+// if WEBAPP_URL is localhost, use the test key
+// else use the live key
+
+const webAppUrl = env('NEXT_PUBLIC_WEBAPP_URL');
+const isProduction   = webAppUrl?.includes('e-sign.nomiadocs.com');
+const paystackKey = isProduction ? env('NEXT_PAYSTACK_LIVE_KEY') : env('NEXT_PAYSTACK_TEST_KEY');
+if (!paystackKey) {
+  throw new Error('Paystack key is not set');
+}
+
+const paystack = new Paystack(paystackKey);
+
 
 export { paystack };
 
