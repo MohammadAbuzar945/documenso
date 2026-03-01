@@ -398,13 +398,11 @@ export const TeamCreateDialog = ({ trigger, onCreated, ...props }: TeamCreateDia
                               />
                             </SelectTrigger>
                             <SelectContent>
-                              {organisationMembers?.data
-                                .filter((member) => member.userId !== organisation.ownerUserId)
-                                .map((member) => (
-                                  <SelectItem key={member.id} value={member.id}>
-                                   {member.name ? `${member.name} (${member.email})` : member.email}
-                                  </SelectItem>
-                                ))}
+                              {organisationMembers?.data?.map((member) => (
+                                <SelectItem key={member.id} value={member.id}>
+                                  {member.name ? `${member.name} (${member.email})` : member.email}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </FormControl>

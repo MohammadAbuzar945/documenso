@@ -288,12 +288,6 @@ export const createTeam = async ({
             });
           }
 
-          if (organisationMember.user.id === organisation.owner.id) {
-            throw new AppError(AppErrorCode.INVALID_BODY, {
-              message: 'Organisation owner cannot be added as a member of a private team.',
-            });
-          }
-
           const adminTeamGroup = internalTeamGroups
             .flatMap((group) => group.teamGroups)
             .find((group) => group.teamId === team.id && group.teamRole === TeamMemberRole.ADMIN);
