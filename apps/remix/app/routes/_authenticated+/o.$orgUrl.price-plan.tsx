@@ -720,7 +720,7 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
     <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
       <div className="w-full">
         <Link
-          to={`/o/${orgUrl}/settings/billing`}
+          to={`/o/${orgUrl}/settings/general`}
           className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center text-sm font-medium transition-colors"
         >
           <ChevronLeftIcon className="mr-2 h-4 w-4" />
