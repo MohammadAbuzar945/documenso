@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
+import { ChevronLeftIcon } from 'lucide-react';
 import { Link, type LoaderFunctionArgs, useLocation, useRevalidator } from 'react-router';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
@@ -718,6 +719,14 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
   return (
     <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
       <div className="w-full">
+        <Link
+          to={`/o/${orgUrl}/settings/billing`}
+          className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center text-sm font-medium transition-colors"
+        >
+          <ChevronLeftIcon className="mr-2 h-4 w-4" />
+          <Trans>Back</Trans>
+        </Link>
+
         <Dialog
           open={isCancelPreviousSubscriptionDialogOpen}
           onOpenChange={setIsCancelPreviousSubscriptionDialogOpen}
@@ -832,7 +841,9 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
                             <span className="italic text-gray-400">Unknown</span>
                           )}
                         </TableCell>
-                        <TableCell>{sub.status}</TableCell>
+                        <TableCell>
+                          {sub.status === 'PAST_DUE' ? 'INCOMPLETE' : sub.status}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
