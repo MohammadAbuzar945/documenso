@@ -55,6 +55,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
     throw redirect(url.pathname.replace(`/documents/${id}`, `/documents/${envelope.id}`));
   }
+
+  return null;
 }
 
 export default function DocumentsLayout() {

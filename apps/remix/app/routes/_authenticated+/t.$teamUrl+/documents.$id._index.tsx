@@ -60,6 +60,7 @@ export default function DocumentPage({ params }: Route.ComponentProps) {
       envelopeId: params.id,
     },
     {
+      ...(team?.id != null && { context: { teamId: String(team.id) } }),
       // Refetch every 3 seconds when document is pending to catch status changes
       refetchInterval: (query) => {
         const envelope = query.state.data;
