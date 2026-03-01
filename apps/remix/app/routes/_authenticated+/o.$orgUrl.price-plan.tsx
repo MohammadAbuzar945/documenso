@@ -813,26 +813,29 @@ export default function PricePlansPage({ params, loaderData }: Route.ComponentPr
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {subscriptions?.map((sub: any, i: number) => (
-                    <TableRow key={i} className="hover:bg-muted/50 transition">
-                      <TableCell>
-                        {getActiveSubscriptionDetails(sub.planId)?.label || (
-                          <span className="italic text-gray-400">Unknown</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {getActiveSubscriptionDetails(sub.planId)?.amount || (
-                          <span className="italic text-gray-400">Unknown</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {getActiveSubscriptionDetails(sub.planId)?.credits || (
-                          <span className="italic text-gray-400">Unknown</span>
-                        )}
-                      </TableCell>
-                      <TableCell>{sub.status}</TableCell>
-                    </TableRow>
-                  ))}
+                  {subscriptions?.map((sub: any, i: number) => {
+                    const planDetails = getActiveSubscriptionDetails(sub.priceId ?? sub.planId);
+                    return (
+                      <TableRow key={sub.planId ?? i} className="hover:bg-muted/50 transition">
+                        <TableCell>
+                          {planDetails?.label ?? (
+                            <span className="italic text-gray-400">Unknown</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {planDetails?.amount ?? (
+                            <span className="italic text-gray-400">Unknown</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {planDetails?.credits ?? (
+                            <span className="italic text-gray-400">Unknown</span>
+                          )}
+                        </TableCell>
+                        <TableCell>{sub.status}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
