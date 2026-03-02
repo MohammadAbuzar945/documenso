@@ -12,6 +12,7 @@ import { trpc } from '@documenso/trpc/react';
 import { Sheet, SheetContent } from '@documenso/ui/primitives/sheet';
 import { ThemeSwitcher } from '@documenso/ui/primitives/theme-switcher';
 
+import { BrandingLogo } from '~/components/general/branding-logo';
 import { useOptionalCurrentTeam } from '~/providers/team';
 
 export type AppNavMobileProps = {
@@ -83,13 +84,7 @@ export const AppNavMobile = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileProps
     <Sheet open={isMenuOpen} onOpenChange={onMenuOpenChange}>
       <SheetContent className="flex w-full max-w-[350px] flex-col">
         <Link to="/" onClick={handleMenuItemClick}>
-          <img
-            src="/static/logo.png"
-            alt="Nomia Logo"
-            className="dark:invert"
-            width={170}
-            height={25}
-          />
+          <BrandingLogo alt="Nomia Logo" className="h-6 w-auto" />
         </Link>
 
         <div className="mt-8 flex w-full flex-col items-start gap-y-4">
