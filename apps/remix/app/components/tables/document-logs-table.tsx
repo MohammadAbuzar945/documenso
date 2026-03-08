@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { DateTime } from 'luxon';
-import type { DateTimeFormatOptions } from 'luxon';
 import { useSearchParams } from 'react-router';
 import { UAParser } from 'ua-parser-js';
 
@@ -20,11 +19,6 @@ import { TableCell } from '@documenso/ui/primitives/table';
 export type DocumentLogsTableProps = {
   documentId: number;
   userId?: number;
-};
-
-const dateFormat: DateTimeFormatOptions = {
-  ...DateTime.DATETIME_SHORT,
-  hourCycle: 'h12',
 };
 
 export const DocumentLogsTable = ({ documentId, userId }: DocumentLogsTableProps) => {
@@ -67,7 +61,8 @@ export const DocumentLogsTable = ({ documentId, userId }: DocumentLogsTableProps
       {
         header: _(msg`Time`),
         accessorKey: 'createdAt',
-        cell: ({ row }) => i18n.date(row.original.createdAt, dateFormat),
+        cell: ({ row }) =>
+          DateTime.fromJSDate(row.original.createdAt).toFormat('yyyy-MM-dd hh:mm:ss a'),
       },
       {
         header: _(msg`User`),
