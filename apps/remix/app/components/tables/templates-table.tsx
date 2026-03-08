@@ -4,6 +4,7 @@ import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { AlertTriangle, Globe2Icon, InfoIcon, Link2Icon, Loader, LockIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { Link } from 'react-router';
 
 import { useLimits } from '@documenso/ee/server-only/limits/provider/client';
@@ -98,7 +99,8 @@ export const TemplatesTable = ({
       {
         header: _(msg`Created`),
         accessorKey: 'createdAt',
-        cell: ({ row }) => i18n.date(row.original.createdAt),
+        cell: ({ row }) =>
+          DateTime.fromJSDate(row.original.createdAt).toFormat('yyyy-MM-dd hh:mm:ss a'),
       },
       {
         header: _(msg`Title`),
