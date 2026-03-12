@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
-import { Loader } from 'lucide-react';
 import { useRevalidator } from 'react-router';
 
 import { DO_NOT_INVALIDATE_QUERY_ON_MUTATION } from '@documenso/lib/constants/trpc';
@@ -83,20 +82,31 @@ export const DocumentSigningCheckboxField = ({
     );
   }, [checkedValues, validationSign, checkboxValidationLength]);
 
-  const { mutateAsync: signFieldWithToken, isPending: isSignFieldWithTokenLoading } =
-    trpc.field.signFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
+  const { mutateAsync: signFieldWithToken } = trpc.field.signFieldWithToken.useMutation(
+    DO_NOT_INVALIDATE_QUERY_ON_MUTATION,
+  );
 
-  const {
-    mutateAsync: removeSignedFieldWithToken,
-    isPending: isRemoveSignedFieldWithTokenLoading,
-  } = trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
-
-  const isLoading = isSignFieldWithTokenLoading || isRemoveSignedFieldWithTokenLoading;
+  const { mutateAsync: removeSignedFieldWithToken } =
+    trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
   const shouldAutoSignField =
     (!field.inserted && checkedValues.length > 0 && isLengthConditionMet) ||
     (!field.inserted && isReadOnly && isLengthConditionMet);
 
+  const [optimisticInserted, setOptimisticInserted] = useState<boolean | null>(null);
+  const [optimisticCustomText, setOptimisticCustomText] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOptimisticInserted(null);
+    setOptimisticCustomText(null);
+  }, [field.id, field.inserted, field.customText]);
+
+  const isInserted = optimisticInserted ?? field.inserted;
+  const customTextToDisplay = optimisticCustomText ?? field.customText;
+
   const onSign = async (authOptions?: TRecipientActionAuth) => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticCustomText = optimisticCustomText;
+
     try {
       // Do nothing, this should only happen when the user clicks the field, but
       // misses the checkbox which triggers this callback.
@@ -107,6 +117,9 @@ export const DocumentSigningCheckboxField = ({
       if (!isLengthConditionMet) {
         return;
       }
+
+      setOptimisticInserted(true);
+      setOptimisticCustomText(toCheckboxValue(checkedValues));
 
       const payload: TSignFieldWithTokenMutationSchema = {
         token: recipient.token,
@@ -124,6 +137,9 @@ export const DocumentSigningCheckboxField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticCustomText(previousOptimisticCustomText);
+
       const error = AppError.parseError(err);
 
       if (error.code === AppErrorCode.UNAUTHORIZED) {
@@ -143,11 +159,17 @@ export const DocumentSigningCheckboxField = ({
   };
 
   const onRemove = async (fieldType?: string) => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticCustomText = optimisticCustomText;
+
     try {
       const payload: TRemovedSignedFieldWithTokenMutationSchema = {
         token: recipient.token,
         fieldId: field.id,
       };
+
+      setOptimisticInserted(false);
+      setOptimisticCustomText('');
 
       if (onUnsignField) {
         await onUnsignField(payload);
@@ -161,6 +183,9 @@ export const DocumentSigningCheckboxField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticCustomText(previousOptimisticCustomText);
+
       console.error(err);
 
       toast({
@@ -186,6 +211,9 @@ export const DocumentSigningCheckboxField = ({
     value: string;
   }) => {
     let updatedValues: string[] = [];
+    const previousCheckedValues = checkedValues;
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticCustomText = optimisticCustomText;
 
     try {
       const isChecked = checkedValues.includes(
@@ -204,6 +232,8 @@ export const DocumentSigningCheckboxField = ({
       }
 
       setCheckedValues(updatedValues);
+      setOptimisticInserted(updatedValues.length > 0);
+      setOptimisticCustomText(updatedValues.length > 0 ? toCheckboxValue(updatedValues) : '');
 
       const removePayload: TRemovedSignedFieldWithTokenMutationSchema = {
         token: recipient.token,
@@ -231,6 +261,10 @@ export const DocumentSigningCheckboxField = ({
         }
       }
     } catch (err) {
+      setCheckedValues(previousCheckedValues);
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticCustomText(previousOptimisticCustomText);
+
       console.error(err);
 
       toast({
@@ -253,8 +287,8 @@ export const DocumentSigningCheckboxField = ({
   }, [checkedValues, isLengthConditionMet, field.inserted]);
 
   const parsedCheckedValues = useMemo(
-    () => fromCheckboxValue(field.customText),
-    [field.customText],
+    () => fromCheckboxValue(customTextToDisplay),
+    [customTextToDisplay],
   );
 
   return (
@@ -264,13 +298,7 @@ export const DocumentSigningCheckboxField = ({
       onRemove={onRemove}
       type="Checkbox"
     >
-      {isLoading && (
-        <div className="bg-background absolute inset-0 z-20 flex items-center justify-center rounded-md">
-          <Loader className="text-primary h-5 w-5 animate-spin md:h-8 md:w-8" />
-        </div>
-      )}
-
-      {!field.inserted && (
+      {!isInserted && (
         <>
           {!isLengthConditionMet && (
             <FieldToolTip key={field.id} field={field} color="warning" className="">
@@ -312,7 +340,7 @@ export const DocumentSigningCheckboxField = ({
         </>
       )}
 
-      {field.inserted && (
+      {isInserted && (
         <div
           className={cn(
             'my-0.5 flex gap-1',
@@ -328,7 +356,7 @@ export const DocumentSigningCheckboxField = ({
                   className="h-3 w-3"
                   id={`checkbox-${field.id}-${item.id}`}
                   checked={parsedCheckedValues.includes(itemValue)}
-                  disabled={isLoading || isReadOnly}
+                  disabled={isReadOnly}
                   onCheckedChange={() => void handleCheckboxOptionClick(item)}
                 />
                 {!item.value.includes('empty-value-') && item.value && (

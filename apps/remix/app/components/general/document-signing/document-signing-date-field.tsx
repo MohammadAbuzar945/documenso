@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
+
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { Loader } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { useRevalidator } from 'react-router';
 
 import {
@@ -46,27 +48,48 @@ export const DocumentSigningDateField = ({
 
   const { recipient, isAssistantMode } = useDocumentSigningRecipientContext();
 
-  const { mutateAsync: signFieldWithToken, isPending: isSignFieldWithTokenLoading } =
-    trpc.field.signFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
+  const { mutateAsync: signFieldWithToken } = trpc.field.signFieldWithToken.useMutation(
+    DO_NOT_INVALIDATE_QUERY_ON_MUTATION,
+  );
 
   const {
     mutateAsync: removeSignedFieldWithToken,
-    isPending: isRemoveSignedFieldWithTokenLoading,
   } = trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
-
-  const isLoading = isSignFieldWithTokenLoading || isRemoveSignedFieldWithTokenLoading;
 
   const safeFieldMeta = ZDateFieldMeta.safeParse(field.fieldMeta);
   const parsedFieldMeta = safeFieldMeta.success ? safeFieldMeta.data : null;
 
-  const localDateString = convertToLocalSystemFormat(field.customText, dateFormat, timezone);
-  const isDifferentTime = field.inserted && localDateString !== field.customText;
+  const [optimisticInserted, setOptimisticInserted] = useState<boolean | null>(null);
+  const [optimisticCustomText, setOptimisticCustomText] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOptimisticInserted(null);
+    setOptimisticCustomText(null);
+  }, [field.id, field.inserted, field.customText]);
+
+  const isInserted = optimisticInserted ?? field.inserted;
+  const customTextToDisplay = optimisticCustomText ?? field.customText;
+
+  const localDateString = isInserted
+    ? convertToLocalSystemFormat(customTextToDisplay, dateFormat, timezone)
+    : '';
+  const isDifferentTime = isInserted && localDateString !== customTextToDisplay;
   const tooltipText = _(
     msg`"${field.customText}" will appear on the document as it has a timezone of "${timezone || ''}".`,
   );
 
   const onSign = async (authOptions?: TRecipientActionAuth) => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticCustomText = optimisticCustomText;
+
     try {
+      const formattedCustomText = DateTime.now()
+        .setZone(timezone ?? DEFAULT_DOCUMENT_TIME_ZONE)
+        .toFormat(dateFormat ?? DEFAULT_DOCUMENT_DATE_FORMAT);
+
+      setOptimisticInserted(true);
+      setOptimisticCustomText(formattedCustomText);
+
       const payload: TSignFieldWithTokenMutationSchema = {
         token: recipient.token,
         fieldId: field.id,
@@ -83,6 +106,9 @@ export const DocumentSigningDateField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticCustomText(previousOptimisticCustomText);
+
       const error = AppError.parseError(err);
 
       if (error.code === AppErrorCode.UNAUTHORIZED) {
@@ -102,11 +128,17 @@ export const DocumentSigningDateField = ({
   };
 
   const onRemove = async () => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticCustomText = optimisticCustomText;
+
     try {
       const payload: TRemovedSignedFieldWithTokenMutationSchema = {
         token: recipient.token,
         fieldId: field.id,
       };
+
+      setOptimisticInserted(false);
+      setOptimisticCustomText('');
 
       if (onUnsignField) {
         await onUnsignField(payload);
@@ -117,6 +149,9 @@ export const DocumentSigningDateField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticCustomText(previousOptimisticCustomText);
+
       console.error(err);
 
       toast({
@@ -135,19 +170,13 @@ export const DocumentSigningDateField = ({
       type="Date"
       tooltipText={isDifferentTime ? tooltipText : undefined}
     >
-      {isLoading && (
-        <div className="bg-background absolute inset-0 flex items-center justify-center rounded-md">
-          <Loader className="text-primary h-5 w-5 animate-spin md:h-8 md:w-8" />
-        </div>
-      )}
-
-      {!field.inserted && (
-        <p className="group-hover:text-primary text-foreground group-hover:text-recipient-green text-[clamp(0.425rem,25cqw,0.825rem)] duration-200">
+      {!isInserted && (
+        <p className="text-foreground group-hover:text-recipient-green text-[clamp(0.425rem,25cqw,0.825rem)] duration-200">
           <Trans>Date</Trans>
         </p>
       )}
 
-      {field.inserted && (
+      {isInserted && (
         <div className="flex h-full w-full items-center">
           <p
             className={cn(

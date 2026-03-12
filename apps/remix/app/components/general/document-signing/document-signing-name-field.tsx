@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
@@ -25,7 +25,6 @@ import { useRequiredDocumentSigningAuthContext } from './document-signing-auth-p
 import { DocumentSigningFieldContainer } from './document-signing-field-container';
 import {
   DocumentSigningFieldsInserted,
-  DocumentSigningFieldsLoader,
   DocumentSigningFieldsUninserted,
 } from './document-signing-fields';
 import { useRequiredDocumentSigningContext } from './document-signing-provider';
@@ -53,21 +52,29 @@ export const DocumentSigningNameField = ({
 
   const { executeActionAuthProcedure } = useRequiredDocumentSigningAuthContext();
 
-  const { mutateAsync: signFieldWithToken, isPending: isSignFieldWithTokenLoading } =
-    trpc.field.signFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
+  const { mutateAsync: signFieldWithToken } = trpc.field.signFieldWithToken.useMutation(
+    DO_NOT_INVALIDATE_QUERY_ON_MUTATION,
+  );
 
   const {
     mutateAsync: removeSignedFieldWithToken,
-    isPending: isRemoveSignedFieldWithTokenLoading,
   } = trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
-
-  const isLoading = isSignFieldWithTokenLoading || isRemoveSignedFieldWithTokenLoading;
 
   const safeFieldMeta = ZNameFieldMeta.safeParse(field.fieldMeta);
   const parsedFieldMeta = safeFieldMeta.success ? safeFieldMeta.data : null;
 
   const [showFullNameModal, setShowFullNameModal] = useState(false);
   const [localFullName, setLocalFullName] = useState('');
+  const [optimisticInserted, setOptimisticInserted] = useState<boolean | null>(null);
+  const [optimisticText, setOptimisticText] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOptimisticInserted(null);
+    setOptimisticText(null);
+  }, [field.id, field.inserted, field.customText]);
+
+  const isInserted = optimisticInserted ?? field.inserted;
+  const insertedText = optimisticText ?? field.customText;
 
   const onPreSign = () => {
     if (!providedFullName && !isAssistantMode) {
@@ -92,6 +99,9 @@ export const DocumentSigningNameField = ({
   };
 
   const onSign = async (authOptions?: TRecipientActionAuth, name?: string) => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticText = optimisticText;
+
     try {
       const value = name || providedFullName || '';
 
@@ -99,6 +109,9 @@ export const DocumentSigningNameField = ({
         setShowFullNameModal(true);
         return;
       }
+
+      setOptimisticInserted(true);
+      setOptimisticText(value);
 
       const payload: TSignFieldWithTokenMutationSchema = {
         token: recipient.token,
@@ -117,6 +130,9 @@ export const DocumentSigningNameField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticText(previousOptimisticText);
+
       const error = AppError.parseError(err);
 
       if (error.code === AppErrorCode.UNAUTHORIZED) {
@@ -136,11 +152,17 @@ export const DocumentSigningNameField = ({
   };
 
   const onRemove = async () => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticText = optimisticText;
+
     try {
       const payload: TRemovedSignedFieldWithTokenMutationSchema = {
         token: recipient.token,
         fieldId: field.id,
       };
+
+      setOptimisticInserted(false);
+      setOptimisticText('');
 
       if (onUnsignField) {
         await onUnsignField(payload);
@@ -151,6 +173,9 @@ export const DocumentSigningNameField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticText(previousOptimisticText);
+
       console.error(err);
 
       toast({
@@ -169,17 +194,15 @@ export const DocumentSigningNameField = ({
       onRemove={onRemove}
       type="Name"
     >
-      {isLoading && <DocumentSigningFieldsLoader />}
-
-      {!field.inserted && (
+      {!isInserted && (
         <DocumentSigningFieldsUninserted>
           <Trans>Name</Trans>
         </DocumentSigningFieldsUninserted>
       )}
 
-      {field.inserted && (
+      {isInserted && (
         <DocumentSigningFieldsInserted textAlign={parsedFieldMeta?.textAlign}>
-          {field.customText}
+          {insertedText}
         </DocumentSigningFieldsInserted>
       )}
 

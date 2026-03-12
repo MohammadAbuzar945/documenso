@@ -26,7 +26,6 @@ import { useRequiredDocumentSigningAuthContext } from './document-signing-auth-p
 import { DocumentSigningFieldContainer } from './document-signing-field-container';
 import {
   DocumentSigningFieldsInserted,
-  DocumentSigningFieldsLoader,
   DocumentSigningFieldsUninserted,
 } from './document-signing-fields';
 import { useDocumentSigningRecipientContext } from './document-signing-recipient-provider';
@@ -75,18 +74,25 @@ export const DocumentSigningNumberField = ({
   };
 
   const [errors, setErrors] = useState(initialErrors);
+  const [optimisticInserted, setOptimisticInserted] = useState<boolean | null>(null);
+  const [optimisticText, setOptimisticText] = useState<string | null>(null);
 
   const { executeActionAuthProcedure } = useRequiredDocumentSigningAuthContext();
 
-  const { mutateAsync: signFieldWithToken, isPending: isSignFieldWithTokenLoading } =
-    trpc.field.signFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
+  const { mutateAsync: signFieldWithToken } = trpc.field.signFieldWithToken.useMutation(
+    DO_NOT_INVALIDATE_QUERY_ON_MUTATION,
+  );
 
-  const {
-    mutateAsync: removeSignedFieldWithToken,
-    isPending: isRemoveSignedFieldWithTokenLoading,
-  } = trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
+  const { mutateAsync: removeSignedFieldWithToken } =
+    trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
 
-  const isLoading = isSignFieldWithTokenLoading || isRemoveSignedFieldWithTokenLoading;
+  useEffect(() => {
+    setOptimisticInserted(null);
+    setOptimisticText(null);
+  }, [field.id, field.inserted, field.customText]);
+
+  const isInserted = optimisticInserted ?? field.inserted;
+  const insertedText = optimisticText ?? field.customText;
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
@@ -120,10 +126,16 @@ export const DocumentSigningNumberField = ({
   };
 
   const onSign = async (authOptions?: TRecipientActionAuth) => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticText = optimisticText;
+
     try {
       if (!localNumber || Object.values(errors).some((error) => error.length > 0)) {
         return;
       }
+
+      setOptimisticInserted(true);
+      setOptimisticText(localNumber);
 
       const payload: TSignFieldWithTokenMutationSchema = {
         token: recipient.token,
@@ -144,6 +156,9 @@ export const DocumentSigningNumberField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticText(previousOptimisticText);
+
       const error = AppError.parseError(err);
 
       if (error.code === AppErrorCode.UNAUTHORIZED) {
@@ -184,11 +199,17 @@ export const DocumentSigningNumberField = ({
   };
 
   const onRemove = async () => {
+    const previousOptimisticInserted = optimisticInserted;
+    const previousOptimisticText = optimisticText;
+
     try {
       const payload: TRemovedSignedFieldWithTokenMutationSchema = {
         token: recipient.token,
         fieldId: field.id,
       };
+
+      setOptimisticInserted(false);
+      setOptimisticText('');
 
       if (onUnsignField) {
         await onUnsignField(payload);
@@ -201,6 +222,9 @@ export const DocumentSigningNumberField = ({
 
       await revalidate();
     } catch (err) {
+      setOptimisticInserted(previousOptimisticInserted);
+      setOptimisticText(previousOptimisticText);
+
       console.error(err);
 
       toast({
@@ -246,15 +270,13 @@ export const DocumentSigningNumberField = ({
       onRemove={onRemove}
       type="Number"
     >
-      {isLoading && <DocumentSigningFieldsLoader />}
-
-      {!field.inserted && (
+      {!isInserted && (
         <DocumentSigningFieldsUninserted>{fieldDisplayName}</DocumentSigningFieldsUninserted>
       )}
 
-      {field.inserted && (
+      {isInserted && (
         <DocumentSigningFieldsInserted textAlign={parsedFieldMeta?.textAlign}>
-          {field.customText}
+          {insertedText}
         </DocumentSigningFieldsInserted>
       )}
 
