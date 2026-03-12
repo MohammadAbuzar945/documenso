@@ -68,14 +68,6 @@ export function usePageRenderer(renderFunction: RenderFunction) {
         return;
       }
 
-      // If this page re-renders (scale/rotate/page change), destroy any previous stage
-      // so we don't retain Konva nodes + backing canvases in memory.
-      stage.current?.destroy();
-      stage.current = null;
-      pageLayer.current?.destroy();
-      pageLayer.current = null;
-      kContainer.replaceChildren();
-
       canvas.width = renderViewport.width;
       canvas.height = renderViewport.height;
 
@@ -124,20 +116,9 @@ export function usePageRenderer(renderFunction: RenderFunction) {
 
       return () => {
         runningTask.cancel();
-
-        // Ensure we release Konva + canvas resources when the Page unmounts
-        // (critical for long PDFs where pages mount/unmount frequently).
-        stage.current?.destroy();
-        stage.current = null;
-        pageLayer.current?.destroy();
-        pageLayer.current = null;
-        kContainer.replaceChildren();
-
-        canvas.width = 0;
-        canvas.height = 0;
       };
     },
-    [page, renderViewport, rotate, scale, scaledViewport, renderFunction],
+    [page, scaledViewport],
   );
 
   return {
