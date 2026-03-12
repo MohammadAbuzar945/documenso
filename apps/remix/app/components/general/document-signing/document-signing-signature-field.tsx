@@ -3,6 +3,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
+import { Loader } from 'lucide-react';
 import { useRevalidator } from 'react-router';
 
 import { DO_NOT_INVALIDATE_QUERY_ON_MUTATION } from '@documenso/lib/constants/trpc';
@@ -63,14 +64,17 @@ export const DocumentSigningSignatureField = ({
 
   const { executeActionAuthProcedure } = useRequiredDocumentSigningAuthContext();
 
-  const { mutateAsync: signFieldWithToken } = trpc.field.signFieldWithToken.useMutation(
-    DO_NOT_INVALIDATE_QUERY_ON_MUTATION,
-  );
+  const { mutateAsync: signFieldWithToken, isPending: isSignFieldWithTokenLoading } =
+    trpc.field.signFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
 
-  const { mutateAsync: removeSignedFieldWithToken } =
-    trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
+  const {
+    mutateAsync: removeSignedFieldWithToken,
+    isPending: isRemoveSignedFieldWithTokenLoading,
+  } = trpc.field.removeSignedFieldWithToken.useMutation(DO_NOT_INVALIDATE_QUERY_ON_MUTATION);
 
   const { signature } = field;
+
+  const isLoading = isSignFieldWithTokenLoading || isRemoveSignedFieldWithTokenLoading;
 
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [localSignature, setLocalSignature] = useState<string | null>(null);
@@ -234,8 +238,14 @@ export const DocumentSigningSignatureField = ({
       onRemove={onRemove}
       type="Signature"
     >
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-md bg-background">
+          <Loader className="h-5 w-5 animate-spin text-primary md:h-8 md:w-8" />
+        </div>
+      )}
+
       {state === 'empty' && (
-        <p className="font-signature text-[clamp(0.575rem,25cqw,1.2rem)] text-xl text-muted-foreground duration-200 group-hover:text-recipient-green">
+        <p className="font-signature text-[clamp(0.575rem,25cqw,1.2rem)] text-xl text-muted-foreground duration-200 group-hover:text-primary group-hover:text-recipient-green">
           <Trans>Signature</Trans>
         </p>
       )}
