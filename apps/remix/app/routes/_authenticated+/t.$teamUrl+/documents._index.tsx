@@ -7,7 +7,7 @@ import { Bird } from 'lucide-react';
 import { useParams, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
 import { z } from 'zod';
-
+import { useSessionStorage } from '@documenso/lib/client-only/hooks/use-session-storage';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
@@ -61,7 +61,10 @@ export default function DocumentsPage() {
   const [isMovingDocument, setIsMovingDocument] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<number | null>(null);
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useSessionStorage<RowSelectionState>(
+    'documents-bulk-selection',
+    {},
+  );
   const [isBulkMoveDialogOpen, setIsBulkMoveDialogOpen] = useState(false);
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
@@ -127,10 +130,10 @@ export default function DocumentsPage() {
     }
   }, [data?.stats]);
 
-  // Clear selection when navigation or filters change
-  useEffect(() => {
-    setRowSelection({});
-  }, [folderId, findDocumentSearchParams]);
+  // // Clear selection when navigation or filters change
+  // useEffect(() => {
+  //   setRowSelection({});
+  // }, [folderId, findDocumentSearchParams]);
 
   if (isOwnerNonMember) {
     return (

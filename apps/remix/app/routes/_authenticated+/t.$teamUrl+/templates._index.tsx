@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import {  useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { EnvelopeType } from '@prisma/client';
@@ -13,7 +13,7 @@ import { useSession } from '@documenso/lib/client-only/providers/session';
 import { trpc } from '@documenso/trpc/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import type { RowSelectionState } from '@documenso/ui/primitives/data-table';
-
+import { useSessionStorage } from '@documenso/lib/client-only/hooks/use-session-storage';
 import { EnvelopesBulkDeleteDialog } from '~/components/dialogs/envelopes-bulk-delete-dialog';
 import { EnvelopesBulkMoveDialog } from '~/components/dialogs/envelopes-bulk-move-dialog';
 import { EnvelopeDropZoneWrapper } from '~/components/general/envelope/envelope-drop-zone-wrapper';
@@ -38,7 +38,10 @@ export default function TemplatesPage() {
   const page = Number(searchParams.get('page')) || 1;
   const perPage = Number(searchParams.get('perPage')) || 10;
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useSessionStorage<RowSelectionState>(
+    'templates-bulk-selection',
+    {},
+  );
   const [isBulkMoveDialogOpen, setIsBulkMoveDialogOpen] = useState(false);
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
@@ -55,10 +58,10 @@ export default function TemplatesPage() {
     folderId,
   });
 
-  // Clear selection when navigation or filters change
-  useEffect(() => {
-    setRowSelection({});
-  }, [folderId, page, perPage]);
+  // // Clear selection when navigation or filters change
+  // useEffect(() => {
+  //   setRowSelection({});
+  // }, [folderId, page, perPage]);
 
   const isOrganisationOwner = organisation.ownerUserId === user.id;
   const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
