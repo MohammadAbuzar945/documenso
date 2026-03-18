@@ -153,8 +153,9 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <Scripts />
 
-                {/* Cleanup: remove stray "$" text nodes that can be injected by CDNs between streaming markers */}
-                <script
+        {/* Cleanup: remove stray "$" text nodes injected between streaming markers.
+            IMPORTANT: run only after hydration (window.load) to avoid hydration mismatches. */}
+        <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
@@ -173,42 +174,41 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
 
     const run = () => removeDollarTextsIn(document.body || document);
 
-    // If parsing isn't finished, schedule cleanup when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', run, { once: true });
-    } else {
-      // Run as soon as possible, then in the next tick to catch parser-inserted nodes
-      run();
-      setTimeout(run, 0);
-    }
+    window.addEventListener(
+      'load',
+      () => {
+        try {
+          run();
+          setTimeout(run, 0);
+          setTimeout(run, 200);
 
-    // Also run after window load (some CDNs inject at onload)
-    window.addEventListener('load', () => {
-      run();
-      setTimeout(run, 0);
-      setTimeout(run, 200);
-    }, { once: true });
+          // Watch briefly for post-load insertions (e.g., beacons injected after streaming completes)
+          const obs = new MutationObserver((muts) => {
+            for (const m of muts) {
+              if (isDollarText(m.target)) {
+                m.target.parentNode && m.target.parentNode.removeChild(m.target);
+                continue;
+              }
+              for (const n of m.addedNodes) {
+                if (isDollarText(n)) {
+                  n.parentNode && n.parentNode.removeChild(n);
+                } else if (n.nodeType === Node.ELEMENT_NODE) {
+                  removeDollarTextsIn(n);
+                }
+              }
+            }
+          });
 
-    // Watch for post-load insertions (e.g., beacons injected after streaming completes)
-    const obs = new MutationObserver((muts) => {
-      for (const m of muts) {
-        if (isDollarText(m.target)) {
-          m.target.parentNode && m.target.parentNode.removeChild(m.target);
-          continue;
-        }
-        for (const n of m.addedNodes) {
-          if (isDollarText(n)) {
-            n.parentNode && n.parentNode.removeChild(n);
-          } else if (n.nodeType === Node.ELEMENT_NODE) {
-            removeDollarTextsIn(n);
-          }
-        }
-      }
-    });
-    obs.observe(document.documentElement, { childList: true, subtree: true });
-
-    // Optional: stop observing after a few seconds to avoid long-lived observers
-    setTimeout(() => { try { obs.disconnect(); } catch (_) {} }, 5000);
+          obs.observe(document.documentElement, { childList: true, subtree: true });
+          setTimeout(() => {
+            try {
+              obs.disconnect();
+            } catch (_) {}
+          }, 3000);
+        } catch (_) {}
+      },
+      { once: true },
+    );
   } catch (_) {}
 })();`,
           }}
