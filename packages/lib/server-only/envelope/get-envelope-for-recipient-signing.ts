@@ -77,6 +77,7 @@ export const ZEnvelopeForSigningResponse = z.object({
       id: true,
       title: true,
       order: true,
+      documentDataId: true,
     }).array(),
 
     team: TeamSchema.pick({
