@@ -13,6 +13,7 @@ import * as z from 'zod';
 
 import { useCurrentEnvelopeEditor } from '@documenso/lib/client-only/providers/envelope-editor-provider';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
+import { DO_NOT_INVALIDATE_QUERY_ON_MUTATION } from '@documenso/lib/constants/trpc';
 import { extractDocumentAuthMethods } from '@documenso/lib/utils/document-auth';
 import { getRecipientsWithMissingFields } from '@documenso/lib/utils/recipients';
 import { trpc, trpc as trpcReact } from '@documenso/trpc/react';
@@ -115,10 +116,15 @@ export const EnvelopeDistributeDialog = ({
   } = form;
 
   const { data: emailData, isLoading: isLoadingEmails } =
-    trpc.enterprise.organisation.email.find.useQuery({
-      organisationId: organisation.id,
-      perPage: 100,
-    });
+    trpc.enterprise.organisation.email.find.useQuery(
+      {
+        organisationId: organisation.id,
+        perPage: 100,
+      },
+      {
+        ...DO_NOT_INVALIDATE_QUERY_ON_MUTATION,
+      },
+    );
 
   const emails = emailData?.data || [];
 
@@ -260,6 +266,24 @@ export const EnvelopeDistributeDialog = ({
           <Form {...form}>
             <form onSubmit={handleSubmit(onFormSubmit)}>
               <fieldset disabled={isSubmitting}>
+                <Tabs
+                  onValueChange={(value) =>
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                    setValue('meta.distributionMethod', value as DocumentDistributionMethod)
+                  }
+                  value={distributionMethod}
+                  className="mb-2"
+                >
+                  <TabsList className="w-full">
+                    <TabsTrigger className="w-full" value={DocumentDistributionMethod.EMAIL}>
+                      <Trans>Email</Trans>
+                    </TabsTrigger>
+                    <TabsTrigger className="w-full" value={DocumentDistributionMethod.NONE}>
+                      <Trans>None</Trans>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+
                 <div
                   className={cn('min-h-72', {
                     'min-h-[23rem]': organisation.organisationClaim.flags.emailDomains,

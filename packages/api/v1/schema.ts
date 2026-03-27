@@ -36,9 +36,9 @@ export const ZGetDocumentsQuerySchema = z.object({
   page: z.coerce.number().min(1).optional().default(1),
   perPage: z.coerce.number().min(1).optional().default(10),
   folderId: z
-  .string()
-  .describe('Filter documents by folder ID. When omitted, returns root documents.')
-  .optional(),
+    .string()
+    .describe('Filter documents by folder ID. When omitted, returns root documents.')
+    .optional(),
 });
 
 export type TGetDocumentsQuerySchema = z.infer<typeof ZGetDocumentsQuerySchema>;
@@ -442,8 +442,8 @@ export const ZSuccessfulRecipientResponseSchema = z.object({
   role: z.nativeEnum(RecipientRole),
   signingOrder: z.number().nullish(),
   token: z.string(),
-  // !: Not used for now
-  // expired: z.string(),
+  expiresAt: z.date().nullish(),
+  expirationNotifiedAt: z.date().nullish(),
   signedAt: z.date().nullable(),
   readStatus: z.nativeEnum(ReadStatus),
   signingStatus: z.nativeEnum(SigningStatus),
@@ -581,7 +581,8 @@ export const ZRecipientSchema = z.object({
   token: z.string(),
   signingOrder: z.number().nullish(),
   documentDeletedAt: z.date().nullish(),
-  expired: z.date().nullish(),
+  expiresAt: z.date().nullish(),
+  expirationNotifiedAt: z.date().nullish(),
   signedAt: z.date().nullish(),
   authOptions: z.unknown(),
   role: z.nativeEnum(RecipientRole),

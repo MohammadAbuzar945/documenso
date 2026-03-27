@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { msg } from '@lingui/core/macro';
+import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { Link, redirect } from 'react-router';
+import { Link, redirect, useSearchParams } from 'react-router';
 
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import {
@@ -12,15 +14,17 @@ import {
 } from '@documenso/lib/constants/auth';
 import { env } from '@documenso/lib/utils/env';
 import { isValidReturnTo, normalizeReturnTo } from '@documenso/lib/utils/is-valid-return-to';
+import { Alert, AlertDescription } from '@documenso/ui/primitives/alert';
 
 import { BrandingLogo } from '~/components/general/branding-logo';
 import { SignInForm } from '~/components/forms/signin';
+import { SIGNUP_ERROR_MESSAGES } from '~/components/forms/signup';
 import { appMetaTags } from '~/utils/meta';
 
 import type { Route } from './+types/signin';
 
 export function meta() {
-  return appMetaTags('Sign In');
+  return appMetaTags(msg`Sign In`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -58,7 +62,13 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
     returnTo,
   } = loaderData;
 
+  const { _ } = useLingui();
+
+  const [searchParams] = useSearchParams();
   const [isEmbeddedRedirect, setIsEmbeddedRedirect] = useState(false);
+
+  const errorParam = searchParams.get('error');
+  const signupError = errorParam ? SIGNUP_ERROR_MESSAGES[errorParam] : undefined;
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
@@ -79,7 +89,7 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
           <Trans>Sign in to your account</Trans>
         </h1>
 
-        <p className="text-muted-foreground mt-2 text-sm">
+        <p className="mt-2 text-sm text-muted-foreground">
           <Trans>Welcome back, we are lucky to have you.</Trans>
         </p>
         <hr className="-mx-6 my-4" />
@@ -93,7 +103,7 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
         />
 
         {!isEmbeddedRedirect && env('NEXT_PUBLIC_DISABLE_SIGNUP') !== 'true' && (
-          <p className="text-muted-foreground mt-6 text-center text-sm">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             <Trans>
               Don't have an account?{' '}
               <Link

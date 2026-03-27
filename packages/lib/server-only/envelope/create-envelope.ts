@@ -126,6 +126,14 @@ export type CreateEnvelopeOptions = {
     data: string;
     type?: TEnvelopeAttachmentType;
   }>;
+
+  /**
+   * Whether to bypass adding default recipients.
+   *
+   * Defaults to false.
+   */
+  bypassDefaultRecipients?: boolean;
+
   meta?: Partial<Omit<DocumentMeta, 'id'>>;
   requestMetadata: ApiRequestMetadata;
 };
@@ -139,6 +147,7 @@ export const createEnvelope = async ({
   meta,
   requestMetadata,
   internalVersion,
+  bypassDefaultRecipients = false,
 }: CreateEnvelopeOptions) => {
   const {
     type,
@@ -231,7 +240,7 @@ export const createEnvelope = async ({
 
         const titleToUse = item.title || title;
 
-        const newDocumentData = await putPdfFileServerSide({
+        const { documentData: newDocumentData } = await putPdfFileServerSide({
           name: titleToUse,
           type: 'application/pdf',
           arrayBuffer: async () => Promise.resolve(normalizedPdf),
@@ -326,8 +335,6 @@ export const createEnvelope = async ({
     return delegatedOwner;
   };
 
-  
-
   const [documentMeta, secondaryId, delegatedOwner] = await Promise.all([
     prisma.documentMeta.create({
       data: extractDerivedDocumentMeta(settings, {
@@ -396,9 +403,10 @@ export const createEnvelope = async ({
 
     const firstEnvelopeItem = envelope.envelopeItems[0];
 
-    const defaultRecipients = settings.defaultRecipients
-      ? ZDefaultRecipientsSchema.parse(settings.defaultRecipients)
-      : [];
+    const defaultRecipients =
+      settings.defaultRecipients && !bypassDefaultRecipients
+        ? ZDefaultRecipientsSchema.parse(settings.defaultRecipients)
+        : [];
 
     const mappedDefaultRecipients: CreateEnvelopeRecipientOptions[] = defaultRecipients.map(
       (recipient) => ({

@@ -63,10 +63,18 @@ CLAUDE.md
 
 # scripts
 scripts/output*
+scripts/bench-*
 
 # license
 .documenso-license.json
 .documenso-license-backup.json
+
+certs
+
+.cursor/
+analysis
+# tmp
+tmp/
 
 certs
 
