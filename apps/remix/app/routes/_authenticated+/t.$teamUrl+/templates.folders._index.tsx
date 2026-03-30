@@ -63,14 +63,11 @@ export default function TemplatesFoldersPage() {
     const templatesPath = formatTemplatesPath(team.url);
 
     if (folderId) {
-      void navigate(`${templatesPath}/f/${folderId}`);
+      return `${templatesPath}/f/${folderId}`;
     } else {
-      void navigate(templatesPath);
+      return templatesPath;
     }
   };
-
-  const isFolderMatchingSearch = (folder: TFolderWithSubfolders) =>
-    folder.name.toLowerCase().includes(searchTerm.toLowerCase());
 
   const isOrganisationOwner = organisation.ownerUserId === user.id;
   const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;

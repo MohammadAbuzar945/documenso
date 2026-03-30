@@ -1,15 +1,13 @@
 import { type MessageDescriptor, i18n } from '@lingui/core';
 
-import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
-import { env } from '@documenso/lib/utils/env';
-
 export const appMetaTags = (title?: MessageDescriptor) => {
   const description =
     'An intuitive, affordable app with pay-as-you-go pricing bundles and unlimited seats. Premium e-sign without the premium price tag. Fully AATL compliant.';
+  const resolvedTitle = title ? i18n._(title) : null;
 
   return [
     {
-      title: title ? `${title} - Nomia Signatures` : 'Nomia Signatures',
+      title: resolvedTitle ? `${resolvedTitle} - Nomia Signatures` : 'Nomia Signatures',
     },
     {
       name: 'description',

@@ -48,6 +48,7 @@ import {
   SelectValue,
 } from '@documenso/ui/primitives/select';
 import { SpinnerBox } from '@documenso/ui/primitives/spinner';
+import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { Textarea } from '@documenso/ui/primitives/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@documenso/ui/primitives/tooltip';
 import { useToast } from '@documenso/ui/primitives/use-toast';

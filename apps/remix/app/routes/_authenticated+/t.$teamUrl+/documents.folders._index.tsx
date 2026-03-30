@@ -57,18 +57,21 @@ export default function DocumentsFoldersPage() {
   const hasFolders = (foldersData?.folders.length ?? 0) > 0;
   const hasSearchResults = filteredFolders.length > 0;
 
+
+  const organisation = useCurrentOrganisation();
+  const { user } = useSession();
+
   const formatBreadcrumbPath = (folderId: string) => {
     const documentsPath = formatDocumentsPath(team.url);
 
     if (folderId) {
-      void navigate(`${documentsPath}/f/${folderId}`);
+      return `${documentsPath}/f/${folderId}`;
     } else {
-      void navigate(documentsPath);
+      return documentsPath;
     }
   };
 
-  const isFolderMatchingSearch = (folder: TFolderWithSubfolders) =>
-    folder.name.toLowerCase().includes(searchTerm.toLowerCase());
+
 
   const isOrganisationOwner = organisation.ownerUserId === user.id;
   const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;

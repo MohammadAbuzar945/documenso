@@ -449,11 +449,6 @@ export const EnvelopeEditorFieldsPageRenderer = ({ pageData }: { pageData: PageR
       (node) =>
         node.hasName('field-group') && Boolean(node.getStage()) && Boolean(node.getParent()),
     ) as Konva.Group[];
-    
-    const fieldGroups = nodes.filter(
-      (node) =>
-        node.hasName('field-group') && Boolean(node.getStage()) && Boolean(node.getParent()),
-    ) as Konva.Group[];
 
     interactiveTransformer.current?.nodes(fieldGroups);
     setSelectedKonvaFieldGroups(fieldGroups);

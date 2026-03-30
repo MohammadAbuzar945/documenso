@@ -289,7 +289,7 @@ export const run = async ({
           recipients: envelope.recipients,
           fields,
           language: envelope.documentMeta.language,
-          includeQrCodeInCertificate,
+          includeQrCodeInCertificate: envelope.includeQrCodeInCertificate ?? settings.includeQrCodeInCertificate ?? true,
           envelopeOwner: {
             email: envelope.user.email,
             name: envelope.user.name || '',
@@ -316,54 +316,22 @@ export const run = async ({
               }).then(async (buffer) => PDF.load(buffer))
             : generateAuditLogPdf(certificatePayload);
 
-      const [createdCertificatePdf, createdAuditLogPdf] = await Promise.all([
-        settings.includeSigningCertificate ? makeCertificatePdf() : null,
-        settings.includeAuditLog ? makeAuditLogPdf() : null,
-      ]);
+        const [createdCertificatePdf, createdAuditLogPdf] = await Promise.all([
+          settings.includeSigningCertificate ? makeCertificatePdf() : null,
+          settings.includeAuditLog ? makeAuditLogPdf() : null,
+        ]);
 
-      certificateDoc = createdCertificatePdf;
-      auditLogDoc = createdAuditLogPdf;
+        certificateDoc = createdCertificatePdf;
+        auditLogDoc = createdAuditLogPdf;
 
-      // Verify certificate is created once for all files
-      if (certificateDoc) {
-        const certificatePageCount = certificateDoc.getPageCount();
-        console.log(
-          `[Certificate Verification] Created single certificate for envelope ${envelope.id} with ${envelopeItems.length} files. Certificate has ${certificatePageCount} page(s) and will be added to all files.`,
-        );
+        // Verify certificate is created once for all files
+        if (certificateDoc) {
+          const certificatePageCount = certificateDoc.getPageCount();
+          console.log(
+            `[Certificate Verification] Created single certificate for envelope ${envelope.id} with ${envelopeItems.length} files. Certificate has ${certificatePageCount} page(s) and will be added to all files.`,
+          );
+        }
       }
-    }
-
-    const newDocumentData: Array<{ oldDocumentDataId: string; newDocumentDataId: string }> = [];
-
-    for (const envelopeItem of envelopeItems) {
-      const envelopeItemFields = envelope.envelopeItems.find(
-        (item) => item.id === envelopeItem.id,
-      )?.field;
-
-      if (!envelopeItemFields) {
-        throw new Error(`Envelope item fields not found for envelope item ${envelopeItem.id}`);
-      }
-
-      // Verify the same certificateDoc is being used for all files
-      if (certificateDoc) {
-        const certificatePageCount = certificateDoc.getPageCount();
-        console.log(
-          `[Certificate Verification] Adding certificate (${certificatePageCount} page(s)) to file: ${envelopeItem.title}`,
-        );
-      }
-
-      const result = await decorateAndSignPdf({
-        envelope,
-        envelopeItem,
-        envelopeItemFields,
-        isRejected,
-        rejectionReason,
-        pdfData,
-        certificateDoc,
-        auditLogDoc,
-      });
-
-      newDocumentData.push(result);
     }
 
     await prisma.$transaction(async (tx) => {

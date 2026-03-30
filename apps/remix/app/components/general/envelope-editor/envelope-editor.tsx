@@ -7,6 +7,7 @@ import { EnvelopeType } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
   ArrowLeftIcon,
+  CopyPlusIcon,
   DownloadCloudIcon,
   EyeIcon,
   LinkIcon,
@@ -30,6 +31,7 @@ import { Separator } from '@documenso/ui/primitives/separator';
 import { SpinnerBox } from '@documenso/ui/primitives/spinner';
 
 import { EnvelopeDeleteDialog } from '~/components/dialogs/envelope-delete-dialog';
+import { EnvelopeDuplicateDialog } from '~/components/dialogs/envelope-duplicate-dialog';
 import { EnvelopeDistributeDialog } from '~/components/dialogs/envelope-distribute-dialog';
 import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
 import { EnvelopeRedistributeDialog } from '~/components/dialogs/envelope-redistribute-dialog';

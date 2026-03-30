@@ -211,9 +211,11 @@ export const EnvelopeEditorSettingsDialog = ({
       envelope.documentMeta.distributionMethod === DocumentDistributionMethod.NONE
         ? DocumentDistributionMethod.EMAIL
         : envelope.documentMeta.distributionMethod || DocumentDistributionMethod.EMAIL;
+    const resolvedTemplateType =
+      envelope.templateType === TemplateType.PUBLIC ? TemplateType.PUBLIC : TemplateType.PRIVATE;
 
     return {
-      templateType: envelope.templateType || TemplateType.PRIVATE,
+      templateType: resolvedTemplateType,
       externalId: envelope.externalId || '',
       visibility: envelope.visibility || '',
       includeQrCodeInCertificate: envelope.includeQrCodeInCertificate ?? null,
@@ -801,14 +803,10 @@ export const EnvelopeEditorSettingsDialog = ({
                                           </SelectItem>
                                         ))}
 
-                                        <SelectItem value={'-1'}>Documenso</SelectItem>
+                                        <SelectItem value={'-1'}>Nomia</SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </FormControl>
-                                    <SelectItem value={'-1'}>Nomia</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
 
                                   <FormMessage />
                                 </FormItem>
@@ -998,7 +996,6 @@ export const EnvelopeEditorSettingsDialog = ({
                             </FormItem>
                           )}
                         />
-                      )}
                     </>
                   ))
                   .otherwise(() => null)}

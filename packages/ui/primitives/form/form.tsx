@@ -66,12 +66,22 @@ type FormItemContextValue = {
 const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue);
 
 const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => {
-    const id = React.useId();
+  ({ className, id: providedId, ...props }, ref) => {
+    const reactId = React.useId();
+    const fieldContext = React.useContext(FormFieldContext);
+
+    const fieldName =
+      fieldContext && 'name' in fieldContext ? String(fieldContext.name ?? '') : '';
+
+    const stableFieldId = fieldName
+      ? `form-item-${fieldName.replace(/[^a-zA-Z0-9_-]/g, '-')}`
+      : reactId;
+
+    const id = providedId ?? stableFieldId;
 
     return (
       <FormItemContext.Provider value={{ id }}>
-        <div ref={ref} className={cn('space-y-2', className)} {...props} />
+        <div ref={ref} id={id} className={cn('space-y-2', className)} {...props} />
       </FormItemContext.Provider>
     );
   },

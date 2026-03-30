@@ -141,7 +141,10 @@ const handleV1Loader = async ({ params, request }: Route.LoaderArgs) => {
     throw redirect(`/sign/${token}/rejected`);
   }
 
-  if (isRecipientExpired(recipient)) {
+  const recipientExpiresAt =
+    'expiresAt' in recipient ? (recipient.expiresAt as Date | null) : null;
+
+  if (isRecipientExpired({ expiresAt: recipientExpiresAt })) {
     throw redirect(`/sign/${token}/expired`);
   }
 

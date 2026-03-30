@@ -79,7 +79,10 @@ async function handleV1Loader({ params, request }: Route.LoaderArgs) {
     );
   }
 
-  if (isRecipientExpired(recipient)) {
+  const recipientExpiresAt =
+    'expiresAt' in recipient ? (recipient.expiresAt as Date | null) : null;
+
+  if (isRecipientExpired({ expiresAt: recipientExpiresAt })) {
     throw data(
       {
         type: 'embed-recipient-expired',

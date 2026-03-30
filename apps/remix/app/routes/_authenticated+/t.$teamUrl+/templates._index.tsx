@@ -12,13 +12,11 @@ import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/org
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { formatDocumentsPath, formatTemplatesPath } from '@documenso/lib/utils/teams';
-import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
-import { useSession } from '@documenso/lib/client-only/providers/session';
 import { trpc } from '@documenso/trpc/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import type { RowSelectionState } from '@documenso/ui/primitives/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
-
+import { useSession } from '@documenso/lib/client-only/providers/session';
 import { EnvelopesBulkDeleteDialog } from '~/components/dialogs/envelopes-bulk-delete-dialog';
 import { EnvelopesBulkMoveDialog } from '~/components/dialogs/envelopes-bulk-move-dialog';
 import { EnvelopeDropZoneWrapper } from '~/components/general/envelope/envelope-drop-zone-wrapper';
@@ -69,16 +67,37 @@ export default function TemplatesPage() {
   const documentRootPath = formatDocumentsPath(team.url);
   const templateRootPath = formatTemplatesPath(team.url);
 
-  const { data, isLoading, isLoadingError } = trpc.template.findTemplates.useQuery({
-    page: page,
-    perPage: perPage,
-    folderId,
-  });
+  const teamTemplatesQuery = trpc.template.findTemplates.useQuery(
+    {
+      page,
+      perPage,
+      folderId,
+    },
+    {
+      enabled: !isOrgView,
+    },
+  );
 
-  // // Clear selection when navigation or filters change
-  // useEffect(() => {
-  //   setRowSelection({});
-  // }, [folderId, page, perPage]);
+  const orgTemplatesQuery = trpc.template.findOrganisationTemplates.useQuery(
+    {
+      page,
+      perPage,
+    },
+    {
+      enabled: isOrgView,
+    },
+  );
+
+  const activeQuery = isOrgView ? orgTemplatesQuery : teamTemplatesQuery;
+
+  const handleViewChange = (newView: string) => {
+    if (newView !== 'team' && newView !== 'organisation') {
+      return;
+    }
+
+    void setView(newView === 'team' ? null : newView);
+  };
+
 
   const isOrganisationOwner = organisation.ownerUserId === user.id;
   const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;

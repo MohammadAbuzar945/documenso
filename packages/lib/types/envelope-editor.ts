@@ -236,6 +236,7 @@ export const ZEditorEnvelopeSchema = EnvelopeSchema.pick({
   status: true,
   source: true,
   visibility: true,
+  includeQrCodeInCertificate: true,
   templateType: true,
   id: true,
   secondaryId: true,

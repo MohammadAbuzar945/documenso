@@ -99,7 +99,7 @@ export const isRecipientEmailValidForSending = (recipient: Pick<Recipient, 'emai
 /**
  * Whether the recipient's signing window has expired.
  */
-export const isRecipientExpired = (recipient: { expiresAt: Date | null }) => {
+export const isRecipientExpired = (recipient: { expiresAt?: Date | null }) => {
   return Boolean(recipient.expiresAt && new Date(recipient.expiresAt) <= new Date());
 };
 
@@ -108,7 +108,7 @@ export const isRecipientExpired = (recipient: { expiresAt: Date | null }) => {
  *
  * Throws an AppError with RECIPIENT_EXPIRED if the expiration date has passed.
  */
-export const assertRecipientNotExpired = (recipient: { expiresAt: Date | null }) => {
+export const assertRecipientNotExpired = (recipient: { expiresAt?: Date | null }) => {
   if (isRecipientExpired(recipient)) {
     throw new AppError(AppErrorCode.RECIPIENT_EXPIRED, {
       message: 'Recipient signing window has expired',

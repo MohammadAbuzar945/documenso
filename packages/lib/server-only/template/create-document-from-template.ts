@@ -547,7 +547,7 @@ export const createDocumentFromTemplate = async ({
   const finalExternalId = externalId || template.externalId;
   const { processedExternalId, fromNomia } = processExternalId(finalExternalId || undefined);
 
-  return await prisma.$transaction(async (tx) => {
+  const { envelope, createdEnvelope } = await prisma.$transaction(async (tx) => {
     const envelope = await tx.envelope.create({
       data: {
         id: prefixedId('envelope'),
@@ -575,7 +575,6 @@ export const createDocumentFromTemplate = async ({
         visibility: template.visibility || settings.documentVisibility,
         useLegacyFieldInsertion: template.useLegacyFieldInsertion ?? false,
         documentMetaId: documentMeta.id,
-        formValues: formValues ?? undefined,
         formValues: formValues ?? undefined,
         recipients: {
           createMany: {

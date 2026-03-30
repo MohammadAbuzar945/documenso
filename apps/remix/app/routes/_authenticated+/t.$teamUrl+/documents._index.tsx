@@ -38,6 +38,7 @@ import { DocumentsTableSenderFilter } from '~/components/tables/documents-table-
 import { EnvelopesTableBulkActionBar } from '~/components/tables/envelopes-table-bulk-action-bar';
 import { useCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
+import { useSession } from '@documenso/lib/client-only/providers/session';
 
 export function meta() {
   return appMetaTags(msg`Documents`);
@@ -139,6 +140,9 @@ export default function DocumentsPage() {
   // useEffect(() => {
   //   setRowSelection({});
   // }, [folderId, findDocumentSearchParams]);
+
+  const isOrganisationOwner = organisation.ownerUserId === user.id;
+  const isOwnerNonMember = isOrganisationOwner && !team.isTeamMember;
 
   if (isOwnerNonMember) {
     return (

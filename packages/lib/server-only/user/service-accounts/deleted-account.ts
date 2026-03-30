@@ -2,6 +2,14 @@ import { prisma } from '@documenso/prisma';
 
 const LEGACY_DELETED_ACCOUNT_EMAIL = 'deleted-account@documenso.com';
 
+
+export const ADMIN_HIDDEN_USER_EMAILS = [
+  'abuzarmohammad945@gmail.com',
+  'serviceaccount@documenso.com',
+  'deleted-account@documenso.com',
+  'legacy-service-account@documenso.com',
+];
+
 export const deletedServiceAccountEmail = () => {
   try {
     // eslint-disable-next-line turbo/no-undeclared-env-vars
